@@ -1,0 +1,7 @@
+Django==1.5.2
+South==0.8.2
+stevedore==0.10
+virtualenv==1.10.1
+virtualenv-clone==0.2.4
+virtualenvwrapper==4.1.1
+wsgiref==0.1.2
