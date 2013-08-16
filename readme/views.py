@@ -19,7 +19,7 @@ class AddView(generic.CreateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        self.object.owner = User.objects.get(pk=1)
+        self.object.owner = self.request.user
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
 
