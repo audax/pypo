@@ -1,1 +1,2 @@
 *.pyc
+pypo/settings_local.py
