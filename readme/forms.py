@@ -6,5 +6,5 @@ class CreateItemForm(forms.ModelForm):
 
     class Meta:
         model = Item
-        fields = ('url', 'title')
+        fields = ('url',)
 
