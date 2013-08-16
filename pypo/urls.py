@@ -3,9 +3,7 @@ from django.contrib import admin
 
 from readme import views
 
-# Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
@@ -13,8 +11,8 @@ urlpatterns = patterns('',
     # url(r'^pypo/', include('pypo.foo.urls')),
 
     url(r'^$', views.IndexView.as_view(), name='index'),
-    url(r'^add/$', views.AddView.as_view(), name='index'),
-    url(r'^view/(?P<pk>\d+)$', views.ItemView.as_view(), name='index'),
+    url(r'^add/$', views.AddView.as_view(), name='item_add'),
+    url(r'^view/(?P<pk>\d+)$', views.ItemView.as_view(), name='item_view'),
 
 
     # Uncomment the admin/doc line below to enable admin documentation:
