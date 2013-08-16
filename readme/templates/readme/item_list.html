@@ -3,6 +3,9 @@
 
     <li>
         <a href="{{item.url}}">{{item.title}}</a> - {{item.created}}
+        <div>
+        {{ item.summary | safe}}
+        </div>
     </li>
 
 {% endfor %}
