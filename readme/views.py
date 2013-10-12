@@ -30,7 +30,7 @@ class DeleteItem(RestrictItemAccessMixin, generic.DeleteView):
 
 class AddView(generic.CreateView):
     model = Item
-    success_url = "/"
+    success_url = reverse_lazy('index')
 
     form_class = CreateItemForm
 
