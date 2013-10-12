@@ -5,6 +5,7 @@ from readme.models import Item
 class ItemIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     readable_article = indexes.CharField(model_attr='readable_article')
+    summary = indexes.CharField(model_attr='summary')
     title = indexes.CharField(model_attr='title')
     created = indexes.DateTimeField(model_attr='created')
 
