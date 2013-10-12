@@ -32,15 +32,18 @@ class AddView(generic.CreateView):
             pass
 
         self.object.owner = self.request.user
-        req = requests.get(self.object.url)
-        doc = Document(req.text)
-        self.object.title = doc.short_title()
-        self.object.readable_article = doc.summary(True)
+        try:
+            req = requests.get(self.object.url)
+        except requests.RequestException:
+            self.object.title = self.object.url
+            self.object.readable_article = ''
+        else:
+            doc = Document(req.text)
+            self.object.title = doc.short_title()
+            self.object.readable_article = doc.summary(True)
 
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
-
-
 
 
 class ItemView(generic.DetailView):

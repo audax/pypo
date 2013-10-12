@@ -17,5 +17,5 @@ class Item(models.Model):
 
     @property
     def domain(self):
-        return get_tld(self.url, fail_silently=True)
+        return get_tld(self.url.encode('utf-8'), fail_silently=True)
 
