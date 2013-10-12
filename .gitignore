@@ -1,2 +1,3 @@
 *.pyc
 pypo/settings_local.py
+pypo/whoosh_index/*
