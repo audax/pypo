@@ -6,11 +6,13 @@ from readability import Document
 import requests
 import re
 
+
 class IndexView(generic.ListView):
     context_object_name = 'current_item_list'
 
     def get_queryset(self):
         return Item.objects.order_by('-created')
+
 
 class DeleteItem(generic.DeleteView):
     model = Item
