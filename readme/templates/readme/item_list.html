@@ -5,7 +5,10 @@
 
     <li>
         <a href="{{item.url}}">{{item.title}}
-            {% if item.domain %}[{{item.domain}}]{% endif %}</a> - {{item.created}}
+            {% if item.domain %}[{{item.domain}}]{% endif %}</a>
+        - {{item.created}}
+        <a href="{{ item.get_absolute_url }}">Details</a>
+        <a href="{{ item.get_delete_url }}">Delete</a>
         <div>
         {{ item.summary | safe}}
         </div>

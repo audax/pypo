@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^$', login_required(views.IndexView.as_view()), name='index'),
     url(r'^add/$', login_required(views.AddView.as_view()), name='item_add'),
     url(r'^view/(?P<pk>\d+)$', login_required(views.ItemView.as_view()), name='item_view'),
+    url(r'^delete/(?P<pk>\d+)$', login_required(views.DeleteItem.as_view()), name='item_delete'),
     url(r'^accounts/login/$', login, name='login'),
     url(r'^accounts/logout/$', logout_then_login, name='logout'),
 

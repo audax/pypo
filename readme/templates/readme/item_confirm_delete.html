@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+    <form method="post" class="form-horizontal" id="create-item-form">
+    {%  csrf_token %}
+        <div class="form-actions">
+            <input type="submit" class="btn btn-primary" value="Delete"
+                                         name="submit">
+        </div>
+    </form>
+    <div class="detail-view">
+        <a href="{{ item.url }}">{{ item.title }}
+            {% if item.domain %}[{{ item.domain }}]{% endif %}</a> - {{ item.created }}
+        <div>
+            {{ item.summary | safe }}
+        </div>
+    </div>
+{% endblock %}

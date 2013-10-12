@@ -2,9 +2,9 @@ from django.views import generic
 from .models import Item
 from .forms import CreateItemForm
 from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse_lazy
 from readability import Document
 import requests
-import re
 
 
 class IndexView(generic.ListView):
@@ -16,6 +16,8 @@ class IndexView(generic.ListView):
 
 class DeleteItem(generic.DeleteView):
     model = Item
+    context_object_name = 'item'
+    success_url = reverse_lazy('index')
 
 
 class AddView(generic.CreateView):
@@ -48,3 +50,4 @@ class AddView(generic.CreateView):
 
 class ItemView(generic.DetailView):
     model = Item
+    context_object_name = 'item'
