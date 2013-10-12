@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import login, logout_then_login
 
 from readme import views
+from haystack.views import search_view_factory, SearchView
+from haystack.forms import SearchForm
 
 admin.autodiscover()
 
@@ -17,6 +19,11 @@ urlpatterns = patterns('',
     url(r'^view/(?P<pk>\d+)$', login_required(views.ItemView.as_view()), name='item_view'),
     url(r'^accounts/login/$', login, name='login'),
     url(r'^accounts/logout/$', logout_then_login, name='logout'),
+
+    url(r'^search/', search_view_factory(
+        view_class=SearchView,
+        form_class=SearchForm
+        ), name='haystack_search'),
 
 
     # Uncomment the admin/doc line below to enable admin documentation:
