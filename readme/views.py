@@ -3,18 +3,26 @@ from .models import Item
 from .forms import CreateItemForm
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
+from django.shortcuts import redirect
 from readability import Document
 import requests
+
+
+class RestrictItemAccessMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user == self.get_object().owner:
+            return redirect('index')
+        return super(RestrictItemAccessMixin, self).dispatch(request, *args, **kwargs)
 
 
 class IndexView(generic.ListView):
     context_object_name = 'current_item_list'
 
     def get_queryset(self):
-        return Item.objects.order_by('-created')
+        return Item.objects.filter(owner=self.request.user).order_by('-created')
 
 
-class DeleteItem(generic.DeleteView):
+class DeleteItem(RestrictItemAccessMixin, generic.DeleteView):
     model = Item
     context_object_name = 'item'
     success_url = reverse_lazy('index')
@@ -48,6 +56,7 @@ class AddView(generic.CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class ItemView(generic.DetailView):
+class ItemView(RestrictItemAccessMixin, generic.DetailView):
     model = Item
     context_object_name = 'item'
+
