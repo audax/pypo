@@ -40,9 +40,9 @@ class FunctionalTests(TestCase):
     def test_add_item(self):
         c = Client()
         c.login(username='dev', password='dev')
-        response = c.post('/add/', {'url': 'https://www.example.com'}, follow=True)
+        response = c.post('/add/', {'url': 'http://www.example.com'}, follow=True)
         self.assertEquals(response.status_code, 200)
-        assert 'https://www.example.com/' in response.content
+        assert 'http://www.example.com/' in response.content
         assert '[example.com]' in response.content
 
 
