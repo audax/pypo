@@ -1,3 +1,5 @@
+import os
+
 # Django settings for pypo project.
 
 DEBUG = True
@@ -129,6 +131,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'readme',
     'crispy_forms',
+    'haystack',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -161,6 +164,13 @@ LOGGING = {
 }
 
 CRISPY_FAIL_SILENTLY = not DEBUG
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
+    },
+}
 
 try:
     from settings_local import *
