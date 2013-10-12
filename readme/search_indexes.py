@@ -7,6 +7,10 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
     summary = indexes.CharField(model_attr='summary')
     title = indexes.CharField(model_attr='title')
     created = indexes.DateTimeField(model_attr='created')
+    tags = indexes.MultiValueField()
+
+    def prepare_tags(self, obj):
+        return obj.tags.names()
 
     def get_model(self):
         return Item

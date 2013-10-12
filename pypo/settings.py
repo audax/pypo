@@ -132,6 +132,7 @@ INSTALLED_APPS = (
     'readme',
     'crispy_forms',
     'haystack',
+    'taggit',
 )
 
 # A sample logging configuration. The only tangible logging
