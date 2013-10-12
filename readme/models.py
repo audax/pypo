@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.html import strip_tags
+from tld import get_tld
+
+
 
 
 class Item(models.Model):
@@ -14,4 +17,8 @@ class Item(models.Model):
     @property
     def summary(self):
         return strip_tags(self.readable_article)[:300]
+
+    @property
+    def domain(self):
+        return get_tld(self.url, fail_silently=True)
 

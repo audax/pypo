@@ -10,7 +10,9 @@ psycopg2==2.5.1
 pycrypto==2.6
 readability-lxml==0.2.6.1
 requests==1.2.3
+six==1.4.1
 stevedore==0.10
+tld==0.6.1
 virtualenv==1.10.1
 virtualenv-clone==0.2.4
 virtualenvwrapper==4.1.1
