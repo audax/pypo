@@ -6,9 +6,7 @@
         <a href="{{ item.get_delete_url }}">Delete</a>
         <div class="tags">
             <ul>
-                {% foreach item.tags as tag %}
-                    {{ tag.name }}
-                {% endforeach %}
+                {{ item.tags.names|unordered_list }}
             </ul>
         </div>
         <div>
