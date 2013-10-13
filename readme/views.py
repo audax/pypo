@@ -4,10 +4,15 @@ from .forms import CreateItemForm
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import redirect
-import requests
 
 
 class RestrictItemAccessMixin(object):
+    """
+    Mixing for generic views that implement get_object()
+
+    Restricts access so that every user can only access views for
+    objects that have him as the object.owner
+    """
     def dispatch(self, request, *args, **kwargs):
         if not request.user == self.get_object().owner:
             return redirect('index')
