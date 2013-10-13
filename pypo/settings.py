@@ -165,6 +165,7 @@ LOGGING = {
 }
 
 CRISPY_FAIL_SILENTLY = not DEBUG
+CRISPY_TEMPLATE_PACK = 'bootstrap'
 
 HAYSTACK_CONNECTIONS = {
     'default': {

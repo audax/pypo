@@ -39,11 +39,10 @@ class AddView(generic.CreateView):
         try:
             self.object = self.model.objects.get(url=self.object.url, owner=self.request.user)
         except Item.DoesNotExist:
-            pass
+            self.object.owner = self.request.user
         else:
             self.object.tags.clear()
             self.object.tags.add(*form.cleaned_data['tags'])
-            self.object.owner = self.request.user
 
         try:
             req = requests.get(self.object.url)

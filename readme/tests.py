@@ -39,7 +39,7 @@ class FunctionalTests(TestCase):
 
     def test_add_item(self):
         c = Client()
-        c.login(username='dev', password='dev')
+        assert c.login(username='dev', password='dev')
         response = c.post('/add/', {'url': 'http://www.example.com'}, follow=True)
         self.assertEquals(response.status_code, 200)
         assert 'http://www.example.com/' in response.content
