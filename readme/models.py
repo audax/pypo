@@ -4,6 +4,9 @@ from django.utils.html import strip_tags
 from tld import get_tld
 from django.core.urlresolvers import reverse
 from taggit.managers import TaggableManager
+from readability import Document
+
+import requests
 
 
 class Item(models.Model):
@@ -27,3 +30,14 @@ class Item(models.Model):
 
     def get_delete_url(self):
         return reverse('item_delete', args=[str(self.id)])
+
+
+def fetch_article(url):
+    try:
+        req = requests.get(url)
+    except requests.RequestException:
+        return url, ''
+    else:
+        doc = Document(req.text)
+        return doc.short_title(), doc.summary(True)
+

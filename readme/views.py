@@ -1,10 +1,9 @@
 from django.views import generic
-from .models import Item
+from .models import Item, fetch_article
 from .forms import CreateItemForm
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import redirect
-from readability import Document
 import requests
 
 
@@ -44,15 +43,7 @@ class AddView(generic.CreateView):
             self.object.tags.clear()
             self.object.tags.add(*form.cleaned_data['tags'])
 
-        try:
-            req = requests.get(self.object.url)
-        except requests.RequestException:
-            self.object.title = self.object.url
-            self.object.readable_article = ''
-        else:
-            doc = Document(req.text)
-            self.object.title = doc.short_title()
-            self.object.readable_article = doc.summary(True)
+        self.object.title,  self.object.readable_article = fetch_article(self.object.url)
 
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
