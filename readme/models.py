@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.html import strip_tags
 from tld import get_tld
 from django.core.urlresolvers import reverse
+from taggit.managers import TaggableManager
 
 
 class Item(models.Model):
@@ -11,6 +12,7 @@ class Item(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User)
     readable_article = models.TextField(null=True)
+    tags = TaggableManager(blank=True)
 
     @property
     def summary(self):

@@ -4,6 +4,13 @@
         <a href="{{ item.url }}">{{ item.title }}
             {% if item.domain %}[{{ item.domain }}]{% endif %}</a> - {{ item.created }}
         <a href="{{ item.get_delete_url }}">Delete</a>
+        <div class="tags">
+            <ul>
+                {% foreach item.tags as tag %}
+                    {{ tag.name }}
+                {% endforeach %}
+            </ul>
+        </div>
         <div>
             {{ item.summary | safe }}
         </div>

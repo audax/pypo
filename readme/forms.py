@@ -21,5 +21,5 @@ class CreateItemForm(forms.ModelForm):
 
     class Meta:
         model = Item
-        fields = ('url',)
+        fields = ('url', 'tags',)
 
