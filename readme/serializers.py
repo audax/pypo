@@ -27,9 +27,11 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'name')
 
 
-class ItemSerializer(serializers.HyperlinkedModelSerializer):
+class ItemSerializer(serializers.ModelSerializer):
     tags = TagListSerializer(required=False)
+    title = serializers.CharField(required=False, read_only=True)
+    readable_article = serializers.CharField(required=False, read_only=True)
 
     class Meta:
         model = Item
-        fields = ('url', 'title', 'created', 'readable_article', 'tags')
+        fields = ('id', 'url', 'title', 'created', 'readable_article', 'tags')
