@@ -43,12 +43,6 @@ class ItemViewSet(viewsets.ModelViewSet):
         """
         item.owner = self.request.user
         item.title, item.readable_article = fetch_article(item.url)
-        try:
-            original_item = self.model.objects.get(url=item.url, owner=item.owner)
-        except self.model.DoesNotExist:
-            pass
-        else:
-            item.id = original_item.id
 
 
     def post_save(self, item, *args, **kwargs):
