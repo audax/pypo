@@ -7,7 +7,7 @@ from taggit.managers import TaggableManager
 
 
 class Item(models.Model):
-    url = models.URLField()
+    url = models.URLField(max_length=2000)
     title = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User)
