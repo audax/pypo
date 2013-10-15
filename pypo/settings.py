@@ -162,6 +162,11 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'readme.request': {
+            'handlers': ['mail_admins'],
+            'level': 'INFO',
+            'propagate': True,
+        },
     }
 }
 
@@ -187,6 +192,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissions',
     ),
 }
+
+# 10MB
+PYPO_MAX_CONTENT_LENGTH = 1.049e+7
 
 
 
