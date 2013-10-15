@@ -5,6 +5,7 @@ from tld import get_tld
 from django.core.urlresolvers import reverse
 from taggit.managers import TaggableManager
 from readability import Document
+from readability.readability import Unparseable
 
 import requests
 
@@ -37,7 +38,9 @@ def fetch_article(url):
         req = requests.get(url)
     except requests.RequestException:
         return url, ''
-    else:
+    try:
         doc = Document(req.text)
         return doc.short_title(), doc.summary(True)
+    except Unparseable:
+        return url, ''
 
