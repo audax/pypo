@@ -1,5 +1,5 @@
 from django.views import generic
-from .models import Item, fetch_article
+from .models import Item
 from .forms import CreateItemForm
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
@@ -48,7 +48,7 @@ class AddView(generic.CreateView):
             self.object.tags.clear()
             self.object.tags.add(*form.cleaned_data['tags'])
 
-        self.object.title,  self.object.readable_article = fetch_article(self.object.url)
+        self.object.fetch_article()
 
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())

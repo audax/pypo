@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from .serializers import UserSerializer, GroupSerializer, ItemSerializer
-from .models import Item, fetch_article
+from .models import Item
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -18,6 +18,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+
 
 class ItemViewSet(viewsets.ModelViewSet):
     """
@@ -42,7 +43,7 @@ class ItemViewSet(viewsets.ModelViewSet):
         If the url was already fetched by this user, overwrite the old Item
         """
         item.owner = self.request.user
-        item.title, item.readable_article = fetch_article(item.url)
+        item.fetch_article()
 
 
     def post_save(self, item, *args, **kwargs):

@@ -32,15 +32,29 @@ class Item(models.Model):
     def get_delete_url(self):
         return reverse('item_delete', args=[str(self.id)])
 
+    def fetch_article(self):
+        url = self.url
+        try:
+            req = requests.get(url)
+        except requests.RequestException:
+            self._fetch_fallback()
+        else:
+            if 'html' in req.headers['content-type']:
+                self._parse_webpage(req)
+                return
+            else:
+                self._fetch_fallback()
 
-def fetch_article(url):
-    try:
-        req = requests.get(url)
-    except requests.RequestException:
-        return url, ''
-    try:
-        doc = Document(req.text)
-        return doc.short_title(), doc.summary(True)
-    except Unparseable:
-        return url, ''
+    def _fetch_fallback(self):
+        self.title, self.readable_article = self.url, ''
+
+    def _parse_webpage(self, req):
+        try:
+            doc = Document(req.text)
+        except Unparseable:
+            self._fetch_fallback()
+        else:
+            self.title, self.readable_article = doc.short_title(), doc.summary(True)
+            return
+
 
