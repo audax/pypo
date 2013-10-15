@@ -53,6 +53,10 @@ class AddView(generic.CreateView):
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
 
+    def get_initial(self):
+        url = self.request.GET.get('url', None)
+        return {'url': url}
+
 
 class ItemView(RestrictItemAccessMixin, generic.DetailView):
     model = Item
