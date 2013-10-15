@@ -17,6 +17,7 @@ It's main components are built with:
  * tld
  * South
  * requests
+ * djangorestframework
 
 Features
 --------
