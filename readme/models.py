@@ -41,7 +41,7 @@ class Item(models.Model):
         try:
             req = requests.get(url, stream=True)
             try:
-                content_length = int(req.headers['content-length'])
+                content_length = int(req.headers.get('content-length', 0))
             except ValueError:
                 # no valid content length set
                 self._fetch_fallback()
