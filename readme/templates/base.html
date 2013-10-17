@@ -31,10 +31,15 @@
       </div>
       <!--/.nav-collapse -->
   </div>
-
-    <div id="content" class="container">
+  <div class="row">
+    <div id="content" class="col-lg-8 col-lg-offset-2">
         {% block content %}{% endblock %}
     </div>
+      <div class="col-lg-2">
+          <!--  Just to center it on large screens -->
+      </div>
+  </div>
+
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="{% static "js/jquery-2.0.3.min.js" %}"></script>
