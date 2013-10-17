@@ -1,21 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
-<ul>
-{% for item in current_item_list %}
-
-    <li>
-        <a href="{{item.url}}">{{item.title}}
-            {% if item.domain %}[{{item.domain}}]{% endif %}</a>
-        - {{item.created}}
-        <a href="{{ item.get_absolute_url }}">Details</a>
-        <a href="{{ item.get_delete_url }}">Delete</a>
-        <div>
-        {{ item.summary | safe}}
+    <div class="row">
+        {% for item in current_item_list %}
+        <div class="col-md-4">
+            <h4>
+                <a href="{{item.url}}">{{item.title}}
+                    {% if item.domain %}[{{item.domain}}]{% endif %}</a>
+            </h4>
+            <div class="row">
+                <div class="col-md-6">
+                    {{item.created}}
+                </div>
+                <div class="col-md-2 col-md-offset-1">
+                    <a href="{{ item.get_absolute_url }}">Details</a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ item.get_delete_url }}">Delete</a>
+                </div>
+            </div>
+            <div>
+                {{ item.summary | safe}}
+            </div>
         </div>
-    </li>
-
-{% endfor %}
-</ul>
-
-
+        {% endfor %}
+    </div>
 {% endblock %}
