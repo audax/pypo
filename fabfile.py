@@ -14,6 +14,7 @@ def update_server():
     with virtualenv():
 	    local('git pull')
             local('./manage.py migrate')
+            local('./manage.py collectstatic')
 	    local('sudo service apache2 restart')
 
 
