@@ -1,5 +1,19 @@
-from fabric.api import lcd, local
+from fabric.api import lcd, local, cd, prefix, env
+from contextlib import contextmanager as _contextmanager
 
-def prepare_deployment(branch_name):
-    local('python manage.py test pypo')
-    local('git add -p && git commit')
+env.directory = '/home/dax/pypo'
+env.activate = '. /home/dax/pypo_env/bin/activate'
+
+@_contextmanager
+def virtualenv():
+    with cd(env.directory):
+        with prefix(env.activate):
+            yield
+
+def update_server():
+    with virtualenv():
+	    local('git pull')
+            local('./manage.py migrate')
+	    local('sudo service apache2 restart')
+
+
