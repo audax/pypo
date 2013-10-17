@@ -1,13 +1,12 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import login, logout_then_login
 from rest_framework import routers
 from haystack.views import search_view_factory, SearchView
 from haystack.forms import SearchForm
 
 
-from readme import views
+from readme import views, account_urls
 from readme.api import GroupViewSet, UserViewSet, ItemViewSet
 
 
@@ -29,8 +28,7 @@ urlpatterns = patterns('',
     url(r'^add/$', login_required(views.AddView.as_view()), name='item_add'),
     url(r'^view/(?P<pk>\d+)$', login_required(views.ItemView.as_view()), name='item_view'),
     url(r'^delete/(?P<pk>\d+)$', login_required(views.DeleteItem.as_view()), name='item_delete'),
-    url(r'^accounts/login/$', login, name='login'),
-    url(r'^accounts/logout/$', logout_then_login, name='logout'),
+    url(r'^accounts/', include(account_urls)),
 
     url(r'^search/', search_view_factory(
         view_class=SearchView,

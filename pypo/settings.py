@@ -125,8 +125,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'south',
-    # Uncomment the next line to enable the admin:
-    'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
     'readme',
@@ -134,6 +132,7 @@ INSTALLED_APPS = (
     'haystack',
     'taggit',
     'rest_framework',
+    'django.contrib.admin',
 )
 
 # A sample logging configuration. The only tangible logging
