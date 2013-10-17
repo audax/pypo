@@ -52,10 +52,16 @@ class Item(models.Model):
                                      content_length, settings.PYPO_MAX_CONTENT_LENGTH)
                     self._fetch_fallback()
                     return
-                # only decode text requests
-                decode_unicode = 'html' in req.headers['content-type']
                 # In case content_length lied to us
-                content = req.iter_content(settings.PYPO_MAX_CONTENT_LENGTH, decode_unicode).next()
+                content = req.iter_content(settings.PYPO_MAX_CONTENT_LENGTH).next()
+                # only decode text requests
+                if req.headers.get('content-type', '').startswith('text/'):
+                    try:
+                        content = content.decode(req.encoding)
+                    except UnicodeDecodeError:
+                        # just ignore it then, the encoding from the header was wrong
+                        pass
+
         except requests.RequestException:
             self._fetch_fallback()
         else:
