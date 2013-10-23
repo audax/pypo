@@ -21,17 +21,17 @@ class BasicTests(TestCase):
         item.title = 'Title'
         item.owner = user
         item.save()
-        self.assert_(item.owner)
+        self.assertTrue(item.owner)
 
     def test_summary(self):
         item = Item()
         item.readable_article = 'lorem_ipsum' * 100
-        self.assertEquals(item.summary, item.readable_article[:300])
+        self.assertEqual(item.summary, item.readable_article[:300])
 
     def test_unknown_tld(self):
         item = Item()
         item.url = 'foobar'
-        self.assertEquals(item.domain, None)
+        self.assertEqual(item.domain, None)
 
 
 class FunctionalTests(TestCase):
@@ -41,9 +41,9 @@ class FunctionalTests(TestCase):
         c = Client()
         assert c.login(username='dev', password='dev')
         response = c.post('/add/', {'url': 'http://www.example.com'}, follow=True)
-        self.assertEquals(response.status_code, 200)
-        assert 'http://www.example.com/' in response.content
-        assert '[example.com]' in response.content
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode('utf-8')
+        assert 'http://www.example.com/' in content
 
 
 

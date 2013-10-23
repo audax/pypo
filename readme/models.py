@@ -53,7 +53,7 @@ class Item(models.Model):
                     self._fetch_fallback()
                     return
                 # In case content_length lied to us
-                content = req.iter_content(settings.PYPO_MAX_CONTENT_LENGTH).next()
+                content = next(req.iter_content(settings.PYPO_MAX_CONTENT_LENGTH))
                 # only decode text requests
                 if req.headers.get('content-type', '').startswith('text/'):
                     try:
