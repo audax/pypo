@@ -56,18 +56,15 @@ class Item(models.Model):
                 content = next(req.iter_content(settings.PYPO_MAX_CONTENT_LENGTH))
                 # only decode text requests
                 if req.headers.get('content-type', '').startswith('text/'):
-                    try:
-                        content = content.decode(req.encoding)
-                    except UnicodeDecodeError:
-                        # just ignore it then, the encoding from the header was wrong
-                        pass
+                    text = content.decode(req.encoding, errors='ignore')
+                else:
+                    text = None
 
         except requests.RequestException:
             self._fetch_fallback()
         else:
-            if 'html' in req.headers['content-type']:
-                # content is already decoded
-                self._parse_webpage(content)
+            if 'html' in req.headers['content-type'] and text is not None:
+                self._parse_webpage(text)
             else:
                 self._fetch_fallback()
 
@@ -77,7 +74,6 @@ class Item(models.Model):
     def _parse_webpage(self, text):
         try:
             doc = Document(text)
+            self.title, self.readable_article = doc.short_title(), doc.summary(True)
         except Unparseable:
             self._fetch_fallback()
-        else:
-            self.title, self.readable_article = doc.short_title(), doc.summary(True)
