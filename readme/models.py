@@ -10,6 +10,7 @@ from readability.readability import Unparseable
 
 import requests
 import logging
+from readme.scrapers import parse
 
 request_log = logging.getLogger('readme.requests')
 
@@ -54,30 +55,18 @@ class Item(models.Model):
                     return
                 # In case content_length lied to us
                 content = req.iter_content(settings.PYPO_MAX_CONTENT_LENGTH).next()
+                text = None
                 # only decode text requests
                 if req.headers.get('content-type', '').startswith('text/'):
                     try:
-                        content = content.decode(req.encoding)
+                        text = content.decode(req.encoding)
                     except UnicodeDecodeError:
                         # just ignore it then, the encoding from the header was wrong
                         pass
 
         except requests.RequestException:
-            self._fetch_fallback()
-        else:
-            if 'html' in req.headers['content-type']:
-                # content is already decoded
-                self._parse_webpage(content)
-            else:
-                self._fetch_fallback()
+            text, content = None, None
 
-    def _fetch_fallback(self):
-        self.title, self.readable_article = self.url, ''
+        self.title, self.readable_article = parse(self, content_type=req.headers.get('content-type', ''),
+                                                  text=text, content=content)
 
-    def _parse_webpage(self, text):
-        try:
-            doc = Document(text)
-        except Unparseable:
-            self._fetch_fallback()
-        else:
-            self.title, self.readable_article = doc.short_title(), doc.summary(True)
