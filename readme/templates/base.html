@@ -1,4 +1,5 @@
 {% load static from staticfiles %}
+{% load less %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -6,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet" media="screen">
+      <link href="{{ STATIC_URL }}{% less "less/readme.less" %}" rel="stylesheet" media="screen">
   </head>
   <body>
   <div class="navbar navbar-inverse">
@@ -20,11 +22,13 @@
       <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
               {% block sidebar %}
+                  {% if user.is_authenticated %}
                   <li><a href="{% url "index" %}">Home</a></li>
                   <li><a href="{% url "item_add" %}">Add new item</a></li>
                   <li><a href="{% url "haystack_search" %}">Search</a></li>
                   <li><a href="{% url "password_change" %}">Password change</a></li>
                   <li><a href="{% url "logout" %}">Logout</a></li>
+                  {% endif %}
               {% endblock %}
           </ul>
           </ul>
@@ -32,12 +36,9 @@
       <!--/.nav-collapse -->
   </div>
   <div class="row">
-    <div id="content" class="col-lg-8 col-lg-offset-2">
+    <div id="content" class="container">
         {% block content %}{% endblock %}
     </div>
-      <div class="col-lg-2">
-          <!--  Just to center it on large screens -->
-      </div>
   </div>
 
 

@@ -1,16 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="detail-view">
-        <a href="{{ item.url }}">{{ item.title }}
-            {% if item.domain %}[{{ item.domain }}]{% endif %}</a> - {{ item.created }}
-        <a href="{{ item.get_delete_url }}">Delete</a>
-        <div class="tags">
-            <ul>
-                {{ item.tags.names|unordered_list }}
-            </ul>
-        </div>
-        <div>
-            {{ item.summary | safe }}
-        </div>
+    {% include "readme/item_single.html" %}
     </div>
 {% endblock %}
