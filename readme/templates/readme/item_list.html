@@ -2,41 +2,7 @@
 {% block content %}
     <div class="row">
         {% for item in current_item_list %}
-        <div class="col-md-4 item">
-            <div class="panel panel-default">
-                <div class="panel-heading item-header">
-                    <a href="{{item.url}}">{{item.title}}
-                        {% if item.domain %}[{{item.domain}}]{% endif %}</a>
-                </div>
-                <div class="panel-body item-content">
-                    <div class="row">
-                        <div class="col-xs-6">
-                            {{item.created}}
-                        </div>
-                        <div class="col-xs-6">
-                            <div class="row pull-right">
-                                <div class="col-xs-6">
-                                    <a href="{{ item.get_absolute_url }}">
-                                        <span class="glyphicon glyphicon-eye-open"></span>
-                                    </a>
-                                </div>
-                                <div class="col-xs-6">
-                                    <a href="{{ item.get_delete_url }}">
-                                        <span class="glyphicon glyphicon-minus-sign"></span>
-                                    </a>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                        {{ item.summary | safe}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+            {% include "readme/item_single.html" %}
         {% endfor %}
     </div>
 {% endblock %}
