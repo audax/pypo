@@ -4,6 +4,10 @@ from readability.readability import Unparseable
 
 
 class ParserException(Exception):
+    '''
+    Generic exception for parsers/scrapers.
+    Indicates that a scraper cannot succeed.
+    '''
     pass
 
 
@@ -34,6 +38,7 @@ parse.domains = {}
 def domain_parser(domain):
     """
     Decorator to register a domain specific parser
+
     :param domain: String
     :return: function
     """
@@ -45,7 +50,9 @@ def domain_parser(domain):
 
 def parse_web_page(text):
     """
-    Generic wep page parser with readability
+    Generic wep page parser with readability.
+    Used as a fallback.
+
     :param text: unicode text
     :return: title, article
     :raise ParserException:
@@ -63,6 +70,15 @@ def parse_web_page(text):
 @domain_parser('github.com')
 @domain_parser('bitbucket.org')
 def parse_github(item, content_type, text):
+    """
+    Reads the readme of a repo if it can find one.
+
+    :param item:  ignored
+    :param content_type: ignored
+    :param text: unicode text
+    :return: title, article
+    :raise ParserException: raised of no readme is found
+    """
     if text is None:
         raise ParserException('Could not decode content')
     doc = document_fromstring(text)

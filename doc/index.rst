@@ -6,15 +6,12 @@
 Welcome to pypo's documentation!
 ================================
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
 
-This is just a stub.
+   readme_module
 
-.. autoclass:: readme.models.Item
-
+.. include:: ../README.rst
 
 
 Indices and tables
