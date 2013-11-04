@@ -4,7 +4,6 @@ from readme.models import Item
 
 class ItemIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.NgramField(document=True, use_template=True)
-    summary = indexes.CharField(model_attr='summary')
     title = indexes.CharField(model_attr='title')
     created = indexes.DateTimeField(model_attr='created')
     tags = indexes.MultiValueField()
