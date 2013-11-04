@@ -19,6 +19,10 @@ It's main components are built with:
 -  requests
 -  djangorestframework
 
+Documentation
+-------------
+Full documentation can be found at `readthedocs`_
+
 Features
 --------
 
@@ -58,3 +62,4 @@ This project is licensed under the terms of the Apache License version
 
 .. _Pocket: http://www.getpocket.com
 .. _Deploying Django with WSGI: https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
+.. _readthedocs: http://pypo.readthedocs.org/
