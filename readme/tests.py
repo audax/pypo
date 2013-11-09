@@ -9,6 +9,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
 from .models import Item
+from readme.scrapers import parse
 
 
 class BasicTests(TestCase):
@@ -32,6 +33,14 @@ class BasicTests(TestCase):
         item = Item()
         item.url = 'foobar'
         self.assertEqual(item.domain, None)
+
+
+class ScraperText(TestCase):
+    fixtures = ['users.json']
+
+    def test_invalid_html(self):
+        item = Item.objects.create(url='http://some_invalid_localhost', domain='nothing', owner=User.objects.get(pk=1))
+        self.assertEqual((item.url, ''), parse(item, content_type='text/html', text=None))
 
 
 class FunctionalTests(TestCase):
