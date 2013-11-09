@@ -12,3 +12,4 @@ lxml==3.2.4
 requests==2.0.0
 tld==0.6.1
 selenium==2.37.2
+https://github.com/audax/python-readability/archive/master.zip
