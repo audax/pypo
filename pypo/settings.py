@@ -135,6 +135,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'django.contrib.admin',
     'less',
+    'functional_tests'
 )
 
 # A sample logging configuration. The only tangible logging
