@@ -81,7 +81,6 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'less.finders.LessFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
@@ -137,7 +136,6 @@ INSTALLED_APPS = (
     'taggit',
     'rest_framework',
     'django.contrib.admin',
-    'less',
     'functional_tests'
 )
 
