@@ -105,6 +105,9 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+SESSION_COOKIE_NAME = 'sessionid'
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
+
 ROOT_URLCONF = 'pypo.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
