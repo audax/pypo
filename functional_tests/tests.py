@@ -14,8 +14,8 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from pypo import settings
 
-class ExistingUserTest(LiveServerTestCase):
 
+class ExistingUserTest(LiveServerTestCase):
     fixtures = ['users.json']
 
     def setUp(self):
@@ -30,8 +30,8 @@ class ExistingUserTest(LiveServerTestCase):
         self.b.get(self.live_server_url)
 
         # He sees the login form and sends it
-        self.assertEquals('Username*', self.b.find_element_by_id('div_id_username').text,
-                          'Login form not found')
+        self.assertEqual('Username*', self.b.find_element_by_id('div_id_username').text,
+                         'Login form not found')
         input_username = self.b.find_element_by_name('username')
         input_username.send_keys('dev')
         input_pass = self.b.find_element_by_name('password')
@@ -46,7 +46,7 @@ class ExistingUserTest(LiveServerTestCase):
 
         # User opens pypo and has no items in his list
         self.b.get(self.live_server_url)
-        self.assertEquals(0, len(self.b.find_elements_by_class_name('item')))
+        self.assertEqual(0, len(self.b.find_elements_by_class_name('item')))
 
         # He opens the add item page and sees the form
         self.b.get(self.live_server_url+'/add')
@@ -58,8 +58,8 @@ class ExistingUserTest(LiveServerTestCase):
 
         # The link is now in his list
         items = self.b.find_elements_by_class_name('item_link')
-        self.assertEquals(1, len(items), 'Item was not added')
-        self.assertEquals(u'http://www.example.com/', items[0].get_attribute('href'))
+        self.assertEqual(1, len(items), 'Item was not added')
+        self.assertEqual(u'http://www.example.com/', items[0].get_attribute('href'))
 
         # The domain is in the link text
         self.assertIn(u'[example.com]', items[0].text)
