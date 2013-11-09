@@ -1,5 +1,4 @@
 {% load static from staticfiles %}
-{% load less %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -7,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet" media="screen">
-      <link href="{{ STATIC_URL }}{% less "less/readme.less" %}" rel="stylesheet" media="screen">
+      <link href="{% static "css/readme.css" %}" rel="stylesheet" media="screen">
   </head>
   <body>
   <div class="navbar navbar-inverse">
