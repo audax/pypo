@@ -5,7 +5,7 @@ from django.conf import settings
 from tld import get_tld
 from django.core.urlresolvers import reverse
 from taggit.managers import TaggableManager
-from scrapers import parse
+from readme.scrapers import parse
 
 import requests
 import logging
@@ -43,7 +43,7 @@ class Item(models.Model):
         """
         Domain of the url
         """
-        return get_tld(self.url.encode('utf-8'), fail_silently=True)
+        return get_tld(self.url, fail_silently=True)
 
     def get_absolute_url(self):
         return reverse('item_view', args=[str(self.id)])

@@ -61,7 +61,7 @@ def parse_web_page(text):
         raise ParserException('No decoded text available, aborting!')
     try:
         doc = Document(text)
-    except Unparseable, e:
+    except Unparseable as e:
         raise ParserException(e.message)
     else:
         return doc.short_title(), doc.summary(True)

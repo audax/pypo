@@ -1,4 +1,4 @@
-Django==1.5.4
+Django==1.6.0
 Fabric==1.8.0
 South==0.8.2
 Whoosh==2.5.4
@@ -9,7 +9,7 @@ django-taggit==0.10
 djangorestframework==2.3.8
 psycopg2==2.5.1
 pycrypto==2.6
-lxml==0.3.0.2
+lxml==3.2.4
 requests==2.0.0
 tld==0.6.1
-django-less==0.7.2
+selenium=2.37.2
