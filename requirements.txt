@@ -1,5 +1,4 @@
 Django==1.6.0
-Fabric==1.8.0
 South==0.8.2
 Whoosh==2.5.4
 django-crispy-forms==1.4.0
