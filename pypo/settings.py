@@ -135,6 +135,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'django.contrib.admin',
     'less',
+    'functional_tests'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -195,7 +196,7 @@ REST_FRAMEWORK = {
 }
 
 # 10MB
-PYPO_MAX_CONTENT_LENGTH = int(1.049e+7)
+PYPO_MAX_CONTENT_LENGTH = 1.049e+7
 
 
 

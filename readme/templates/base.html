@@ -23,11 +23,11 @@
           <ul class="nav navbar-nav">
               {% block sidebar %}
                   {% if user.is_authenticated %}
-                  <li><a href="{% url "index" %}">Home</a></li>
-                  <li><a href="{% url "item_add" %}">Add new item</a></li>
-                  <li><a href="{% url "haystack_search" %}">Search</a></li>
-                  <li><a href="{% url "password_change" %}">Password change</a></li>
-                  <li><a href="{% url "logout" %}">Logout</a></li>
+                  <li><a id="id_link_index" href="{% url "index" %}">Home</a></li>
+                  <li><a id="id_link_add" href="{% url "item_add" %}">Add new item</a></li>
+                  <li><a id="id_link_search" href="{% url "haystack_search" %}">Search</a></li>
+                  <li><a id="id_link_pw_change" href="{% url "password_change" %}">Password change</a></li>
+                  <li><a id="id_link_logout" href="{% url "logout" %}">Logout</a></li>
                   {% endif %}
               {% endblock %}
           </ul>
