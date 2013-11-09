@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="row">
+    <div id="id_item_list" class="row">
         {% for item in current_item_list %}
             {% include "readme/item_single.html" %}
         {% endfor %}
