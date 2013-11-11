@@ -1,5 +1,7 @@
 import os
+import sys
 from os import path
+
 PROJECT_ROOT = path.abspath(path.join(path.dirname(__file__), '..'))
 
 # Django settings for pypo project.
@@ -202,6 +204,13 @@ REST_FRAMEWORK = {
 PYPO_MAX_CONTENT_LENGTH = int(1.049e+7)
 
 
+if 'test' in sys.argv:
+    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+            },
+        }
 
 try:
     from settings_local import *
