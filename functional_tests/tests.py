@@ -112,18 +112,34 @@ class ExistingUserTest(PypoLiveServerTestCase):
         # The domain is in the link text
         self.assertIn(u'[example.com]', items[0].text)
 
-    def create_pre_authenticated_session(self):
-        user = User.objects.create(username='uther')
-        session = SessionStore()
-        session[SESSION_KEY] = user.pk
-        session[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
-        session.save()
-        ## to set a cookie we need to first visit the domain.
-        ## 404 pages load the quickest!
-        self.b.get(self.live_server_url + "/404_no_such_url/")
-        self.b.add_cookie(dict(
-            name=settings.SESSION_COOKIE_NAME,
-            value=session.session_key,
-            path='/',
-        ))
+    def test_added_items_are_searchable(self):
+        self.create_pre_authenticated_session()
+        self._add_example_item()
+        # Uther visits the search page and searches for the example page
+        self.b.find_element_by_id('id_link_search').click()
+        search_input = self.b.find_element_by_name('q')
+        search_input.send_keys('example')
+        search_input.send_keys(Keys.ENTER)
+
+        # He sees the example item with a link pointing to example.com
+        items = self.b.find_elements_by_class_name('item_link')
+        self.assertEqual(1, len(items), 'Item not found in results')
+        self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
+        self.assertIn('[example.com]', items[0].text)
+
+    def test_invalid_searches_return_no_results(self):
+        self.create_pre_authenticated_session()
+        self._add_example_item()
+        # Uther visits the search page and searches for an unknown term
+        self.b.find_element_by_id('id_link_search').click()
+        search_input = self.b.find_element_by_name('q')
+        search_input.send_keys('invalid_search')
+        search_input.send_keys(Keys.ENTER)
+
+        # He sees no results
+        items = self.b.find_elements_by_class_name('item_link')
+        self.assertEqual(0, len(items))
+        self.assertIn('No results found.',
+                            (p.text for p in self.b.find_elements_by_tag_name('p')))
+
 
