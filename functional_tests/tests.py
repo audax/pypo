@@ -13,9 +13,30 @@ from django.test import LiveServerTestCase, Client
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from pypo import settings
+import sys
+
+EXAMPLE_COM = 'http://www.example.com/'
 
 
-class ExistingUserTest(LiveServerTestCase):
+class PypoLiveServerTestCase(LiveServerTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        for arg in sys.argv:
+            if 'liveserver' in arg:
+                cls.server_url = arg.split('=')[1]
+                return
+        LiveServerTestCase.setUpClass()
+        cls.server_url = cls.live_server_url
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.server_url == cls.live_server_url:
+            LiveServerTestCase.tearDownClass()
+
+
+
+class ExistingUserTest(PypoLiveServerTestCase):
     fixtures = ['users.json']
 
     def setUp(self):
@@ -26,8 +47,35 @@ class ExistingUserTest(LiveServerTestCase):
     def tearDown(self):
         self.b.quit()
 
+    def create_pre_authenticated_session(self):
+        try:
+            user = User.objects.get(username='uther')
+        except User.DoesNotExist:
+            user = User.objects.create(username='uther')
+        session = SessionStore()
+        session[SESSION_KEY] = user.pk
+        session[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
+        session.save()
+        ## to set a cookie we need to first visit the domain.
+        ## 404 pages load the quickest!
+        self.b.get(self.live_server_url + "/404_no_such_url/")
+        self.b.add_cookie(dict(
+            name=settings.SESSION_COOKIE_NAME,
+            value=session.session_key,
+            path='/',
+            ))
+
+    def _add_example_item(self):
+        # Open the add item page
+        self.b.get(self.live_server_url+'/add')
+
+        # He submits a link
+        input_url = self.b.find_element_by_name('url')
+        input_url.send_keys(EXAMPLE_COM)
+        input_url.send_keys(Keys.ENTER)
+
     def test_login_dev_user(self):
-        self.b.get(self.live_server_url)
+        self.b.get(self.server_url)
 
         # He sees the login form and sends it
         self.assertEqual('Username*', self.b.find_element_by_id('div_id_username').text,
@@ -53,13 +101,13 @@ class ExistingUserTest(LiveServerTestCase):
 
         # He submits a link
         input_url = self.b.find_element_by_name('url')
-        input_url.send_keys('http://www.example.com')
+        input_url.send_keys(EXAMPLE_COM)
         input_url.send_keys(Keys.ENTER)
 
         # The link is now in his list
         items = self.b.find_elements_by_class_name('item_link')
         self.assertEqual(1, len(items), 'Item was not added')
-        self.assertEqual(u'http://www.example.com/', items[0].get_attribute('href'))
+        self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
 
         # The domain is in the link text
         self.assertIn(u'[example.com]', items[0].text)
