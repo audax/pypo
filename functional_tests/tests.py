@@ -4,18 +4,28 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
-from time import sleep
+from django.core.management import call_command
+import haystack
+import os
 from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY
 from django.contrib.auth.models import User
 from django.contrib.sessions.backends.db import SessionStore
 
 from django.test import LiveServerTestCase, Client
+from django.test.utils import override_settings
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from pypo import settings
 import sys
 
 EXAMPLE_COM = 'http://www.example.com/'
+
+TEST_INDEX = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index_test'),
+        },
+    }
 
 
 class PypoLiveServerTestCase(LiveServerTestCase):
@@ -36,6 +46,7 @@ class PypoLiveServerTestCase(LiveServerTestCase):
 
 
 
+@override_settings(HAYSTACK_CONNECTIONS=TEST_INDEX)
 class ExistingUserTest(PypoLiveServerTestCase):
     fixtures = ['users.json']
 
@@ -43,9 +54,11 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.b = webdriver.Firefox()
         self.b.implicitly_wait(3)
         self.c = Client()
+        haystack.connections.reload('default')
 
     def tearDown(self):
         self.b.quit()
+        call_command('clear_index', interactive=False, verbosity=0)
 
     def create_pre_authenticated_session(self):
         try:

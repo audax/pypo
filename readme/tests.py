@@ -4,10 +4,13 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+from django.core.management import call_command
+import haystack
+import os
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
-from haystack.query import SearchQuerySet
+from django.test.utils import override_settings
 from .models import Item
 from readme.scrapers import parse
 from readme import serializers
@@ -78,20 +81,6 @@ class SerializerTest(TestCase):
         with self.assertRaises(ParseError):
             serializer.to_native("not a list")
 
-
-
-
-class SearchIntegrationTest(TestCase):
-    fixtures = ['users.json']
-
-    def test_item_is_insertet_into_search_index(self):
-        Item.objects.create(url=EXAMPLE_COM, title='Example test',
-                            owner=User.objects.get(username='dev'),
-                            readable_article='test')
-        self.assertEqual(1, len(SearchQuerySet().all()), "Search index is empty")
-
-
-
 class ScraperText(TestCase):
     fixtures = ['users.json']
 
@@ -100,22 +89,41 @@ class ScraperText(TestCase):
         self.assertEqual((item.url, ''), parse(item, content_type='text/html', text=None))
 
 
+def login():
+    c = Client()
+    assert c.login(username='dev', password='dev')
+    return c
+
+
 class ExistingUserIntegrationTest(TestCase):
     fixtures = ['users.json']
 
-    def login(self):
-        c = Client()
-        assert c.login(username='dev', password='dev')
-        return c
-
     def test_add_item(self):
-        c = self.login()
+        c = login()
         response = c.post('/add/', {'url': 'http://www.example.com'}, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, EXAMPLE_COM)
 
+TEST_INDEX = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index_test'),
+        },
+    }
+
+@override_settings(HAYSTACK_CONNECTIONS=TEST_INDEX)
+class SearchIntegrationTest(TestCase):
+    fixtures = ['users.json']
+
+    def setUp(self):
+        haystack.connections.reload('default')
+        super(TestCase, self).setUp()
+
+    def tearDown(self):
+        call_command('clear_index', interactive=False, verbosity=0)
+
     def test_search_item(self):
-        c = self.login()
+        c = login()
         Item.objects.create(url=EXAMPLE_COM, title='Example test',
                             owner=User.objects.get(username='dev'),
                              readable_article='test')

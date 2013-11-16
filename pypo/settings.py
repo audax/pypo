@@ -187,7 +187,7 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+HAYSTACK_SIGNAL_PROCESSOR = 'readme.signals.ItemOnlySignalProcessor'
 
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
@@ -202,15 +202,6 @@ REST_FRAMEWORK = {
 
 # 10MB
 PYPO_MAX_CONTENT_LENGTH = int(1.049e+7)
-
-
-if 'test' in sys.argv:
-    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
-    HAYSTACK_CONNECTIONS = {
-        'default': {
-            'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
-            },
-        }
 
 try:
     from settings_local import *
