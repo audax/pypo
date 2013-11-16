@@ -1,9 +1,3 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
-"""
 from unittest.mock import patch, Mock
 from django.core.management import call_command
 import haystack
@@ -122,7 +116,7 @@ class ExistingUserIntegrationTest(TestCase):
 
     def test_add_item(self):
         c = login()
-        response = c.post('/add/', {'url': 'http://www.example.com'}, follow=True)
+        response = c.post('/add/', {'url': EXAMPLE_COM}, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, EXAMPLE_COM)
 
