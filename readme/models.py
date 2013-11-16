@@ -5,6 +5,7 @@ from django.conf import settings
 from tld import get_tld
 from django.core.urlresolvers import reverse
 from taggit.managers import TaggableManager
+from readme.download import download
 from readme.scrapers import parse
 
 import requests
@@ -56,36 +57,7 @@ class Item(models.Model):
         Fetches a title and a readable_article for the current url.
         It uses the scrapers module for this and only downloads the content.
         """
-        url = self.url
-        try:
-            req = requests.get(url, stream=True)
-        except requests.RequestException:
-            self.title, self.readable_article = '', ''
-            return
-
-        try:
-            content_length = int(req.headers.get('content-length', 0))
-        except ValueError:
-            # no valid content length set
-            self._fetch_fallback()
-        else:
-            # if content is too long, abort.
-            if content_length > settings.PYPO_MAX_CONTENT_LENGTH:
-                request_log.info('Aborting: content-length %d is larger than max content length %d',
-                                 content_length, settings.PYPO_MAX_CONTENT_LENGTH)
-                self._fetch_fallback()
-                return
-            # In case content_length lied to us
-            content = next(req.iter_content(settings.PYPO_MAX_CONTENT_LENGTH))
-            text = None
-            # only decode text requests
-            if req.headers.get('content-type', '').startswith('text/'):
-                try:
-                    text = content.decode(req.encoding, errors='ignore')
-                except UnicodeDecodeError:
-                    # just ignore it then, the encoding from the header was wrong
-                    pass
-
-        self.title, self.readable_article = parse(self, content_type=req.headers.get('content-type', ''),
-                                                  text=text, content=content)
+        dl = download(self.url, max_content_length=settings.PYPO_MAX_CONTENT_LENGTH)
+        self.title, self.readable_article = parse(self, content_type=dl.content_type,
+                                                  text=dl.text, content=dl.content)
 

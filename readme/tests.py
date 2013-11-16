@@ -4,6 +4,7 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+from unittest.mock import patch, Mock
 from django.core.management import call_command
 import haystack
 import os
@@ -11,9 +12,10 @@ from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
 from django.test.utils import override_settings
+import requests
 from .models import Item
 from readme.scrapers import parse
-from readme import serializers
+from readme import serializers, download
 from rest_framework.exceptions import ParseError
 from unittest import mock
 
@@ -131,6 +133,75 @@ class SearchIntegrationTest(TestCase):
         self.assertContains(response, 'Results')
         self.assertEqual(1, len(response.context['page'].object_list),
                           'Could not find the test item')
+
+
+@patch('requests.get')
+class DownloadTest(TestCase):
+
+    def _mock_content(self, get_mock, content, content_type="", content_length=1, encoding=None):
+        return_mock = Mock(headers={'content-type': content_type,
+                                    'content-length': content_length},
+                           encoding=encoding)
+        return_mock.iter_content.return_value = iter([content])
+        get_mock.return_value = return_mock
+
+    def test_uses_request_to_start_the_download(self, get_mock):
+        get_mock.side_effect = requests.RequestException
+        with self.assertRaises(download.DownloadException):
+            download.download(EXAMPLE_COM)
+        get_mock.assert_called_with(EXAMPLE_COM, stream=True)
+
+    def test_aborts_large_downloads(self, get_mock):
+        max_length = 1000
+        return_mock = Mock(headers={'content-length': max_length+1})
+        get_mock.return_value = return_mock
+        with self.assertRaises(download.DownloadException) as cm:
+            download.download(EXAMPLE_COM, max_length)
+        self.assertIn('content-length', cm.exception.message)
+
+    def test_aborts_with_invalid_headers(self, get_mock):
+        return_mock = Mock(headers={'content-length': "invalid"})
+        get_mock.return_value = return_mock
+        with self.assertRaises(download.DownloadException) as cm:
+            download.download(EXAMPLE_COM)
+        self.assertIn('content-length', cm.exception.message)
+        self.assertIn('convert', cm.exception.message)
+        self.assertIsInstance(cm.exception.parent, ValueError)
+
+    def test_only_downloads_up_to_a_maximum_length(self, get_mock):
+        content = Mock()
+        max_length = 1
+        self._mock_content(get_mock, content=content, content_length=max_length)
+        ret = download.download(EXAMPLE_COM, max_content_length=max_length)
+        get_mock.return_value.iter_content.assert_called_with(max_length)
+        self.assertEqual(ret.content, content)
+
+    def test_decodes_text_content(self, get_mock):
+        content, encoding = Mock(), Mock()
+        content.decode.return_value = 'text'
+        self._mock_content(get_mock, content=content, content_type='text/html', encoding=encoding)
+        ret = download.download(EXAMPLE_COM)
+        content.decode.assert_called_with(encoding, errors='ignore')
+        self.assertEqual('text', ret.text)
+
+    def test_ignores_invalid_decode(self, get_mock):
+        content, encoding = "üöä".encode('utf-8'), 'ascii'
+        self._mock_content(get_mock, content=content, content_type='text/html', encoding=encoding)
+        ret = download.download(EXAMPLE_COM)
+        # expect the empty fallback text because the decode had only errors
+        self.assertEqual('', ret.text)
+
+    def test_only_decodes_text_content(self, get_mock):
+        content = Mock()
+        self._mock_content(get_mock, content=content, content_type="something/else")
+        ret = download.download(EXAMPLE_COM)
+        # expect the empty fallback text because the decode failed
+        self.assertEqual(None, ret.text)
+
+
+
+
+
 
 
 
