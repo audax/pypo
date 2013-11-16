@@ -97,6 +97,18 @@ def login():
     return c
 
 
+class UnknownUserTest(TestCase):
+    fixtures = ['users.json']
+
+    def test_item_access_restricted_to_owners(self):
+        c = login()
+        item = Item.objects.create(url='http://some_invalid_localhost', domain='nothing',
+                                   owner=User.objects.create(username='somebody', password='something'))
+        response = c.get('/view/{}'.format(item.id))
+        self.assertEqual(302, response.status_code, 'User did not get redirected trying to access to a foreign item')
+
+
+
 class ExistingUserIntegrationTest(TestCase):
     fixtures = ['users.json']
 
@@ -105,6 +117,15 @@ class ExistingUserIntegrationTest(TestCase):
         response = c.post('/add/', {'url': 'http://www.example.com'}, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, EXAMPLE_COM)
+
+    def test_update_item_updates_tags(self):
+        c = login()
+        item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=User.objects.get(pk=1))
+        item.tags.add('foo', 'bar')
+        c.post('/add/', {'url': item.url, 'tags': 'bar baz'})
+        new_item = Item.objects.get(id=item.id)
+        self.assertEqual(set(['bar', 'baz']), set(new_item.tags.names()))
+
 
 TEST_INDEX = {
     'default': {
