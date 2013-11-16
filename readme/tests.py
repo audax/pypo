@@ -107,6 +107,14 @@ class UnknownUserTest(TestCase):
         response = c.get('/view/{}'.format(item.id))
         self.assertEqual(302, response.status_code, 'User did not get redirected trying to access to a foreign item')
 
+    def test_login_required(self):
+        item = Item.objects.create(url='http://some_invalid_localhost', domain='nothing',
+                                   owner=User.objects.create(username='somebody', password='something'))
+        urls = ['', '/add/', '/view/{}'.format(item.id), '/delete/{}'.format(item.id), '/search/']
+        c = Client()
+        for url in urls:
+            response = c.get(url)
+            self.assertEqual(302, response.status_code, 'url {} did not redirect for an anonymus user'.format(url))
 
 
 class ExistingUserIntegrationTest(TestCase):

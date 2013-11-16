@@ -1,9 +1,24 @@
 from django.views import generic
+from haystack.forms import SearchForm
+from haystack.views import SearchView, search_view_factory
 from .models import Item
 from .forms import CreateItemForm
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
+
+class LoginRequiredMixin(object):
+    """
+    Mixing for generic views
+
+    It applies the login_required decorator
+    """
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
 
 
 class RestrictItemAccessMixin(object):
@@ -19,7 +34,7 @@ class RestrictItemAccessMixin(object):
         return super(RestrictItemAccessMixin, self).dispatch(request, *args, **kwargs)
 
 
-class IndexView(generic.ListView):
+class IndexView(LoginRequiredMixin, generic.ListView):
     context_object_name = 'current_item_list'
 
     def get_queryset(self):
@@ -32,7 +47,7 @@ class DeleteItem(RestrictItemAccessMixin, generic.DeleteView):
     success_url = reverse_lazy('index')
 
 
-class AddView(generic.CreateView):
+class AddView(LoginRequiredMixin, generic.CreateView):
     model = Item
     success_url = reverse_lazy('index')
 
@@ -62,3 +77,14 @@ class ItemView(RestrictItemAccessMixin, generic.DetailView):
     model = Item
     context_object_name = 'item'
 
+search = login_required(search_view_factory(
+        view_class=SearchView,
+        form_class=SearchForm
+))
+
+# Class based views as normal view function
+
+index = IndexView.as_view()
+add = AddView.as_view()
+view = ItemView.as_view()
+delete = DeleteItem.as_view()
