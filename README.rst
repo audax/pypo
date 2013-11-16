@@ -9,7 +9,7 @@ possibly a firefox extension to add, search and view the bookmarks.
 
 It's main components are built with:
 
--  Python
+-  Python 3
 -  Postgresql
 -  Django
 -  readability-lxml
@@ -46,7 +46,8 @@ Installation
    the settings.py.
 4. Setup the database
 
-   ./manage.py syncdb ./manage.py migrate
+   ./manage.py syncdb
+   ./manage.py migrate
 
 5. Add a superuser
 
@@ -55,6 +56,12 @@ Installation
 6. Host the application, see `Deploying Django with WSGI`_
 7. Create normal users with the admin interface /admin
 8. That should do it.
+
+Deploying
+---------
+There is a fab file you can custome to you liking. It creates a virtualenv,
+sets up the directory structure and checks your current local commit out
+on the target machine.
 
 License
 -------

@@ -7,7 +7,7 @@ SITES_FOLDER = '/home/dax/sites'
 REPO_URL = 'https://bitbucket.org/audax/pypo.git'
 
 def deploy():
-    _create_directory_structure_if_necessary(env.host) #2
+    _create_directory_structure_if_necessary(env.host)
     source_folder = path.join(SITES_FOLDER, env.host, 'source')
     _get_latest_source(source_folder)
     _update_virtualenv(source_folder)
