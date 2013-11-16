@@ -1,6 +1,8 @@
 About Pypo
 ==========
 
+|Build Status|
+
 Pypo is a self hosted bookmarking service like `Pocket`_. This is a very
 early alpha. There will be an android application, bookmarklets and
 possibly a firefox extension to add, search and view the bookmarks.
@@ -63,3 +65,5 @@ This project is licensed under the terms of the Apache License version
 .. _Pocket: http://www.getpocket.com
 .. _Deploying Django with WSGI: https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
 .. _readthedocs: http://pypo.readthedocs.org/
+.. |Build Status| image:: https://drone.io/bitbucket.org/audax/pypo/status.png
+   :target: https://drone.io/bitbucket.org/audax/pypo/latest

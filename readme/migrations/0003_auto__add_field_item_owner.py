@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'Item.owner'
         db.add_column(u'readme_item', 'owner',
-                      self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['auth.User']),
+                      self.gf('django.db.models.fields.related.ForeignKey')(default=0, to=orm['auth.User']),
                       keep_default=False)
 
 

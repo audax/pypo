@@ -1,4 +1,8 @@
 import os
+import sys
+from os import path
+
+PROJECT_ROOT = path.abspath(path.join(path.dirname(__file__), '..'))
 
 # Django settings for pypo project.
 
@@ -63,7 +67,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = path.join(PROJECT_ROOT, '../static')
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -81,7 +85,6 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'less.finders.LessFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
@@ -137,7 +140,6 @@ INSTALLED_APPS = (
     'taggit',
     'rest_framework',
     'django.contrib.admin',
-    'less',
     'functional_tests'
 )
 
@@ -185,7 +187,7 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+HAYSTACK_SIGNAL_PROCESSOR = 'readme.signals.ItemOnlySignalProcessor'
 
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
@@ -199,11 +201,9 @@ REST_FRAMEWORK = {
 }
 
 # 10MB
-PYPO_MAX_CONTENT_LENGTH = 1.049e+7
-
-
+PYPO_MAX_CONTENT_LENGTH = int(1.049e+7)
 
 try:
-    from settings_local import *
+    from .settings_local import *
 except ImportError:
     pass

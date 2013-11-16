@@ -12,8 +12,12 @@ class TagListSerializer(serializers.WritableField):
 
     def to_native(self, obj):
         if type(obj) is not list:
-            return [tag.name for tag in obj.all()]
+            try:
+                return [tag.name for tag in obj.all()]
+            except AttributeError:
+                raise ParseError("expected a list of data or a TaggableManager")
         return obj
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

@@ -1,6 +1,4 @@
 from lxml.html import document_fromstring
-from readability import Document
-from readability.readability import Unparseable
 
 
 class ParserException(Exception):
@@ -57,11 +55,17 @@ def parse_web_page(text):
     :return: title, article
     :raise ParserException:
     """
+    try:
+        from readability import Document
+        from readability.readability import Unparseable
+    except ImportError:
+        raise ParserException('readability is not installed')
+
     if not text:
         raise ParserException('No decoded text available, aborting!')
     try:
         doc = Document(text)
-    except Unparseable, e:
+    except Unparseable as e:
         raise ParserException(e.message)
     else:
         return doc.short_title(), doc.summary(True)
