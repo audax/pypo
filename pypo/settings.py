@@ -204,6 +204,6 @@ REST_FRAMEWORK = {
 PYPO_MAX_CONTENT_LENGTH = int(1.049e+7)
 
 try:
-    from settings_local import *
+    from .settings_local import *
 except ImportError:
     pass
