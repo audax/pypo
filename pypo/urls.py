@@ -7,6 +7,7 @@ admin.autodiscover()
 readme_patterns = patterns('readme.views',
     url(r'^$', 'index', name='index'),
     url(r'^add/$', 'add', name='item_add'),
+    url(r'^update/(?P<pk>\d+)/$', 'update', name='item_update'),
     url(r'^view/(?P<pk>\d+)/$', 'view', name='item_view'),
     url(r'^delete/(?P<pk>\d+)/$', 'delete', name='item_delete'),
     url(r'^search/', 'search', name='haystack_search'),

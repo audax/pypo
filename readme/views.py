@@ -2,7 +2,7 @@ from django.views import generic
 from haystack.forms import SearchForm
 from haystack.views import SearchView, search_view_factory
 from .models import Item
-from .forms import CreateItemForm
+from .forms import CreateItemForm, UpdateItemForm
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import redirect
@@ -46,6 +46,13 @@ class DeleteItem(RestrictItemAccessMixin, generic.DeleteView):
     context_object_name = 'item'
     success_url = reverse_lazy('index')
 
+class UpdateItem(RestrictItemAccessMixin, generic.UpdateView):
+    model = Item
+    context_object_name = 'item'
+    success_url = reverse_lazy('index')
+
+    form_class = UpdateItemForm
+
 
 class AddView(LoginRequiredMixin, generic.CreateView):
     model = Item
@@ -88,3 +95,4 @@ index = IndexView.as_view()
 add = AddView.as_view()
 view = ItemView.as_view()
 delete = DeleteItem.as_view()
+update = UpdateItem.as_view()

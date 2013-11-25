@@ -184,5 +184,23 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.assertIn('example', tag_string)
         self.assertIn('fish', tag_string)
 
+    def test_can_update_tags_from_the_list(self):
+        self.create_pre_authenticated_session()
+        self._add_example_item()
+        self.b.get(self.live_server_url)
+        # Uther visits the listing page and adds a new tag to the example item
+        self.b.find_element_by_css_selector('.item-content .tools a.tags_link').click()
+        tag_input = self.b.find_element_by_id('id_tags')
+        # There are currently to tags for this item
+        self.assertEqual('', tag_input.text);
+        # Uther adds 2 new tags: example and fish
+        tag_input.send_keys('example fish')
+        tag_input.send_keys(Keys.ENTER)
+        # The new tags are added to the list
+        tags = self.b.find_elements_by_css_selector('.item-content ul.tag-list li.tag')
+        tag_string = ''.join(t.text for t in tags)
+        self.assertIn('example', tag_string)
+        self.assertIn('fish', tag_string)
+
 
 

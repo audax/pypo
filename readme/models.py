@@ -52,6 +52,9 @@ class Item(models.Model):
     def get_delete_url(self):
         return reverse('item_delete', args=[str(self.id)])
 
+    def get_update_url(self):
+        return reverse('item_update', args=[str(self.id)])
+
     def fetch_article(self):
         """
         Fetches a title and a readable_article for the current url.
