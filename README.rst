@@ -72,5 +72,5 @@ This project is licensed under the terms of the Apache License version
 .. _Pocket: http://www.getpocket.com
 .. _Deploying Django with WSGI: https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
 .. _readthedocs: http://pypo.readthedocs.org/
-.. |Build Status| image:: https://drone.io/bitbucket.org/audax/pypo/status.png
-   :target: https://drone.io/bitbucket.org/audax/pypo/latest
+.. |Build Status| image:: https://travis-ci.org/audax/pypo.png?branch=master
+    :target: https://travis-ci.org/audax/pypo

@@ -4,7 +4,7 @@ from fabric.contrib.files import exists
 
 SITES_FOLDER = '/home/dax/sites'
 
-REPO_URL = 'https://bitbucket.org/audax/pypo.git'
+REPO_URL = 'https://github.com/audax/pypo.git'
 
 def deploy():
     _create_directory_structure_if_necessary(env.host)
