@@ -26,8 +26,15 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-8">
                     {{ item.summary | safe}}
+                </div>
+                <div class="col-md-4">
+                    <ul class="tag-list">
+                        {% for tag in item.tags.names %}
+                            <li class="tag">{{ tag }}</li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
         </div>

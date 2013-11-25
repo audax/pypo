@@ -128,6 +128,14 @@ class ExistingUserIntegrationTest(TestCase):
         new_item = Item.objects.get(id=item.id)
         self.assertEqual(set(['bar', 'baz']), set(new_item.tags.names()))
 
+    def test_tags_are_shown_in_the_list(self):
+        c = login()
+        item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=User.objects.get(pk=1))
+        item.tags.add('foo-tag', 'bar-tag')
+        response = c.get('/')
+        self.assertContains(response, 'foo-tag')
+        self.assertContains(response, 'bar-tag')
+
 
 TEST_INDEX = {
     'default': {

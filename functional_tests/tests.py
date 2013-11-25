@@ -151,6 +151,19 @@ class ExistingUserTest(PypoLiveServerTestCase):
         items = self.b.find_elements_by_class_name('item_link')
         self.assertEqual(0, len(items))
         self.assertIn('No results found.',
-                            (p.text for p in self.b.find_elements_by_tag_name('p')))
+                      (p.text for p in self.b.find_elements_by_tag_name('p')))
+
+    def test_item_tags_are_shown_in_the_list(self):
+        self.create_pre_authenticated_session()
+        item = self._add_example_item()
+        item.tags.add('example fish')
+
+        self.b.get(self.live_server_url)
+        # Uther sees the two tags for his example entry in a list
+        tags = self.b.find_elements_by_css_selector('.item-content ul.tag-list li.tag')
+        tag_string = ''.join(t.text for t in tags)
+        self.assertIn('example', tag_string)
+        self.assertIn('fish', tag_string)
+
 
 
