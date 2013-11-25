@@ -44,6 +44,14 @@ class PypoLiveServerTestCase(LiveServerTestCase):
 
 
 
+TEST_INDEX = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index_test'),
+        },
+    }
+
+@override_settings(HAYSTACK_CONNECTIONS=TEST_INDEX)
 class ExistingUserTest(PypoLiveServerTestCase):
     fixtures = ['users.json']
 
@@ -59,6 +67,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
                            encoding='utf-8')
         return_mock.iter_content.return_value = iter([b"example.com"])
         get_mock.return_value = return_mock
+        haystack.connections.reload('default')
 
     def tearDown(self):
         self.b.quit()
@@ -86,6 +95,15 @@ class ExistingUserTest(PypoLiveServerTestCase):
 
     def _add_example_item(self):
         return Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=self.user)
+
+    def create_example_item(self):
+        self.b.get(self.live_server_url + '/add')
+        # He submits a link
+        input_url = self.b.find_element_by_name('url')
+        input_url.send_keys(EXAMPLE_COM)
+        input_tags = self.b.find_element_by_name('tags')
+        input_tags.send_keys('super-tag')
+        input_tags.send_keys(Keys.ENTER)
 
     def test_login_dev_user(self):
         self.b.get(self.server_url)
@@ -125,14 +143,15 @@ class ExistingUserTest(PypoLiveServerTestCase):
         # The domain is in the link text
         self.assertIn(u'[example.com]', items[0].text)
 
-    def test_added_items_are_searchable(self):
+    def test_added_items_are_searchable_by_tag(self):
         self.create_pre_authenticated_session()
-        self._add_example_item()
-        self.b.get(self.live_server_url)
+        # Uther adds his usual item
+        self.create_example_item()
+
         # Uther visits the search page and searches for the example page
         self.b.find_element_by_id('id_link_search').click()
         search_input = self.b.find_element_by_name('q')
-        search_input.send_keys('example')
+        search_input.send_keys('super-tag')
         search_input.send_keys(Keys.ENTER)
 
         # He sees the example item with a link pointing to example.com
@@ -141,16 +160,15 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
         self.assertIn('[example.com]', items[0].text)
 
-    def test_added_items_are_searchable_by_tag(self):
+    def test_added_items_are_searchable_by_domain(self):
         self.create_pre_authenticated_session()
-        item = self._add_example_item()
-        item.tags.add('some-tag')
-        item.save()
-        self.b.get(self.live_server_url)
+        # He opens the add item page and sees the form
+        self.create_example_item()
+
         # Uther visits the search page and searches for the example page
         self.b.find_element_by_id('id_link_search').click()
         search_input = self.b.find_element_by_name('q')
-        search_input.send_keys('some-tag')
+        search_input.send_keys('example.com')
         search_input.send_keys(Keys.ENTER)
 
         # He sees the example item with a link pointing to example.com

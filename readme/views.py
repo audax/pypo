@@ -71,6 +71,8 @@ class AddView(LoginRequiredMixin, generic.CreateView):
         self.object.fetch_article()
         self.object.save()
         form.save_m2m()
+        # additional save to update the search index
+        self.object.save()
         return HttpResponseRedirect(self.get_success_url())
 
     def get_initial(self):

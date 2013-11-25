@@ -55,4 +55,6 @@ class ItemViewSet(viewsets.ModelViewSet):
             saved_bookmark = Item.objects.get(pk=item.pk)
             for tag in item.tags:
                 saved_bookmark.tags.add(tag)
+            # refresh search index
+            item.save()
 
