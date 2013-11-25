@@ -1,0 +1,8 @@
+language: python
+python:
+  - "3.3"
+install: pip install -r requirements.txt --use-mirrors
+script:  ./manage.py test
+before_script:
+  - psql -c 'create database pypo;' -U postgres
+
