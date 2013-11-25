@@ -179,12 +179,14 @@ class ExistingUserTest(PypoLiveServerTestCase):
     def test_item_tags_are_shown_in_the_list(self):
         self.create_pre_authenticated_session()
         item = self._add_example_item()
-        item.tags.add('example fish')
+        item.tags.add('example', 'fish')
         item.save()
 
         self.b.get(self.live_server_url)
+        # Uther activates the tags-list dropdown
+        self.b.find_element_by_css_selector('a.tags-dropdown').click()
         # Uther sees the two tags for his example entry in a list
-        tags = self.b.find_elements_by_css_selector('.item-content ul.tag-list li.tag')
+        tags = self.b.find_elements_by_css_selector('ul.tag-list .tag')
         tag_string = ''.join(t.text for t in tags)
         self.assertIn('example', tag_string)
         self.assertIn('fish', tag_string)
@@ -201,8 +203,10 @@ class ExistingUserTest(PypoLiveServerTestCase):
         # Uther adds 2 new tags: example and fish
         tag_input.send_keys('example fish')
         tag_input.send_keys(Keys.ENTER)
+        # Uther activates the tags-list dropdown
+        self.b.find_element_by_css_selector('a.tags-dropdown').click()
         # The new tags are added to the list
-        tags = self.b.find_elements_by_css_selector('.item-content ul.tag-list li.tag')
+        tags = self.b.find_elements_by_css_selector('ul.tag-list .tag')
         tag_string = ''.join(t.text for t in tags)
         self.assertIn('example', tag_string)
         self.assertIn('fish', tag_string)
