@@ -1,24 +1,20 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
+import sys
+from unittest.mock import patch, Mock
 
-Replace this with more appropriate tests for your application.
-"""
 from django.core.management import call_command
 import haystack
 import os
 from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY
 from django.contrib.auth.models import User
 from django.contrib.sessions.backends.db import SessionStore
-
-from django.test import LiveServerTestCase, Client
+from django.test import LiveServerTestCase
 from django.test.utils import override_settings
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+
 from pypo import settings
-import sys
 from readme.models import Item
-from unittest.mock import patch, Mock
+
 
 EXAMPLE_COM = 'http://www.example.com/'
 
