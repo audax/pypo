@@ -59,7 +59,7 @@ Installation
 
 Deploying
 ---------
-There is a fab file you can custome to you liking. It creates a virtualenv,
+There is a fab file you can customize to you liking. It creates a virtualenv,
 sets up the directory structure and checks your current local commit out
 on the target machine.
 
