@@ -9,7 +9,11 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
     tags = indexes.MultiValueField()
 
     def prepare_tags(self, obj):
-        return obj.tags.names()
+        if not type(obj.tags) is list:
+            return obj.tags.names()
+        else:
+            return obj.tags
+
 
     def get_model(self):
         return Item
