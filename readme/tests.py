@@ -115,6 +115,18 @@ class UnknownUserTest(TestCase):
 class ExistingUserIntegrationTest(TestCase):
     fixtures = ['users.json']
 
+    def setUp(self):
+        self.patcher = patch('requests.get')
+        get_mock = self.patcher.start()
+        return_mock = Mock(headers={'content-type': 'text/html',
+                                    'content-length': 500},
+                           encoding='utf-8')
+        return_mock.iter_content.return_value = iter([b"example.com"])
+        get_mock.return_value = return_mock
+
+    def tearDown(self):
+        self.patcher.stop()
+
     def test_add_item(self):
         c = login()
         response = c.post('/add/', {'url': EXAMPLE_COM}, follow=True)

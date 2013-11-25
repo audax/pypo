@@ -18,6 +18,7 @@ from selenium.webdriver.common.keys import Keys
 from pypo import settings
 import sys
 from readme.models import Item
+from unittest.mock import patch, Mock
 
 EXAMPLE_COM = 'http://www.example.com/'
 
@@ -54,11 +55,19 @@ class ExistingUserTest(PypoLiveServerTestCase):
     def setUp(self):
         self.b = webdriver.Firefox()
         self.b.implicitly_wait(3)
-        self.c = Client()
+        self.c = self.client
         haystack.connections.reload('default')
+        self.patcher = patch('requests.get')
+        get_mock = self.patcher.start()
+        return_mock = Mock(headers={'content-type': 'text/html',
+                                    'content-length': 500},
+                           encoding='utf-8')
+        return_mock.iter_content.return_value = iter([b"example.com"])
+        get_mock.return_value = return_mock
 
     def tearDown(self):
         self.b.quit()
+        self.patcher.stop()
         call_command('clear_index', interactive=False, verbosity=0)
 
     def create_pre_authenticated_session(self):
