@@ -7,6 +7,7 @@ from django.test.client import Client
 from django.contrib.auth.models import User
 from django.test.utils import override_settings
 import requests
+from rest_framework.test import APIClient
 from .models import Item
 from readme.scrapers import parse
 from readme import serializers, download
@@ -242,9 +243,36 @@ class DownloadTest(TestCase):
         self.assertEqual(None, ret.text)
 
 
+@override_settings(HAYSTACK_CONNECTIONS=TEST_INDEX)
+class APITest(TestCase):
+    fixtures = ['users.json']
 
+    client_class = APIClient
 
+    def api_login(self):
+        assert self.client.login(username='dev', password='dev')
 
+    def _fetch_item_details(self, item_id):
+        return self.client.get('/api/items/{}'.format(item_id))
 
+    def test_can_list_all_items(self):
+        item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=User.objects.get(pk=1))
+        item2 = Item.objects.create(url='something.local', domain='nothing', owner=User.objects.get(pk=1))
+        self.api_login()
+        response = self.client.get('/api/items/')
+        self.assertCountEqual(response.data, [
+            {'id': 1, 'url': 'http://www.example.com/', 'title': '',
+             'created': item.created, 'readable_article': None, 'tags': []},
+            {'id': 2, 'url': 'something.local', 'title': '',
+             'created': item2.created, 'readable_article': None, 'tags': []}
+        ])
+
+    def test_can_update_item(self):
+        item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=User.objects.get(pk=1))
+        self.api_login()
+        response = self.client.put('/api/items/{}/'.format(item.id), {'url': item.url, 'tags': ['test-tag', 'second-tag']},
+                               format='json')
+        self.assertEqual(response.data['id'], item.id)
+        self.assertEqual(response.data['tags'], ['test-tag', 'second-tag'])
 
 
