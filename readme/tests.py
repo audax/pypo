@@ -155,7 +155,7 @@ class SearchIntegrationTest(TestCase):
     def tearDown(self):
         call_command('clear_index', interactive=False, verbosity=0)
 
-    def test_search_item(self):
+    def test_search_item_by_title(self):
         c = login()
         Item.objects.create(url=EXAMPLE_COM, title='Example test',
                             owner=User.objects.get(username='dev'),
@@ -164,6 +164,18 @@ class SearchIntegrationTest(TestCase):
         self.assertContains(response, 'Results')
         self.assertEqual(1, len(response.context['page'].object_list),
                           'Could not find the test item')
+
+    def test_search_item_by_tag(self):
+        c = login()
+        item = Item.objects.create(url=EXAMPLE_COM, title='Example test',
+                            owner=User.objects.get(username='dev'),
+                            readable_article='test')
+        item.tags.add('example-tag')
+        item.save()
+        response = c.get('/search/', {'q': 'example-tag'}, follow=True)
+        self.assertContains(response, 'Results')
+        self.assertEqual(1, len(response.context['page'].object_list),
+                         'Could not find the test item')
 
 
 @patch('requests.get')

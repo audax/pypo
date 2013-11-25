@@ -1,3 +1,3 @@
 {{ object.title }}
 {{ object.url }}
-{{ object.tags }}
+{% for tag in object.tags.all %} {{ tag.name }} {% endfor %}

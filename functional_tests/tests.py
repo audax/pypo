@@ -137,6 +137,24 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
         self.assertIn('[example.com]', items[0].text)
 
+    def test_added_items_are_searchable_by_tag(self):
+        self.create_pre_authenticated_session()
+        item = self._add_example_item()
+        item.tags.add('some-tag')
+        item.save()
+        self.b.get(self.live_server_url)
+        # Uther visits the search page and searches for the example page
+        self.b.find_element_by_id('id_link_search').click()
+        search_input = self.b.find_element_by_name('q')
+        search_input.send_keys('some-tag')
+        search_input.send_keys(Keys.ENTER)
+
+        # He sees the example item with a link pointing to example.com
+        items = self.b.find_elements_by_class_name('item_link')
+        self.assertEqual(1, len(items), 'Item not found in results')
+        self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
+        self.assertIn('[example.com]', items[0].text)
+
     def test_invalid_searches_return_no_results(self):
         self.create_pre_authenticated_session()
         self._add_example_item()
@@ -157,6 +175,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.create_pre_authenticated_session()
         item = self._add_example_item()
         item.tags.add('example fish')
+        item.save()
 
         self.b.get(self.live_server_url)
         # Uther sees the two tags for his example entry in a list
