@@ -17,6 +17,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from pypo import settings
 import sys
+from readme.models import Item
 
 EXAMPLE_COM = 'http://www.example.com/'
 
@@ -65,6 +66,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
             user = User.objects.get(username='uther')
         except User.DoesNotExist:
             user = User.objects.create(username='uther')
+        self.user = user
         session = SessionStore()
         session[SESSION_KEY] = user.pk
         session[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
@@ -79,13 +81,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
             ))
 
     def _add_example_item(self):
-        # Open the add item page
-        self.b.get(self.live_server_url+'/add')
-
-        # He submits a link
-        input_url = self.b.find_element_by_name('url')
-        input_url.send_keys(EXAMPLE_COM)
-        input_url.send_keys(Keys.ENTER)
+        return Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=self.user)
 
     def test_login_dev_user(self):
         self.b.get(self.server_url)
@@ -128,6 +124,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
     def test_added_items_are_searchable(self):
         self.create_pre_authenticated_session()
         self._add_example_item()
+        self.b.get(self.live_server_url)
         # Uther visits the search page and searches for the example page
         self.b.find_element_by_id('id_link_search').click()
         search_input = self.b.find_element_by_name('q')
@@ -143,6 +140,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
     def test_invalid_searches_return_no_results(self):
         self.create_pre_authenticated_session()
         self._add_example_item()
+        self.b.get(self.live_server_url)
         # Uther visits the search page and searches for an unknown term
         self.b.find_element_by_id('id_link_search').click()
         search_input = self.b.find_element_by_name('q')
