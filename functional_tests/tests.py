@@ -44,7 +44,6 @@ class PypoLiveServerTestCase(LiveServerTestCase):
 
 
 
-@override_settings(HAYSTACK_CONNECTIONS=TEST_INDEX)
 class ExistingUserTest(PypoLiveServerTestCase):
     fixtures = ['users.json']
 
@@ -211,5 +210,14 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.assertIn('example', tag_string)
         self.assertIn('fish', tag_string)
 
+        self.b.find_element_by_id('id_link_search').click()
+        search_input = self.b.find_element_by_name('q')
+        search_input.send_keys('fish')
+        search_input.send_keys(Keys.ENTER)
+
+        # He sees the example item with a link pointing to example.com
+        items = self.b.find_elements_by_class_name('item_link')
+        self.assertEqual(1, len(items), 'Item not found in results')
+        self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
 
 

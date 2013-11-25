@@ -53,6 +53,11 @@ class UpdateItem(RestrictItemAccessMixin, generic.UpdateView):
 
     form_class = UpdateItemForm
 
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
 
 class AddView(LoginRequiredMixin, generic.CreateView):
     model = Item
