@@ -6,7 +6,7 @@ env:
   - TEST_SUITE=js
   - TEST_SUITE=functional_tests
   - TEST_SUITE=readme
-script: ./run_tests.sh TEST_SUITE
+script: ./run_tests.sh $TEST_SUITE
 before_script:
   - psql -c 'create database pypo;' -U postgres
 before_install:
