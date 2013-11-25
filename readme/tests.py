@@ -160,7 +160,7 @@ class SearchIntegrationTest(TestCase):
         Item.objects.create(url=EXAMPLE_COM, title='Example test',
                             owner=User.objects.get(username='dev'),
                              readable_article='test')
-        response = c.get('/search/', {'q': 'Example test'}, follow=True)
+        response = c.get('/search/', {'q': 'Example test'})
         self.assertContains(response, 'Results')
         self.assertEqual(1, len(response.context['page'].object_list),
                           'Could not find the test item')
@@ -172,7 +172,7 @@ class SearchIntegrationTest(TestCase):
                             readable_article='test')
         item.tags.add('example-tag')
         item.save()
-        response = c.get('/search/', {'q': 'example-tag'}, follow=True)
+        response = c.get('/search/', {'q': 'example-tag'})
         self.assertContains(response, 'Results')
         self.assertEqual(1, len(response.context['page'].object_list),
                          'Could not find the test item')
