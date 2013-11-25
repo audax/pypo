@@ -129,9 +129,10 @@ class ExistingUserIntegrationTest(TestCase):
 
     def test_add_item(self):
         c = login()
-        response = c.post('/add/', {'url': EXAMPLE_COM}, follow=True)
+        response = c.post('/add/', {'url': EXAMPLE_COM, 'tags': 'example-tag'}, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, EXAMPLE_COM)
+        self.assertContains(response, 'example-tag')
 
     def test_edit_item(self):
         c = login()
@@ -142,14 +143,6 @@ class ExistingUserIntegrationTest(TestCase):
         self.assertContains(response, 'are-posted')
         item_refreshed = Item.objects.get(pk=item.id)
         self.assertCountEqual(item_refreshed.tags.names(), ['some-tags', 'are-posted'])
-
-    def test_update_item_updates_tags(self):
-        c = login()
-        item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=User.objects.get(pk=1))
-        item.tags.add('foo', 'bar')
-        c.post('/add/', {'url': item.url, 'tags': 'bar baz'})
-        new_item = Item.objects.get(pk=item.id)
-        self.assertEqual(set(['bar', 'baz']), set(new_item.tags.names()))
 
     def test_tags_are_shown_in_the_list(self):
         c = login()

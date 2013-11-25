@@ -62,17 +62,10 @@ class AddView(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        try:
-            self.object = self.model.objects.get(url=self.object.url, owner=self.request.user)
-        except Item.DoesNotExist:
-            self.object.owner = self.request.user
-        else:
-            self.object.tags.clear()
-            self.object.tags.add(*form.cleaned_data['tags'])
-
+        self.object.owner = self.request.user
         self.object.fetch_article()
-
         self.object.save()
+        form.save_m2m()
         return HttpResponseRedirect(self.get_success_url())
 
     def get_initial(self):
