@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from .serializers import ItemSerializer
 from .models import Item
 
+
 class ItemViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Items to be viewed or edited.
@@ -13,7 +14,7 @@ class ItemViewSet(viewsets.ModelViewSet):
         """
         Filter Items by the current user
         """
-        return Item.objects.filter(owner=self.request.user)
+        return Item.objects.filter(owner=self.request.user).order_by('created')
 
     def pre_save(self, item):
         """
