@@ -6,6 +6,7 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.NgramField(document=True, use_template=True)
     title = indexes.CharField(model_attr='title')
     created = indexes.DateTimeField(model_attr='created')
+    owner_id = indexes.IntegerField(model_attr='owner_id')
     tags = indexes.MultiValueField()
 
     def prepare_tags(self, obj):

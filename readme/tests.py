@@ -193,6 +193,18 @@ class SearchIntegrationTest(TestCase):
         self.assertEqual(1, len(response.context['page'].object_list),
                          'Could not find the test item')
 
+    def test_user_can_only_search_own_items(self):
+        item = Item.objects.create(url=EXAMPLE_COM, title='Example test',
+                                   owner=User.objects.get(username='someone_else'),
+                                   readable_article='test')
+        item.tags.add('example-tag')
+        item.save()
+        c = login()
+        response = c.get('/search/', {'q': 'example-tag'})
+        self.assertContains(response, 'Results')
+        self.assertEqual(0, len(response.context['page'].object_list),
+                         'Item from another user found in search')
+
 
 @patch('requests.get')
 class DownloadTest(TestCase):

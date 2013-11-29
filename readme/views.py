@@ -1,5 +1,6 @@
 from django.views import generic
 from haystack.forms import SearchForm
+from haystack.query import SearchQuerySet
 from haystack.views import SearchView, search_view_factory
 from .models import Item
 from .forms import CreateItemForm, UpdateItemForm
@@ -84,9 +85,22 @@ class ItemView(RestrictItemAccessMixin, generic.DetailView):
     model = Item
     context_object_name = 'item'
 
+
+class ItemSearchView(SearchView):
+    """
+    SearchView that passes a dynamic SearchQuerySet to the
+    form that restricts the result to those owned by
+    the current user.
+    """
+
+    def build_form(self, form_kwargs=None):
+        user_id = self.request.user.id
+        self.searchqueryset = SearchQuerySet().filter(owner_id=user_id)
+        return super(ItemSearchView, self).build_form(form_kwargs)
+
 search = login_required(search_view_factory(
-        view_class=SearchView,
-        form_class=SearchForm
+    view_class=ItemSearchView,
+    form_class=SearchForm,
 ))
 
 # Class based views as normal view function
