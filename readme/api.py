@@ -14,7 +14,7 @@ class ItemViewSet(viewsets.ModelViewSet):
         """
         Filter Items by the current user
         """
-        return Item.objects.filter(owner=self.request.user).order_by('created')
+        return Item.objects.filter(owner=self.request.user).order_by('-created')
 
     def pre_save(self, item):
         """
