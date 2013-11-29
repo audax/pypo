@@ -36,8 +36,7 @@ class ItemViewSet(viewsets.ModelViewSet):
         if type(item.tags) is list:
             # If tags were provided in the request
             saved_bookmark = Item.objects.get(pk=item.pk)
-            for tag in item.tags:
-                saved_bookmark.tags.add(tag)
+            saved_bookmark.tags.add(*item.tags)
             # refresh search index
-            item.save()
+            saved_bookmark.save()
 

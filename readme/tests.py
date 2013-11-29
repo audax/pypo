@@ -1,6 +1,7 @@
 from unittest.mock import patch, Mock
 from django.core.management import call_command
 import haystack
+from haystack.query import SearchQuerySet
 import os
 from django.test import TestCase
 from django.test.client import Client
@@ -276,6 +277,12 @@ class APITest(TestCase):
 
     client_class = APIClient
 
+    def setUp(self):
+        haystack.connections.reload('default')
+
+    def tearDown(self):
+        call_command('clear_index', interactive=False, verbosity=0)
+
     def api_login(self):
         assert self.client.login(username='dev', password='dev')
 
@@ -302,4 +309,10 @@ class APITest(TestCase):
         self.assertEqual(response.data['id'], item.id)
         self.assertEqual(response.data['tags'], ['test-tag', 'second-tag'])
 
-
+    def test_items_are_searchable(self):
+        self.api_login()
+        response = self.client.post('/api/items/', {'url': EXAMPLE_COM, 'tags': ['test-tag', 'second-tag']},
+                                    format='json')
+        self.assertTrue('id' in response.data)
+        sqs = SearchQuerySet().filter(owner_id=1).auto_query('second-tag')
+        self.assertEqual(sqs.count(), 1, 'New item is not in the searchable by tag')
