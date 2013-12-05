@@ -73,6 +73,8 @@ class AddView(LoginRequiredMixin, generic.CreateView):
         if duplicates.count():
             duplicate = duplicates[0]
             duplicate.tags.add(*form.cleaned_data["tags"])
+            # additional save to update the search index
+            duplicate.save()
             return HttpResponseRedirect(duplicate.get_absolute_url())
         self.object.owner = self.request.user
         self.object.fetch_article()

@@ -96,13 +96,18 @@ class ExistingUserTest(PypoLiveServerTestCase):
     def _add_example_item(self):
         return Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=self.user)
 
-    def create_example_item(self):
+    def _find_tags_from_detail(self):
+        self.b.find_element_by_css_selector('a.tags-dropdown').click()
+        tags = self.b.find_elements_by_css_selector('ul.tag-list .tag')
+        return [t.text for t in tags]
+
+    def create_example_item(self, tags='super-tag'):
         self.b.get(self.live_server_url + '/add')
         # He submits a link
         input_url = self.b.find_element_by_name('url')
         input_url.send_keys(EXAMPLE_COM)
         input_tags = self.b.find_element_by_name('tags')
-        input_tags.send_keys('super-tag')
+        input_tags.send_keys(tags)
         input_tags.send_keys(Keys.ENTER)
 
     def test_login_dev_user(self):
@@ -152,10 +157,21 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.create_example_item()
 
         # He submits the same link... again
-        self.create_example_item()
+        self.create_example_item('another-tag')
 
+        tags = self._find_tags_from_detail()
+        self.assertCountEqual(['super-tag', 'another-tag'], tags,
+                              "Additional tag not added when trying to add a duplicate")
+
+        # back to the index page
+        self.b.get(self.live_server_url)
         items = self.b.find_elements_by_class_name('item_link')
         self.assertEqual(1, len(items), 'Duplicate was added')
+
+        # He can find the item with the new tag
+        self.b.get(self.live_server_url+'/search/?q=another-tag')
+        items = self.b.find_elements_by_class_name('item_link')
+        self.assertEqual(1, len(items), 'New tag is not searchable')
 
     def test_added_items_are_searchable_by_tag(self):
         self.create_pre_authenticated_session()
@@ -217,8 +233,8 @@ class ExistingUserTest(PypoLiveServerTestCase):
         # Uther activates the tags-list dropdown
         self.b.find_element_by_css_selector('a.tags-dropdown').click()
         # Uther sees the two tags for his example entry in a list
-        tags = self.b.find_elements_by_css_selector('ul.tag-list .tag')
-        tag_string = ''.join(t.text for t in tags)
+        tag_string = ''.join(self._find_tags_from_detail())
+        # Uther sees the two tags for his example entry in a list
         self.assertIn('example', tag_string)
         self.assertIn('fish', tag_string)
 
