@@ -230,8 +230,6 @@ class ExistingUserTest(PypoLiveServerTestCase):
         item.save()
 
         self.b.get(self.live_server_url)
-        # Uther activates the tags-list dropdown
-        self.b.find_element_by_css_selector('a.tags-dropdown').click()
         # Uther sees the two tags for his example entry in a list
         tag_string = ''.join(self._find_tags_from_detail())
         # Uther sees the two tags for his example entry in a list
