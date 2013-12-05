@@ -127,13 +127,8 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.b.get(self.live_server_url)
         self.assertEqual(0, len(self.b.find_elements_by_class_name('item')))
 
-        # He opens the add item page and sees the form
-        self.b.get(self.live_server_url+'/add')
-
-        # He submits a link
-        input_url = self.b.find_element_by_name('url')
-        input_url.send_keys(EXAMPLE_COM)
-        input_url.send_keys(Keys.ENTER)
+        # He adds an item
+        self.create_example_item()
 
         # The link is now in his list
         items = self.b.find_elements_by_class_name('item_link')
@@ -154,15 +149,10 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.b.get(self.live_server_url+'/add')
 
         # He submits a link
-        input_url = self.b.find_element_by_name('url')
-        input_url.send_keys(EXAMPLE_COM)
-        input_url.send_keys(Keys.ENTER)
+        self.create_example_item()
 
         # He submits the same link... again
-        self.b.get(self.live_server_url+'/add')
-        input_url = self.b.find_element_by_name('url')
-        input_url.send_keys(EXAMPLE_COM)
-        input_url.send_keys(Keys.ENTER)
+        self.create_example_item()
 
         items = self.b.find_elements_by_class_name('item_link')
         self.assertEqual(1, len(items), 'Duplicate was added')
