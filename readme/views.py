@@ -71,7 +71,9 @@ class AddView(LoginRequiredMixin, generic.CreateView):
 
         duplicates = Item.objects.filter(owner=self.request.user, url=self.object.url)
         if duplicates.count():
-            return HttpResponseRedirect(duplicates[0].get_absolute_url())
+            duplicate = duplicates[0]
+            duplicate.tags.add(*form.cleaned_data["tags"])
+            return HttpResponseRedirect(duplicate.get_absolute_url())
         self.object.owner = self.request.user
         self.object.fetch_article()
         self.object.save()
