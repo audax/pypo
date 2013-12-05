@@ -68,6 +68,10 @@ class AddView(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
+
+        duplicates = Item.objects.filter(owner=self.request.user, url=self.object.url)
+        if duplicates.count():
+            return HttpResponseRedirect(duplicates[0].get_absolute_url())
         self.object.owner = self.request.user
         self.object.fetch_article()
         self.object.save()
