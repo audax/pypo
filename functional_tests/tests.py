@@ -127,13 +127,8 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.b.get(self.live_server_url)
         self.assertEqual(0, len(self.b.find_elements_by_class_name('item')))
 
-        # He opens the add item page and sees the form
-        self.b.get(self.live_server_url+'/add')
-
-        # He submits a link
-        input_url = self.b.find_element_by_name('url')
-        input_url.send_keys(EXAMPLE_COM)
-        input_url.send_keys(Keys.ENTER)
+        # He adds an item
+        self.create_example_item()
 
         # The link is now in his list
         items = self.b.find_elements_by_class_name('item_link')
@@ -142,6 +137,25 @@ class ExistingUserTest(PypoLiveServerTestCase):
 
         # The domain is in the link text
         self.assertIn(u'[example.com]', items[0].text)
+
+    def test_unable_to_add_duplicate(self):
+        self.create_pre_authenticated_session()
+
+        # User opens pypo and has no items in his list
+        self.b.get(self.live_server_url)
+        self.assertEqual(0, len(self.b.find_elements_by_class_name('item')))
+
+        # He opens the add item page and sees the form
+        self.b.get(self.live_server_url+'/add')
+
+        # He submits a link
+        self.create_example_item()
+
+        # He submits the same link... again
+        self.create_example_item()
+
+        items = self.b.find_elements_by_class_name('item_link')
+        self.assertEqual(1, len(items), 'Duplicate was added')
 
     def test_added_items_are_searchable_by_tag(self):
         self.create_pre_authenticated_session()
