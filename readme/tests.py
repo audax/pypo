@@ -172,6 +172,20 @@ class SearchIntegrationTest(TestCase):
     def tearDown(self):
         call_command('clear_index', interactive=False, verbosity=0)
 
+    def test_tags_are_saved_as_a_list(self):
+        user = User.objects.get(username='dev')
+        item = Item.objects.create(url=EXAMPLE_COM, title='Example test',
+                            owner=user, readable_article='test')
+        tags = ['foo', 'bar']
+        item.tags.add(*tags)
+        item.save()
+        sqs = SearchQuerySet().filter(owner_id=1)
+        self.assertEqual(1, len(sqs))
+        result = sqs[0]
+        self.assertCountEqual(tags, result.tags)
+
+
+
     def test_search_item_by_title(self):
         c = login()
         Item.objects.create(url=EXAMPLE_COM, title='Example test',

@@ -11,7 +11,7 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_tags(self, obj):
         if not type(obj.tags) is list:
-            return obj.tags.names()
+            return list(obj.tags.names())
         else:
             return obj.tags
 
