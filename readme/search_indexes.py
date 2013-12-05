@@ -7,7 +7,7 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
     title = indexes.CharField(model_attr='title')
     created = indexes.DateTimeField(model_attr='created')
     owner_id = indexes.IntegerField(model_attr='owner_id')
-    tags = indexes.MultiValueField()
+    tags = indexes.MultiValueField(faceted=True)
 
     def prepare_tags(self, obj):
         if not type(obj.tags) is list:

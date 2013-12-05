@@ -93,8 +93,18 @@ class ExistingUserTest(PypoLiveServerTestCase):
             path='/',
             ))
 
-    def _add_example_item(self):
-        return Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=self.user)
+    def _add_example_item(self, tags=None):
+        item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=self.user)
+        if tags is not None:
+            item.tags.add(*tags)
+            item.save()
+        return item
+
+    def _add_tagged_items(self):
+        self._add_example_item(('fish', 'boxing'))
+        self._add_example_item(('fish', 'queen'))
+        self._add_example_item(('queen', 'bartender'))
+        self._add_example_item(('queen', 'pypo'))
 
     def _find_tags_from_detail(self):
         self.b.find_element_by_css_selector('a.tags-dropdown').click()
@@ -230,9 +240,6 @@ class ExistingUserTest(PypoLiveServerTestCase):
         item.save()
 
         self.b.get(self.live_server_url)
-        # Uther activates the tags-list dropdown
-        self.b.find_element_by_css_selector('a.tags-dropdown').click()
-        # Uther sees the two tags for his example entry in a list
         tag_string = ''.join(self._find_tags_from_detail())
         # Uther sees the two tags for his example entry in a list
         self.assertIn('example', tag_string)
@@ -268,4 +275,34 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.assertEqual(1, len(items), 'Item not found in results')
         self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
 
+    def _add_item_for_new_user(self):
+        another_user = User.objects.create(username='someone')
+        another_item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=another_user)
+        another_item.tags.add('queen')
+        another_item.save()
 
+    def test_facets_are_shown_in_a_search(self):
+        self.create_pre_authenticated_session()
+        # Uther added some of his tagged items
+        self._add_tagged_items()
+
+        # Another user also adds an item with the same tag
+        self._add_item_for_new_user()
+
+        # Uther starts a search for his queen-tagged items
+        self.b.get(self.live_server_url+'/search')
+        search_input = self.b.find_element_by_name('q')
+        search_input.send_keys('queen')
+        search_input.send_keys(Keys.ENTER)
+        # He sees that his queen-tagged items also have other tags
+        tags = {}
+        for tag in self.b.find_elements_by_css_selector('li.tag'):
+            tags[tag.find_element_by_css_selector('a.taglink').text] = int(
+                tag.find_element_by_css_selector('span.count').text)
+        # And only those items that are shown are counted in the list of tags
+        self.assertEqual({
+            'queen': 3,
+            'fish': 1,
+            'bartender': 1,
+            'pypo': 1
+        }, tags)

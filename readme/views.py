@@ -1,7 +1,7 @@
 from django.views import generic
-from haystack.forms import SearchForm
+from haystack.forms import FacetedSearchForm
 from haystack.query import SearchQuerySet
-from haystack.views import SearchView, search_view_factory
+from haystack.views import FacetedSearchView, search_view_factory
 from .models import Item
 from .forms import CreateItemForm, UpdateItemForm
 from django.http import HttpResponseRedirect
@@ -94,7 +94,7 @@ class ItemView(RestrictItemAccessMixin, generic.DetailView):
     context_object_name = 'item'
 
 
-class ItemSearchView(SearchView):
+class ItemSearchView(FacetedSearchView):
     """
     SearchView that passes a dynamic SearchQuerySet to the
     form that restricts the result to those owned by
@@ -103,12 +103,12 @@ class ItemSearchView(SearchView):
 
     def build_form(self, form_kwargs=None):
         user_id = self.request.user.id
-        self.searchqueryset = SearchQuerySet().filter(owner_id=user_id)
+        self.searchqueryset = SearchQuerySet().filter(owner_id=user_id).facet('tags')
         return super(ItemSearchView, self).build_form(form_kwargs)
 
 search = login_required(search_view_factory(
     view_class=ItemSearchView,
-    form_class=SearchForm,
+    form_class=FacetedSearchForm,
 ))
 
 # Class based views as normal view function

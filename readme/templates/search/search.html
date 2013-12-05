@@ -21,6 +21,21 @@
             {% endfor %}
         </div>
 
+        {% if facets.fields.tags %}
+        <h3>Tags</h3>
+
+        <div class="row">
+            <ul id="taglist">
+                {% for tag in facets.fields.tags %}
+                <li class="tag">
+                    <a class="taglink" href="{{ request.get_full_path }}&amp;selected_facets=tags_exact:{{ tag.0|urlencode }}">{{ tag.0 }}</a>
+                    (<span class="count">{{ tag.1 }}</span>)
+                </li>
+                {% endfor %}
+            </ul>
+
+        </div>
+        {% endif %}
         {% if page.has_previous or page.has_next %}
             <div>
                 {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
