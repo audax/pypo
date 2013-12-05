@@ -68,6 +68,14 @@ class AddView(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
+
+        duplicates = Item.objects.filter(owner=self.request.user, url=self.object.url)
+        if duplicates.count():
+            duplicate = duplicates[0]
+            duplicate.tags.add(*form.cleaned_data["tags"])
+            # additional save to update the search index
+            duplicate.save()
+            return HttpResponseRedirect(duplicate.get_absolute_url())
         self.object.owner = self.request.user
         self.object.fetch_article()
         self.object.save()
