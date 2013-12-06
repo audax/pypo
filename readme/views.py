@@ -41,6 +41,13 @@ class IndexView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         return Item.objects.filter(owner=self.request.user).order_by('-created')
 
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        facets = SearchQuerySet().filter(owner_id=self.request.user.id).facet('tags').facet_counts()
+        tags = facets.get('fields', {}).get('tags', [])
+        context['tags'] = tags
+        return context
+
 
 class DeleteItem(RestrictItemAccessMixin, generic.DeleteView):
     model = Item

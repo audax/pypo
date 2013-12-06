@@ -180,9 +180,20 @@ class SearchIntegrationTest(TestCase):
     def setUp(self):
         haystack.connections.reload('default')
         super(TestCase, self).setUp()
+        self.user = User.objects.get(pk=1)
+        call_command('clear_index', interactive=False, verbosity=0)
 
     def tearDown(self):
-        call_command('clear_index', interactive=False, verbosity=0)
+        pass
+
+    def test_facets_are_included_in_the_index_view(self):
+        c = login()
+        add_tagged_items(self.user)
+        response = c.get('/')
+        tags = response.context['tags']
+        self.assertCountEqual(
+            [('queen', 3), ('fish', 2), ('pypo', 1), ('boxing', 1), ('bartender', 1), (None, 1)],
+            tags)
 
     def test_tags_are_saved_as_a_list(self):
         user = User.objects.get(username='dev')

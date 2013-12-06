@@ -304,3 +304,20 @@ class ExistingUserTest(PypoLiveServerTestCase):
             'bartender': 1,
             'pypo': 1
         }, tags)
+        ## We are not testing the tag search link because that is haystacks responsibility
+
+    def test_facets_are_shown_on_the_list_page(self):
+        self.create_pre_authenticated_session()
+        self._add_tagged_items()
+        self.b.get(self.live_server_url)
+
+        # On the main page there is a list of all of his tags
+        tags = self.find_tags_on_page()
+        self.assertEqual({
+            'queen': 3,
+            'boxing': 1,
+            'fish': 2,
+            'bartender': 1,
+            'pypo': 1,
+            'Without a tag': 1
+        }, tags)

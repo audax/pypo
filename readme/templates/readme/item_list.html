@@ -5,4 +5,14 @@
             {% include "readme/item_single.html" %}
         {% endfor %}
     </div>
+    <div class="row">
+        {% for tag in tags %}
+            {% with name=tag.0 count=tag.1 %}
+            <li class="tag">
+                <a class="taglink" >{{ name|default_if_none:"Without a tag" }}</a>
+                (<span class="count">{{ count }}</span>)
+            </li>
+            {% endwith %}
+        {% endfor %}
+    </div>
 {% endblock %}
