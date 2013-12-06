@@ -14,6 +14,7 @@ from selenium.webdriver.common.keys import Keys
 
 from pypo import settings
 from readme.models import Item
+from readme.tests import add_example_item, add_tagged_items
 
 
 EXAMPLE_COM = 'http://www.example.com/'
@@ -94,17 +95,10 @@ class ExistingUserTest(PypoLiveServerTestCase):
             ))
 
     def _add_example_item(self, tags=None):
-        item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=self.user)
-        if tags is not None:
-            item.tags.add(*tags)
-            item.save()
-        return item
+        return add_example_item(self.user, tags)
 
     def _add_tagged_items(self):
-        self._add_example_item(('fish', 'boxing'))
-        self._add_example_item(('fish', 'queen'))
-        self._add_example_item(('queen', 'bartender'))
-        self._add_example_item(('queen', 'pypo'))
+        add_tagged_items(self.user)
 
     def _find_tags_from_detail(self):
         self.b.find_element_by_css_selector('a.tags-dropdown').click()
@@ -281,6 +275,13 @@ class ExistingUserTest(PypoLiveServerTestCase):
         another_item.tags.add('queen')
         another_item.save()
 
+    def find_tags_on_page(self):
+        tags = {}
+        for tag in self.b.find_elements_by_css_selector('li.tag'):
+            tags[tag.find_element_by_css_selector('a.taglink').text] = int(
+                tag.find_element_by_css_selector('span.count').text)
+        return tags
+
     def test_facets_are_shown_in_a_search(self):
         self.create_pre_authenticated_session()
         # Uther added some of his tagged items
@@ -295,10 +296,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         search_input.send_keys('queen')
         search_input.send_keys(Keys.ENTER)
         # He sees that his queen-tagged items also have other tags
-        tags = {}
-        for tag in self.b.find_elements_by_css_selector('li.tag'):
-            tags[tag.find_element_by_css_selector('a.taglink').text] = int(
-                tag.find_element_by_css_selector('span.count').text)
+        tags = self.find_tags_on_page()
         # And only those items that are shown are counted in the list of tags
         self.assertEqual({
             'queen': 3,

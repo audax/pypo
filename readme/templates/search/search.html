@@ -27,13 +27,12 @@
         <div class="row">
             <ul id="taglist">
                 {% for tag in facets.fields.tags %}
-                <li class="tag">
-                    <a class="taglink" href="{{ request.get_full_path }}&amp;selected_facets=tags_exact:{{ tag.0|urlencode }}">{{ tag.0 }}</a>
-                    (<span class="count">{{ tag.1 }}</span>)
-                </li>
+                    <li class="tag">
+                        <a class="taglink" href="{{ request.get_full_path }}&amp;selected_facets=tags_exact:{{ tag.0|urlencode }}">{{ tag.0 }}</a>
+                        (<span class="count">{{ tag.1 }}</span>)
+                    </li>
                 {% endfor %}
             </ul>
-
         </div>
         {% endif %}
         {% if page.has_previous or page.has_next %}
