@@ -97,8 +97,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         return Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=self.user)
 
     def _find_tags_from_detail(self):
-        self.b.find_element_by_css_selector('a.tags-dropdown').click()
-        tags = self.b.find_elements_by_css_selector('ul.tag-list .tag')
+        tags = self.b.find_elements_by_css_selector('.tag-list .tag')
         return [t.text for t in tags]
 
     def create_example_item(self, tags='super-tag'):
@@ -244,14 +243,12 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.b.find_element_by_css_selector('.item-content .tools a.tags_link').click()
         tag_input = self.b.find_element_by_id('id_tags')
         # There are currently to tags for this item
-        self.assertEqual('', tag_input.text);
+        self.assertEqual('', tag_input.text)
         # Uther adds 2 new tags: example and fish
         tag_input.send_keys('example fish')
         tag_input.send_keys(Keys.ENTER)
-        # Uther activates the tags-list dropdown
-        self.b.find_element_by_css_selector('a.tags-dropdown').click()
         # The new tags are added to the list
-        tags = self.b.find_elements_by_css_selector('ul.tag-list .tag')
+        tags = self.b.find_elements_by_css_selector('.tag')
         tag_string = ''.join(t.text for t in tags)
         self.assertIn('example', tag_string)
         self.assertIn('fish', tag_string)
