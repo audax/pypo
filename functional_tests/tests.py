@@ -13,7 +13,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 from pypo import settings
-from readme.models import Item
+from readme.tests import add_example_item, add_tagged_items, add_item_for_new_user
 
 
 EXAMPLE_COM = 'http://www.example.com/'
@@ -93,8 +93,11 @@ class ExistingUserTest(PypoLiveServerTestCase):
             path='/',
             ))
 
-    def _add_example_item(self):
-        return Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=self.user)
+    def _add_example_item(self, tags=None):
+        return add_example_item(self.user, tags)
+
+    def _add_tagged_items(self):
+        add_tagged_items(self.user)
 
     def _find_tags_from_detail(self):
         tags = self.b.find_elements_by_css_selector('.tag-list .tag')
@@ -229,7 +232,6 @@ class ExistingUserTest(PypoLiveServerTestCase):
         item.save()
 
         self.b.get(self.live_server_url)
-        # Uther sees the two tags for his example entry in a list
         tag_string = ''.join(self._find_tags_from_detail())
         # Uther sees the two tags for his example entry in a list
         self.assertIn('example', tag_string)
@@ -263,4 +265,49 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.assertEqual(1, len(items), 'Item not found in results')
         self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
 
+    def find_tags_on_page(self):
+        tags = {}
+        for tag in self.b.find_elements_by_css_selector('.taglink'):
+            tags[tag.find_element_by_css_selector('span.tagname').text] = int(
+                tag.find_element_by_css_selector('span.count').text)
+        return tags
 
+    def test_facets_are_shown_in_a_search(self):
+        self.create_pre_authenticated_session()
+        # Uther added some of his tagged items
+        self._add_tagged_items()
+
+        # Another user also adds an item with the same tag
+        add_item_for_new_user(['queen'])
+
+        # Uther starts a search for his queen-tagged items
+        self.b.get(self.live_server_url+'/search')
+        search_input = self.b.find_element_by_name('q')
+        search_input.send_keys('queen')
+        search_input.send_keys(Keys.ENTER)
+        # He sees that his queen-tagged items also have other tags
+        tags = self.find_tags_on_page()
+        # And only those items that are shown are counted in the list of tags
+        self.assertEqual({
+            'queen': 3,
+            'fish': 1,
+            'bartender': 1,
+            'pypo': 1
+        }, tags)
+        ## We are not testing the tag search link because that is haystacks responsibility
+
+    def test_facets_are_shown_on_the_list_page(self):
+        self.create_pre_authenticated_session()
+        self._add_tagged_items()
+        self.b.get(self.live_server_url)
+
+        # On the main page there is a list of all of his tags
+        tags = self.find_tags_on_page()
+        self.assertEqual({
+            'queen': 3,
+            'boxing': 1,
+            'fish': 2,
+            'bartender': 1,
+            'pypo': 1,
+            'Without a tag': 1
+        }, tags)

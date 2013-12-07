@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Offcanvas test</title>
+    <link rel="stylesheet" href="/static/tests/qunit.css">
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture">
+    <a id="id-toggle" data-toggle="offcanvas" href="#">Toggle</a>
+    <div id="id-offcanvas" class="row-offcanvas"></div>
+
+</div>
+<script src="/static/js/jquery.js"></script>
+<script src="/static/tests/qunit.js"></script>
+<script src="/static/tests/sinon.js"></script>
+<script src="/static/js/readme.js"></script>
+<script>
+test("data-toggle-offcanvas toggles the active class", function() {
+   var $toggle = $("#id-toggle"),
+       $row = $("#id-offcanvas");
+    ok(!$row.hasClass("active"), "Row does not have the active class");
+    $toggle.click();
+    ok($row.hasClass("active"),
+            "Row got the active class after clicking the toggle");
+});
+</script>
+</body>
+</html>

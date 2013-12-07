@@ -17,6 +17,33 @@ from unittest import mock
 
 EXAMPLE_COM = 'http://www.example.com/'
 
+TEST_INDEX = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index_test'),
+        },
+    }
+
+def add_example_item(user, tags=None):
+    item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=user)
+    if tags is not None:
+        item.tags.add(*tags)
+        item.save()
+    return item
+
+def add_tagged_items(user):
+    add_example_item(user, ('fish', 'boxing'))
+    add_example_item(user, ('fish', 'queen'))
+    add_example_item(user, ('queen', 'bartender'))
+    add_example_item(user, ('queen', 'pypo'))
+    add_example_item(user, tuple())
+
+
+def add_item_for_new_user(tags):
+    another_user = User.objects.create(username='someone')
+    another_item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=another_user)
+    another_item.tags.add(*tags)
+    another_item.save()
 
 class BasicTests(TestCase):
     fixtures = ['users.json']
@@ -153,14 +180,6 @@ class ExistingUserIntegrationTest(TestCase):
         self.assertContains(response, 'foo-tag')
         self.assertContains(response, 'bar-tag')
 
-
-TEST_INDEX = {
-    'default': {
-        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index_test'),
-        },
-    }
-
 @override_settings(HAYSTACK_CONNECTIONS=TEST_INDEX)
 class SearchIntegrationTest(TestCase):
     fixtures = ['users.json']
@@ -168,9 +187,23 @@ class SearchIntegrationTest(TestCase):
     def setUp(self):
         haystack.connections.reload('default')
         super(TestCase, self).setUp()
+        self.user = User.objects.get(pk=1)
+        call_command('clear_index', interactive=False, verbosity=0)
 
     def tearDown(self):
-        call_command('clear_index', interactive=False, verbosity=0)
+        pass
+
+    def test_facets_are_included_in_the_index_view(self):
+        c = login()
+        add_tagged_items(self.user)
+        # another item with the same tag by another user
+        add_item_for_new_user(['queen'])
+        response = c.get('/')
+        tags = response.context['tags']
+        # only his own tags are counted
+        self.assertCountEqual(
+            [('queen', 3), ('fish', 2), ('pypo', 1), ('boxing', 1), ('bartender', 1), (None, 1)],
+            tags)
 
     def test_tags_are_saved_as_a_list(self):
         user = User.objects.get(username='dev')
@@ -183,8 +216,6 @@ class SearchIntegrationTest(TestCase):
         self.assertEqual(1, len(sqs))
         result = sqs[0]
         self.assertCountEqual(tags, result.tags)
-
-
 
     def test_search_item_by_title(self):
         c = login()

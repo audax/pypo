@@ -1,8 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
-    <div id="id_item_list" class="row">
-        {% for item in current_item_list %}
-            {% include "readme/item_single.html" %}
-        {% endfor %}
+<div class="row row-offcanvas row-offcanvas-right">
+    <div class="col-xs-12 col-sm-9">
+        <div class="row">
+            <div class="col-xs-2 pull-right">
+                <p class="visible-xs">
+                    <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">
+                        Tags
+                    </button>
+                </p>
+            </div>
+        </div>
+        <div id="id_item_list" class="row">
+            {% for item in current_item_list %}
+                {% include "readme/item_single.html" %}
+            {% endfor %}
+        </div>
     </div>
+    <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
+        <div class="list-group">
+            {% for tag in tags %}
+                {% with name=tag.0 count=tag.1 %}
+
+                    <a class="list-group-item taglink" >
+                        <span class="tagname">{{ name|default_if_none:"Without a tag" }}</span>
+                        (<span class="count">{{ count }}</span>)
+                    </a>
+                {% endwith %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -21,6 +21,22 @@
             {% endfor %}
         </div>
 
+        {% if facets.fields.tags %}
+        <h3>Tags</h3>
+
+        <div class="row">
+            <div class="list-group">
+                {% for tag in facets.fields.tags %}
+                    {% with name=tag.0 count=tag.1 %}
+                        <a class="list-group-item taglink" href="{{ request.get_full_path }}&amp;selected_facets=tags_exact:{{ name|urlencode }}">
+                            <span class="tagname">{{ name|default_if_none:"Without a tag" }}</span>
+                            (<span class="count">{{ count }}</span>)
+                        </a>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
         {% if page.has_previous or page.has_next %}
             <div>
                 {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}

@@ -20,7 +20,7 @@
       </div>
       <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-              {% block sidebar %}
+              {% block navbar %}
                   {% if user.is_authenticated %}
                   <li><a id="id_link_index" href="{% url "index" %}">Home</a></li>
                   <li><a id="id_link_add" href="{% url "item_add" %}">Add new item</a></li>
@@ -44,6 +44,7 @@
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="{% static "js/jquery.min.js" %}"></script>
     <script src="{% static "js/bootstrap.min.js" %}"></script>
+    <script src="{% static "js/readme.js" %}"></script>
 
   </body>
 </html>
