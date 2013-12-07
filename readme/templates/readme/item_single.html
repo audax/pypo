@@ -6,35 +6,22 @@
         </div>
         <div class="panel-body item-content">
             <div class="row">
-                <div class="col-xs-6">
+                <div class="col-xs-7">
                     {{item.created}}
                 </div>
-                <div class="col-xs-6">
+                <div class="col-xs-5">
                     <div class="tools row pull-right">
-                        <div class="col-xs-3">
+                        <div class="col-xs-4">
                             <a class="tags_link" href="{{ item.get_update_url }}">
                                 <span class="glyphicon glyphicon-plus-sign"></span>
                             </a>
                         </div>
-                        <div class="col-xs-3">
-                            <div class="dropdown">
-                                <a class="dropdown-toggle tags-dropdown" href="#" data-toggle="dropdown">
-                                    <span class="glyphicon glyphicon-comment"></span>
-                                </a>
-                                <ul class="dropdown-menu pull-right tag-list">
-                                    <li class="dropdown-header">Tags</li>
-                                    {% for tag in item.tags.all %}
-                                    <li><a class="tag">{{ tag.name }}</a></li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-xs-3">
+                        <div class="col-xs-4">
                             <a href="{{ item.get_absolute_url }}">
                                 <span class="glyphicon glyphicon-eye-open"></span>
                             </a>
                         </div>
-                        <div class="col-xs-3">
+                        <div class="col-xs-4">
                             <a href="{{ item.get_delete_url }}">
                                 <span class="glyphicon glyphicon-minus-sign"></span>
                             </a>
@@ -43,6 +30,18 @@
 
                 </div>
             </div>
+            {% if item.tags.count %}
+                <div class="row">
+                    <div class="col-xs-12">
+                        Tags:
+                        <span class="tag-list">
+                            {% for tag in item.tags.all %}
+                            <a class="tag" href="{{ tag.get_absolute_url }}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                </div>
+            {% endif %}
             <div class="row">
                 <div class="col-md-12">
                     {{ item.summary | safe}}
