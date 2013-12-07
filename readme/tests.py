@@ -81,29 +81,42 @@ class BasicTests(TestBase):
 
 class ItemModelTest(TestBase):
 
-    def setUp(self):
-        super(ItemModelTest, self).setUp()
-        add = add_for_user(self.user)
-        self.item_fish = add(['queen', 'fish'])
-        self.item_box = add(['queen', 'box'])
+    def _add_simple_example_items(self):
+        self.item_fish = self.add(['queen', 'fish'])
+        self.item_box = self.add(['queen', 'box'])
         self.filter = Item.objects.filter(owner_id=1)
 
+    def setUp(self):
+        super(ItemModelTest, self).setUp()
+        self.add = add_for_user(self.user)
+
     def test_find_items_by_tag(self):
+        self._add_simple_example_items()
         self.assertCountEqual(
             [self.item_fish, self.item_box],
             Item.objects.filter(owner_id=1).tagged('queen'))
 
     def test_find_items_by_multiple_tags(self):
+        self._add_simple_example_items()
         self.assertEqual(self.item_fish,
                          self.filter.tagged('queen', 'fish').get())
         self.assertEqual(self.item_box,
                          self.filter.tagged('queen', 'box').get())
 
     def test_chain_tag_filters(self):
+        self._add_simple_example_items()
         self.assertEqual(self.item_fish,
                          self.filter.filter(owner_id=1).tagged('queen').tagged('fish').get())
         self.assertEqual(self.item_box,
                          Item.objects.filter(owner_id=1).tagged('queen').tagged('box').get())
+
+    def test_filtering_out(self):
+        add_tagged_items(self.user)
+
+        tags = ['queen', 'fish']
+        queryset = Item.objects.tagged(*tags)
+        self.assertEqual(len(queryset), 1, "Exactly one item with these tags should be found, but found: {}".format(
+            '/ '.join("Item with tags {}".format(item.tags.names()) for item in queryset)))
 
 
 

@@ -16,9 +16,9 @@ request_log = logging.getLogger('readme.requests')
 class ItemQuerySet(models.query.QuerySet):
 
     def tagged(self, *tags):
-        filtered = self.filter
+        filtered = self
         for tag in tags:
-            filtered = self.filter(tags__name=tag)
+            filtered = filtered.filter(tags__name=tag)
         return filtered
 
 
