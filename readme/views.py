@@ -49,12 +49,13 @@ class IndexView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class DeleteItem(RestrictItemAccessMixin, generic.DeleteView):
+class DeleteItemView(RestrictItemAccessMixin, generic.DeleteView):
     model = Item
     context_object_name = 'item'
     success_url = reverse_lazy('index')
 
-class UpdateItem(RestrictItemAccessMixin, generic.UpdateView):
+
+class UpdateItemView(RestrictItemAccessMixin, generic.UpdateView):
     model = Item
     context_object_name = 'item'
     success_url = reverse_lazy('index')
@@ -123,5 +124,5 @@ search = login_required(search_view_factory(
 index = IndexView.as_view()
 add = AddView.as_view()
 view = ItemView.as_view()
-delete = DeleteItem.as_view()
-update = UpdateItem.as_view()
+delete = DeleteItemView.as_view()
+update = UpdateItemView.as_view()
