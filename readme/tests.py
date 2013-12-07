@@ -86,6 +86,7 @@ class ItemModelTest(TestBase):
         add = add_for_user(self.user)
         self.item_fish = add(['queen', 'fish'])
         self.item_box = add(['queen', 'box'])
+        self.filter = Item.objects.filter(owner_id=1)
 
     def test_find_items_by_tag(self):
         self.assertCountEqual(
@@ -94,13 +95,13 @@ class ItemModelTest(TestBase):
 
     def test_find_items_by_multiple_tags(self):
         self.assertEqual(self.item_fish,
-                         Item.objects.filter(owner_id=1).tagged('queen', 'fish').get())
+                         self.filter.tagged('queen', 'fish').get())
         self.assertEqual(self.item_box,
-                         Item.objects.filter(owner_id=1).tagged('queen', 'box').get())
+                         self.filter.tagged('queen', 'box').get())
 
     def test_chain_tag_filters(self):
         self.assertEqual(self.item_fish,
-                         Item.objects.filter(owner_id=1).tagged('queen').tagged('fish').get())
+                         self.filter.filter(owner_id=1).tagged('queen').tagged('fish').get())
         self.assertEqual(self.item_box,
                          Item.objects.filter(owner_id=1).tagged('queen').tagged('box').get())
 
