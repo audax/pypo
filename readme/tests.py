@@ -1,3 +1,4 @@
+from functools import partial
 from unittest.mock import patch, Mock
 from django.core.management import call_command
 import haystack
@@ -7,6 +8,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
 from django.test.utils import override_settings
+from django.core.urlresolvers import reverse
 import requests
 from rest_framework.test import APIClient
 from .models import Item
@@ -45,15 +47,24 @@ def add_item_for_new_user(tags):
     another_item.tags.add(*tags)
     another_item.save()
 
-class BasicTests(TestCase):
+
+def add_for_user(user):
+    return partial(add_example_item, user)
+
+
+class TestBase(TestCase):
     fixtures = ['users.json']
-    
+
+    def setUp(self):
+        self.user = User.objects.get(pk=1)
+
+class BasicTests(TestBase):
+
     def test_item_user_relation(self):
-        user = User.objects.get(pk=1)
         item = Item()
         item.url = 'http://www.example.com'
         item.title = 'Title'
-        item.owner = user
+        item.owner = self.user
         item.save()
         self.assertTrue(item.owner)
 
@@ -66,6 +77,34 @@ class BasicTests(TestCase):
         item = Item()
         item.url = 'foobar'
         self.assertEqual(item.domain, None)
+
+
+class ItemModelTest(TestBase):
+
+    def setUp(self):
+        add = add_for_user(self.user)
+        self.item_fish = add(['queen', 'fish'])
+        self.item_box = add(['queen', 'box'])
+
+    def test_find_items_by_tag(self):
+        self.assertCountEqual(
+            [self.item_fish, self.item_box],
+            Item.objects.filter(owner_id=1).tagged(['queen']))
+
+    def test_find_items_by_multiple_tags(self):
+        self.assertEqual(self.item_fish,
+                         Item.objects.filter(owner_id=1).tagged('queen', 'fish').get())
+        self.assertEqual(self.item_box,
+                         Item.objects.filter(owner_id=1).tagged('queen', 'box').get())
+
+    def test_chain_tag_filters(self):
+        self.assertEqual(self.item_fish,
+                         Item.objects.filter(owner_id=1).tagged('queen').tagged('fish').get())
+        self.assertEqual(self.item_box,
+                         Item.objects.filter(owner_id=1).tagged('queen').tagged('box').get())
+
+
+
 
 
 class SerializerTest(TestCase):
@@ -179,6 +218,19 @@ class ExistingUserIntegrationTest(TestCase):
         response = c.get('/')
         self.assertContains(response, 'foo-tag')
         self.assertContains(response, 'bar-tag')
+
+    def test_tag_view_filters_items(self):
+        c = login()
+        add_tagged_items(User.objects.get(pk=1))
+
+        tags = ['queen', 'fish']
+        queryset = Item.objects.filter(owner_id=1)
+        for tag in tags:
+            queryset = queryset.filter(tags__name=tag)
+        matching_item = queryset.get()
+        response = c.get(reverse('tags', args=tags))
+        context = response.context
+        self.assertCountEqual(context['items'], [matching_item])
 
 @override_settings(HAYSTACK_CONNECTIONS=TEST_INDEX)
 class SearchIntegrationTest(TestCase):
