@@ -38,6 +38,13 @@ def add_tagged_items(user):
     add_example_item(user, ('queen', 'pypo'))
     add_example_item(user, tuple())
 
+
+def add_item_for_new_user(tags):
+    another_user = User.objects.create(username='someone')
+    another_item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=another_user)
+    another_item.tags.add(*tags)
+    another_item.save()
+
 class BasicTests(TestCase):
     fixtures = ['users.json']
     
@@ -189,8 +196,11 @@ class SearchIntegrationTest(TestCase):
     def test_facets_are_included_in_the_index_view(self):
         c = login()
         add_tagged_items(self.user)
+        # another item with the same tag by another user
+        add_item_for_new_user(['queen'])
         response = c.get('/')
         tags = response.context['tags']
+        # only his own tags are counted
         self.assertCountEqual(
             [('queen', 3), ('fish', 2), ('pypo', 1), ('boxing', 1), ('bartender', 1), (None, 1)],
             tags)

@@ -13,8 +13,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 from pypo import settings
-from readme.models import Item
-from readme.tests import add_example_item, add_tagged_items
+from readme.tests import add_example_item, add_tagged_items, add_item_for_new_user
 
 
 EXAMPLE_COM = 'http://www.example.com/'
@@ -266,12 +265,6 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.assertEqual(1, len(items), 'Item not found in results')
         self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
 
-    def _add_item_for_new_user(self):
-        another_user = User.objects.create(username='someone')
-        another_item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=another_user)
-        another_item.tags.add('queen')
-        another_item.save()
-
     def find_tags_on_page(self):
         tags = {}
         for tag in self.b.find_elements_by_css_selector('li.tag'):
@@ -285,7 +278,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self._add_tagged_items()
 
         # Another user also adds an item with the same tag
-        self._add_item_for_new_user()
+        add_item_for_new_user(['queen'])
 
         # Uther starts a search for his queen-tagged items
         self.b.get(self.live_server_url+'/search')
