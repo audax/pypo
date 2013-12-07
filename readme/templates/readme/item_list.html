@@ -23,7 +23,7 @@
                 {% with name=tag.0 count=tag.1 %}
 
                     <a class="list-group-item taglink" >
-                        {{ name|default_if_none:"Without a tag" }}
+                        <span class="tagname">{{ name|default_if_none:"Without a tag" }}</span>
                         (<span class="count">{{ count }}</span>)
                     </a>
                 {% endwith %}

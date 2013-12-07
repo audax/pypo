@@ -267,8 +267,8 @@ class ExistingUserTest(PypoLiveServerTestCase):
 
     def find_tags_on_page(self):
         tags = {}
-        for tag in self.b.find_elements_by_css_selector('li.tag'):
-            tags[tag.find_element_by_css_selector('a.taglink').text] = int(
+        for tag in self.b.find_elements_by_css_selector('.taglink'):
+            tags[tag.find_element_by_css_selector('span.tagname').text] = int(
                 tag.find_element_by_css_selector('span.count').text)
         return tags
 
