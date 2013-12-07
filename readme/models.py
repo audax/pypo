@@ -8,7 +8,6 @@ from taggit.managers import TaggableManager
 from readme.download import download
 from readme.scrapers import parse
 
-import requests
 import logging
 
 request_log = logging.getLogger('readme.requests')
