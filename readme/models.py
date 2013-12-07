@@ -13,6 +13,26 @@ import logging
 request_log = logging.getLogger('readme.requests')
 
 
+class ItemQuerySet(models.query.QuerySet):
+
+    def tagged(self, *tags):
+        filtered = self.filter
+        for tag in tags:
+            filtered = self.filter(tags__name=tag)
+        return filtered
+
+
+class ItemManager(models.Manager):
+
+    def get_queryset(self):
+        return ItemQuerySet(self.model)
+
+    def __getattr__(self, name, *args):
+        if name.startswith("_"):
+            raise AttributeError
+        return getattr(self.get_query_set(), name, *args)
+
+
 class Item(models.Model):
     """
     Entry in the read-it-later-list
@@ -30,6 +50,8 @@ class Item(models.Model):
     readable_article = models.TextField(null=True)
     #:param tags User assigned tags
     tags = TaggableManager(blank=True)
+
+    objects = ItemManager()
 
     @property
     def summary(self):

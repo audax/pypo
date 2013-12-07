@@ -82,6 +82,7 @@ class BasicTests(TestBase):
 class ItemModelTest(TestBase):
 
     def setUp(self):
+        super(ItemModelTest, self).setUp()
         add = add_for_user(self.user)
         self.item_fish = add(['queen', 'fish'])
         self.item_box = add(['queen', 'box'])
@@ -89,7 +90,7 @@ class ItemModelTest(TestBase):
     def test_find_items_by_tag(self):
         self.assertCountEqual(
             [self.item_fish, self.item_box],
-            Item.objects.filter(owner_id=1).tagged(['queen']))
+            Item.objects.filter(owner_id=1).tagged('queen'))
 
     def test_find_items_by_multiple_tags(self):
         self.assertEqual(self.item_fish,
