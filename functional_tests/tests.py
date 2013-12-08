@@ -337,3 +337,11 @@ class ExistingUserTest(PypoLiveServerTestCase):
             'queen': 1,
             'fish': 1,
         }, tags)
+
+    def test_item_tags_link_to_the_tag_view(self):
+        self.create_pre_authenticated_session()
+        self._add_tagged_items()
+        self.b.get(self.live_server_url)
+        tag_links = self.b.find_elements_by_css_selector('a.tag')
+        for tag in tag_links:
+            self.assertTrue(tag.get_attribute('href').endswith(tag.text))

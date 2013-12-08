@@ -36,7 +36,7 @@
                         Tags:
                         <span class="tag-list">
                             {% for tag in item.tags.all %}
-                            <a class="tag" href="{{ tag.get_absolute_url }}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
+                            <a class="tag" href="{% url 'tags' tags=tag.name %}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
                             {% endfor %}
                         </span>
                     </div>
