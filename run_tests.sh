@@ -13,5 +13,5 @@ if [ "$1" == "js" ]; then
     rm runner.js
     exit $success
 else
-    exec python manage.py test "$1"
+    exec coverage run -p --source='.' python manage.py test "$1"
 fi
