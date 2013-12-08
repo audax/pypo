@@ -1,6 +1,7 @@
 from functools import partial
 from unittest.mock import patch, Mock
 from django.core.management import call_command
+from django.utils.text import slugify
 import haystack
 from haystack.query import SearchQuerySet
 import os
@@ -19,7 +20,7 @@ from unittest import mock
 from readme.views import Tag
 
 EXAMPLE_COM = 'http://www.example.com/'
-QUEEN = 'queen'
+QUEEN = 'queen with spaces änd umlauts'
 
 TEST_INDEX = {
     'default': {
@@ -255,7 +256,8 @@ class ExistingUserIntegrationTest(TestCase):
         tags = [QUEEN, 'fish']
         queryset = Item.objects.filter(owner_id=1).tagged(*tags)
         matching_item = queryset.get()
-        response = c.get(reverse('tags', kwargs={'tags': '/'.join(tags)}))
+        tag_slugs = '/'.join(slugify(tag) for tag in tags)
+        response = c.get(reverse('tags', kwargs={'tags': tag_slugs}))
         context = response.context
         self.assertCountEqual([(tag.name, tag.count) for tag in context['tags']],
                               [(QUEEN, 1), ('fish', 1)])
@@ -297,6 +299,7 @@ class SearchIntegrationTest(TestCase):
         self.assertEqual(1, len(sqs))
         result = sqs[0]
         self.assertCountEqual(tags, result.tags)
+        self.assertCountEqual(tags, result.tag_slugs)
 
     def test_search_item_by_title(self):
         c = login()

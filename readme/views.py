@@ -6,6 +6,7 @@ from .models import Item
 from .forms import CreateItemForm, UpdateItemForm
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy, resolve, reverse
+from django.utils.text import slugify
 from django.shortcuts import redirect, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -58,7 +59,7 @@ class Tag:
         self.count = count
         self.tag_list = tag_list[:]
         if not name in self.tag_list:
-            self.tag_list.append(name)
+            self.tag_list.append(slugify(name))
         self.url = reverse('tags', kwargs={'tags': '/'.join(self.tag_list)})
 
     def as_tuple(self):
@@ -75,7 +76,7 @@ class Tag:
 def tags(request, tags=''):
     tag_list = [tag for tag in tags.split('/') if tag != '']
 
-    sqs = SearchQuerySet().filter(owner_id=request.user.id).filter(tags=tag_list)
+    sqs = SearchQuerySet().filter(owner_id=request.user.id).filter(tag_slugs=tag_list)
     sqs = sqs.order_by('-created').facet('tags')
 
     facets = sqs.facet_counts()
