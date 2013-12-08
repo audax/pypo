@@ -8,10 +8,17 @@ class ItemIndex(indexes.SearchIndex, indexes.Indexable):
     created = indexes.DateTimeField(model_attr='created')
     owner_id = indexes.IntegerField(model_attr='owner_id')
     tags = indexes.MultiValueField(faceted=True)
+    tag_slugs = indexes.MultiValueField(faceted=True)
 
     def prepare_tags(self, obj):
         if not type(obj.tags) is list:
             return list(obj.tags.names())
+        else:
+            return obj.tags
+
+    def prepare_tag_slugs(self, obj):
+        if not type(obj.tags) is list:
+            return list(tag.slug for tag in obj.tags.all())
         else:
             return obj.tags
 

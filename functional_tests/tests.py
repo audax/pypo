@@ -4,6 +4,7 @@ from unittest.mock import patch, Mock
 from django.core.management import call_command
 import haystack
 import os
+from django.utils.text import slugify
 from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY
 from django.contrib.auth.models import User
 from django.contrib.sessions.backends.db import SessionStore
@@ -13,7 +14,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 from pypo import settings
-from readme.tests import add_example_item, add_tagged_items, add_item_for_new_user
+from readme.tests import add_example_item, add_tagged_items, add_item_for_new_user, QUEEN
 
 
 EXAMPLE_COM = 'http://www.example.com/'
@@ -278,18 +279,18 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self._add_tagged_items()
 
         # Another user also adds an item with the same tag
-        add_item_for_new_user(['queen'])
+        add_item_for_new_user([QUEEN])
 
         # Uther starts a search for his queen-tagged items
         self.b.get(self.live_server_url+'/search')
         search_input = self.b.find_element_by_name('q')
-        search_input.send_keys('queen')
+        search_input.send_keys(QUEEN)
         search_input.send_keys(Keys.ENTER)
         # He sees that his queen-tagged items also have other tags
         tags = self.find_tags_on_page()
         # And only those items that are shown are counted in the list of tags
         self.assertEqual({
-            'queen': 3,
+            QUEEN: 3,
             'fish': 1,
             'bartender': 1,
             'pypo': 1
@@ -304,10 +305,47 @@ class ExistingUserTest(PypoLiveServerTestCase):
         # On the main page there is a list of all of his tags
         tags = self.find_tags_on_page()
         self.assertEqual({
-            'queen': 3,
+            QUEEN: 3,
             'boxing': 1,
             'fish': 2,
             'bartender': 1,
             'pypo': 1,
-            'Without a tag': 1
         }, tags)
+
+    def test_list_that_is_filtered_by_tags(self):
+        self.create_pre_authenticated_session()
+        self._add_tagged_items()
+        self.b.get(self.live_server_url)
+        # Uther added his usual items and wants to see all of his queen-related entries
+        # so he clicked on the tag on the index page
+        queen_tag = self.b.find_element_by_id("tag-{}".format(slugify(QUEEN)))
+        queen_tag.click()
+        # Now only the queen tagged items are shown
+        tags = self.find_tags_on_page()
+        self.assertEqual({
+            QUEEN: 3,
+            'fish': 1,
+            'bartender': 1,
+            'pypo': 1,
+        }, tags)
+        # He clicks on the fish tag and sees only the one item
+        # that is tagged with queen and fish
+        fish_tag = self.b.find_element_by_id("tag-fish")
+        fish_tag.click()
+
+        tags = self.find_tags_on_page()
+        self.assertEqual({
+            QUEEN: 1,
+            'fish': 1,
+        }, tags)
+
+    def test_item_tags_link_to_the_tag_view(self):
+        self.create_pre_authenticated_session()
+        self._add_tagged_items()
+        self.b.get(self.live_server_url)
+        tag_links = self.b.find_elements_by_css_selector('a.tag')
+        for tag in tag_links:
+            self.assertTrue(tag.get_attribute('href').endswith(slugify(tag.text)),
+                            "Tag link doesn't end with the tag name: {}:{}".format(
+                                tag.get_attribute('href'), slugify(tag.text)
+                            ))

@@ -1,5 +1,7 @@
+from functools import partial
 from unittest.mock import patch, Mock
 from django.core.management import call_command
+from django.utils.text import slugify
 import haystack
 from haystack.query import SearchQuerySet
 import os
@@ -7,6 +9,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
 from django.test.utils import override_settings
+from django.core.urlresolvers import reverse, resolve
 import requests
 from rest_framework.test import APIClient
 from .models import Item
@@ -14,8 +17,10 @@ from readme.scrapers import parse
 from readme import serializers, download
 from rest_framework.exceptions import ParseError
 from unittest import mock
+from readme.views import Tag
 
 EXAMPLE_COM = 'http://www.example.com/'
+QUEEN = 'queen with spaces änd umlauts'
 
 TEST_INDEX = {
     'default': {
@@ -33,9 +38,9 @@ def add_example_item(user, tags=None):
 
 def add_tagged_items(user):
     add_example_item(user, ('fish', 'boxing'))
-    add_example_item(user, ('fish', 'queen'))
-    add_example_item(user, ('queen', 'bartender'))
-    add_example_item(user, ('queen', 'pypo'))
+    add_example_item(user, ('fish', QUEEN))
+    add_example_item(user, (QUEEN, 'bartender'))
+    add_example_item(user, (QUEEN, 'pypo'))
     add_example_item(user, tuple())
 
 
@@ -45,15 +50,24 @@ def add_item_for_new_user(tags):
     another_item.tags.add(*tags)
     another_item.save()
 
-class BasicTests(TestCase):
+
+def add_for_user(user):
+    return partial(add_example_item, user)
+
+
+class TestBase(TestCase):
     fixtures = ['users.json']
-    
+
+    def setUp(self):
+        self.user = User.objects.get(pk=1)
+
+class BasicTests(TestBase):
+
     def test_item_user_relation(self):
-        user = User.objects.get(pk=1)
         item = Item()
         item.url = 'http://www.example.com'
         item.title = 'Title'
-        item.owner = user
+        item.owner = self.user
         item.save()
         self.assertTrue(item.owner)
 
@@ -66,6 +80,49 @@ class BasicTests(TestCase):
         item = Item()
         item.url = 'foobar'
         self.assertEqual(item.domain, None)
+
+
+class ItemModelTest(TestBase):
+
+    def _add_simple_example_items(self):
+        self.item_fish = self.add([QUEEN, 'fish', 'cookie'])
+        self.item_box = self.add([QUEEN, 'box'])
+        self.filter = Item.objects.filter(owner_id=1)
+
+    def setUp(self):
+        super(ItemModelTest, self).setUp()
+        self.add = add_for_user(self.user)
+
+    def test_find_items_by_tag(self):
+        self._add_simple_example_items()
+        self.assertCountEqual(
+            [self.item_fish, self.item_box],
+            Item.objects.filter(owner_id=1).tagged(QUEEN))
+
+    def test_find_items_by_multiple_tags(self):
+        self._add_simple_example_items()
+        self.assertEqual(self.item_fish,
+                         self.filter.tagged(QUEEN, 'fish').get())
+        self.assertEqual(self.item_box,
+                         self.filter.tagged(QUEEN, 'box').get())
+
+    def test_chain_tag_filters(self):
+        self._add_simple_example_items()
+        self.assertEqual(self.item_fish,
+                         self.filter.filter(owner_id=1).tagged(QUEEN).tagged('fish').get())
+        self.assertEqual(self.item_box,
+                         Item.objects.filter(owner_id=1).tagged(QUEEN).tagged('box').get())
+
+    def test_filtering_out(self):
+        add_tagged_items(self.user)
+
+        tags = [QUEEN, 'fish']
+        queryset = Item.objects.tagged(*tags)
+        self.assertEqual(len(queryset), 1, "Exactly one item with these tags should be found, but found: {}".format(
+            '/ '.join("Item with tags {}".format(item.tags.names()) for item in queryset)))
+
+
+
 
 
 class SerializerTest(TestCase):
@@ -151,6 +208,7 @@ class ExistingUserIntegrationTest(TestCase):
                            encoding='utf-8')
         return_mock.iter_content.return_value = iter([b"example.com"])
         get_mock.return_value = return_mock
+        call_command('clear_index', interactive=False, verbosity=0)
 
     def tearDown(self):
         self.patcher.stop()
@@ -176,9 +234,34 @@ class ExistingUserIntegrationTest(TestCase):
         c = login()
         item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=User.objects.get(pk=1))
         item.tags.add('foo-tag', 'bar-tag')
+        item.save()
         response = c.get('/')
         self.assertContains(response, 'foo-tag')
         self.assertContains(response, 'bar-tag')
+        self.assertCountEqual(
+            response.context['tags'], [
+            Tag('foo-tag', 1, []),
+            Tag('bar-tag', 1, [])])
+
+    def test_tag_view_has_abritary_many_arguments(self):
+        match = resolve('/tags/queen/fish')
+        self.assertEqual(match.kwargs['tags'], 'queen/fish')
+        match = resolve('/tags/')
+        self.assertEqual(match.kwargs['tags'], '')
+
+    def test_tag_view_filters_items(self):
+        c = login()
+        add_tagged_items(User.objects.get(pk=1))
+
+        tags = [QUEEN, 'fish']
+        queryset = Item.objects.filter(owner_id=1).tagged(*tags)
+        matching_item = queryset.get()
+        tag_slugs = '/'.join(slugify(tag) for tag in tags)
+        response = c.get(reverse('tags', kwargs={'tags': tag_slugs}))
+        context = response.context
+        self.assertCountEqual([(tag.name, tag.count) for tag in context['tags']],
+                              [(QUEEN, 1), ('fish', 1)])
+        self.assertCountEqual(context['current_item_list'], [matching_item])
 
 @override_settings(HAYSTACK_CONNECTIONS=TEST_INDEX)
 class SearchIntegrationTest(TestCase):
@@ -197,12 +280,12 @@ class SearchIntegrationTest(TestCase):
         c = login()
         add_tagged_items(self.user)
         # another item with the same tag by another user
-        add_item_for_new_user(['queen'])
+        add_item_for_new_user([QUEEN])
         response = c.get('/')
-        tags = response.context['tags']
+        tags = [(tag.name, tag.count) for tag in response.context['tags']]
         # only his own tags are counted
         self.assertCountEqual(
-            [('queen', 3), ('fish', 2), ('pypo', 1), ('boxing', 1), ('bartender', 1), (None, 1)],
+            [(QUEEN, 3), ('fish', 2), ('pypo', 1), ('boxing', 1), ('bartender', 1)],
             tags)
 
     def test_tags_are_saved_as_a_list(self):
@@ -216,6 +299,7 @@ class SearchIntegrationTest(TestCase):
         self.assertEqual(1, len(sqs))
         result = sqs[0]
         self.assertCountEqual(tags, result.tags)
+        self.assertCountEqual(tags, result.tag_slugs)
 
     def test_search_item_by_title(self):
         c = login()

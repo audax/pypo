@@ -5,8 +5,9 @@ from haystack.views import FacetedSearchView, search_view_factory
 from .models import Item
 from .forms import CreateItemForm, UpdateItemForm
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse_lazy
-from django.shortcuts import redirect
+from django.core.urlresolvers import reverse_lazy, resolve, reverse
+from django.utils.text import slugify
+from django.shortcuts import redirect, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
@@ -44,17 +45,58 @@ class IndexView(LoginRequiredMixin, generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
         facets = SearchQuerySet().filter(owner_id=self.request.user.id).facet('tags').facet_counts()
-        tags = facets.get('fields', {}).get('tags', [])
-        context['tags'] = tags
+        tag_objects = []
+        for name, count in facets.get('fields', {}).get('tags', []):
+            if name is not None:
+                tag_objects.append(Tag(name, count, []))
+        context['tags'] = tag_objects
         return context
 
 
-class DeleteItem(RestrictItemAccessMixin, generic.DeleteView):
+class Tag:
+    def __init__(self, name, count, tag_list):
+        self.name = name
+        self.count = count
+        self.tag_list = tag_list[:]
+        if not name in self.tag_list:
+            self.tag_list.append(slugify(name))
+        self.url = reverse('tags', kwargs={'tags': '/'.join(self.tag_list)})
+
+    def as_tuple(self):
+        return self.name, self.count, self.url
+
+    def __eq__(self, other):
+        return self.as_tuple() == other.as_tuple()
+
+    def __hash__(self):
+        return hash(self.as_tuple())
+
+
+@login_required
+def tags(request, tags=''):
+    tag_list = [tag for tag in tags.split('/') if tag != '']
+
+    sqs = SearchQuerySet().filter(owner_id=request.user.id).filter(tag_slugs=tag_list)
+    sqs = sqs.order_by('-created').facet('tags')
+
+    facets = sqs.facet_counts()
+    result_objects = [result.object for result in sqs]
+    tag_objects = [Tag(name, count, tag_list) for name, count in facets.get('fields', {}).get('tags', [])]
+    return render_to_response('readme/item_list.html', {
+        'current_item_list': result_objects,
+        'tags': tag_objects,
+        'user': request.user,
+    })
+
+
+
+class DeleteItemView(RestrictItemAccessMixin, generic.DeleteView):
     model = Item
     context_object_name = 'item'
     success_url = reverse_lazy('index')
 
-class UpdateItem(RestrictItemAccessMixin, generic.UpdateView):
+
+class UpdateItemView(RestrictItemAccessMixin, generic.UpdateView):
     model = Item
     context_object_name = 'item'
     success_url = reverse_lazy('index')
@@ -123,5 +165,5 @@ search = login_required(search_view_factory(
 index = IndexView.as_view()
 add = AddView.as_view()
 view = ItemView.as_view()
-delete = DeleteItem.as_view()
-update = UpdateItem.as_view()
+delete = DeleteItemView.as_view()
+update = UpdateItemView.as_view()
