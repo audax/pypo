@@ -8,7 +8,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
 from django.test.utils import override_settings
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, resolve
 import requests
 from rest_framework.test import APIClient
 from .models import Item
@@ -82,7 +82,7 @@ class BasicTests(TestBase):
 class ItemModelTest(TestBase):
 
     def _add_simple_example_items(self):
-        self.item_fish = self.add(['queen', 'fish'])
+        self.item_fish = self.add(['queen', 'fish', 'cookie'])
         self.item_box = self.add(['queen', 'box'])
         self.filter = Item.objects.filter(owner_id=1)
 
@@ -234,18 +234,23 @@ class ExistingUserIntegrationTest(TestCase):
         self.assertContains(response, 'foo-tag')
         self.assertContains(response, 'bar-tag')
 
+    def test_tag_view_has_abritary_many_arguments(self):
+        match = resolve('/tags/queen/fish')
+        self.assertEqual(match.kwargs['tags'], 'queen/fish')
+        match = resolve('/tags/')
+        self.assertEqual(match.kwargs['tags'], '')
+
     def test_tag_view_filters_items(self):
         c = login()
         add_tagged_items(User.objects.get(pk=1))
 
         tags = ['queen', 'fish']
-        queryset = Item.objects.filter(owner_id=1)
-        for tag in tags:
-            queryset = queryset.filter(tags__name=tag)
+        queryset = Item.objects.filter(owner_id=1).tagged(*tags)
         matching_item = queryset.get()
-        response = c.get(reverse('tags', args=tags))
+        response = c.get(reverse('tags', kwargs={'tags': '/'.join(tags)}))
         context = response.context
-        self.assertCountEqual(context['items'], [matching_item])
+        self.assertCountEqual(context['current_item_list'], [matching_item])
+        self.assertCountEqual(context['tags'], [('queen', 1), ('fish', 1)])
 
 @override_settings(HAYSTACK_CONNECTIONS=TEST_INDEX)
 class SearchIntegrationTest(TestCase):
