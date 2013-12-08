@@ -16,6 +16,7 @@ from readme.scrapers import parse
 from readme import serializers, download
 from rest_framework.exceptions import ParseError
 from unittest import mock
+from readme.views import Tag
 
 EXAMPLE_COM = 'http://www.example.com/'
 
@@ -205,6 +206,7 @@ class ExistingUserIntegrationTest(TestCase):
                            encoding='utf-8')
         return_mock.iter_content.return_value = iter([b"example.com"])
         get_mock.return_value = return_mock
+        call_command('clear_index', interactive=False, verbosity=0)
 
     def tearDown(self):
         self.patcher.stop()
@@ -230,9 +232,14 @@ class ExistingUserIntegrationTest(TestCase):
         c = login()
         item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=User.objects.get(pk=1))
         item.tags.add('foo-tag', 'bar-tag')
+        item.save()
         response = c.get('/')
         self.assertContains(response, 'foo-tag')
         self.assertContains(response, 'bar-tag')
+        self.assertCountEqual(
+            response.context['tags'], [
+            Tag('foo-tag', 1, []),
+            Tag('bar-tag', 1, [])])
 
     def test_tag_view_has_abritary_many_arguments(self):
         match = resolve('/tags/queen/fish')
@@ -249,8 +256,9 @@ class ExistingUserIntegrationTest(TestCase):
         matching_item = queryset.get()
         response = c.get(reverse('tags', kwargs={'tags': '/'.join(tags)}))
         context = response.context
+        self.assertCountEqual([(tag.name, tag.count) for tag in context['tags']],
+                              [('queen', 1), ('fish', 1)])
         self.assertCountEqual(context['current_item_list'], [matching_item])
-        self.assertCountEqual(context['tags'], [('queen', 1), ('fish', 1)])
 
 @override_settings(HAYSTACK_CONNECTIONS=TEST_INDEX)
 class SearchIntegrationTest(TestCase):

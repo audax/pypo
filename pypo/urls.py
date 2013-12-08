@@ -6,6 +6,7 @@ admin.autodiscover()
 
 readme_patterns = patterns('readme.views',
     url(r'^$', 'index', name='index'),
+    url(r'^tags/(?P<tags>.*)$', 'tags', name='tags'),
     url(r'^add/$', 'add', name='item_add'),
     url(r'^update/(?P<pk>\d+)/$', 'update', name='item_update'),
     url(r'^view/(?P<pk>\d+)/$', 'view', name='item_view'),

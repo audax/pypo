@@ -309,13 +309,12 @@ class ExistingUserTest(PypoLiveServerTestCase):
             'fish': 2,
             'bartender': 1,
             'pypo': 1,
-            'Without a tag': 1
         }, tags)
 
     def test_list_that_is_filtered_by_tags(self):
         self.create_pre_authenticated_session()
         self._add_tagged_items()
-        self.b.get('/')
+        self.b.get(self.live_server_url)
         # Uther added his usual items and wants to see all of his queen-related entries
         # so he clicked on the tag on the index page
         queen_tag = self.b.find_element_by_id("tag-queen")
