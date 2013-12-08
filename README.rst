@@ -3,9 +3,9 @@ About Pypo
 
 |Build Status|
 
-Pypo is a self hosted bookmarking service like `Pocket`_. This is a very
-early alpha. There will be an android application, bookmarklets and
-possibly a firefox extension to add, search and view the bookmarks.
+Pypo is a self hosted bookmarking service like `Pocket`_.
+There also is a rudimentary android application and firefox
+extension to add and view the bookmarks.
 
 It's main components are built with:
 
@@ -28,10 +28,10 @@ Full documentation can be found at `readthedocs`_
 Features
 --------
 
--  Adding links to the users own link list
--  Fetch summary and title from those links
--  Add tags
+-  Adding links and fetch their summaries and titles
+-  Links can have multiple tags
 -  Search by title, url and tags
+-  Filter by tags
 
 Installation
 ------------
