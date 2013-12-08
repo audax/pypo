@@ -59,6 +59,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
     def setUp(self):
         self.b = webdriver.Firefox()
         self.b.implicitly_wait(3)
+        self.b.set_window_size(1024, 768)
         self.c = self.client
         haystack.connections.reload('default')
         self.patcher = patch('requests.get')
