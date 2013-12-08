@@ -13,7 +13,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 from pypo import settings
-from readme.tests import add_example_item, add_tagged_items, add_item_for_new_user
+from readme.tests import add_example_item, add_tagged_items, add_item_for_new_user, QUEEN
 
 
 EXAMPLE_COM = 'http://www.example.com/'
@@ -278,18 +278,18 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self._add_tagged_items()
 
         # Another user also adds an item with the same tag
-        add_item_for_new_user(['queen'])
+        add_item_for_new_user([QUEEN])
 
         # Uther starts a search for his queen-tagged items
         self.b.get(self.live_server_url+'/search')
         search_input = self.b.find_element_by_name('q')
-        search_input.send_keys('queen')
+        search_input.send_keys(QUEEN)
         search_input.send_keys(Keys.ENTER)
         # He sees that his queen-tagged items also have other tags
         tags = self.find_tags_on_page()
         # And only those items that are shown are counted in the list of tags
         self.assertEqual({
-            'queen': 3,
+            QUEEN: 3,
             'fish': 1,
             'bartender': 1,
             'pypo': 1
@@ -304,7 +304,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         # On the main page there is a list of all of his tags
         tags = self.find_tags_on_page()
         self.assertEqual({
-            'queen': 3,
+            QUEEN: 3,
             'boxing': 1,
             'fish': 2,
             'bartender': 1,
@@ -322,7 +322,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         # Now only the queen tagged items are shown
         tags = self.find_tags_on_page()
         self.assertEqual({
-            'queen': 3,
+            QUEEN: 3,
             'fish': 1,
             'bartender': 1,
             'pypo': 1,
@@ -334,7 +334,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
 
         tags = self.find_tags_on_page()
         self.assertEqual({
-            'queen': 1,
+            QUEEN: 1,
             'fish': 1,
         }, tags)
 

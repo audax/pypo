@@ -19,6 +19,7 @@ from unittest import mock
 from readme.views import Tag
 
 EXAMPLE_COM = 'http://www.example.com/'
+QUEEN = 'queen'
 
 TEST_INDEX = {
     'default': {
@@ -36,9 +37,9 @@ def add_example_item(user, tags=None):
 
 def add_tagged_items(user):
     add_example_item(user, ('fish', 'boxing'))
-    add_example_item(user, ('fish', 'queen'))
-    add_example_item(user, ('queen', 'bartender'))
-    add_example_item(user, ('queen', 'pypo'))
+    add_example_item(user, ('fish', QUEEN))
+    add_example_item(user, (QUEEN, 'bartender'))
+    add_example_item(user, (QUEEN, 'pypo'))
     add_example_item(user, tuple())
 
 
@@ -83,8 +84,8 @@ class BasicTests(TestBase):
 class ItemModelTest(TestBase):
 
     def _add_simple_example_items(self):
-        self.item_fish = self.add(['queen', 'fish', 'cookie'])
-        self.item_box = self.add(['queen', 'box'])
+        self.item_fish = self.add([QUEEN, 'fish', 'cookie'])
+        self.item_box = self.add([QUEEN, 'box'])
         self.filter = Item.objects.filter(owner_id=1)
 
     def setUp(self):
@@ -95,26 +96,26 @@ class ItemModelTest(TestBase):
         self._add_simple_example_items()
         self.assertCountEqual(
             [self.item_fish, self.item_box],
-            Item.objects.filter(owner_id=1).tagged('queen'))
+            Item.objects.filter(owner_id=1).tagged(QUEEN))
 
     def test_find_items_by_multiple_tags(self):
         self._add_simple_example_items()
         self.assertEqual(self.item_fish,
-                         self.filter.tagged('queen', 'fish').get())
+                         self.filter.tagged(QUEEN, 'fish').get())
         self.assertEqual(self.item_box,
-                         self.filter.tagged('queen', 'box').get())
+                         self.filter.tagged(QUEEN, 'box').get())
 
     def test_chain_tag_filters(self):
         self._add_simple_example_items()
         self.assertEqual(self.item_fish,
-                         self.filter.filter(owner_id=1).tagged('queen').tagged('fish').get())
+                         self.filter.filter(owner_id=1).tagged(QUEEN).tagged('fish').get())
         self.assertEqual(self.item_box,
-                         Item.objects.filter(owner_id=1).tagged('queen').tagged('box').get())
+                         Item.objects.filter(owner_id=1).tagged(QUEEN).tagged('box').get())
 
     def test_filtering_out(self):
         add_tagged_items(self.user)
 
-        tags = ['queen', 'fish']
+        tags = [QUEEN, 'fish']
         queryset = Item.objects.tagged(*tags)
         self.assertEqual(len(queryset), 1, "Exactly one item with these tags should be found, but found: {}".format(
             '/ '.join("Item with tags {}".format(item.tags.names()) for item in queryset)))
@@ -251,13 +252,13 @@ class ExistingUserIntegrationTest(TestCase):
         c = login()
         add_tagged_items(User.objects.get(pk=1))
 
-        tags = ['queen', 'fish']
+        tags = [QUEEN, 'fish']
         queryset = Item.objects.filter(owner_id=1).tagged(*tags)
         matching_item = queryset.get()
         response = c.get(reverse('tags', kwargs={'tags': '/'.join(tags)}))
         context = response.context
         self.assertCountEqual([(tag.name, tag.count) for tag in context['tags']],
-                              [('queen', 1), ('fish', 1)])
+                              [(QUEEN, 1), ('fish', 1)])
         self.assertCountEqual(context['current_item_list'], [matching_item])
 
 @override_settings(HAYSTACK_CONNECTIONS=TEST_INDEX)
@@ -277,12 +278,12 @@ class SearchIntegrationTest(TestCase):
         c = login()
         add_tagged_items(self.user)
         # another item with the same tag by another user
-        add_item_for_new_user(['queen'])
+        add_item_for_new_user([QUEEN])
         response = c.get('/')
-        tags = response.context['tags']
+        tags = [(tag.name, tag.count) for tag in response.context['tags']]
         # only his own tags are counted
         self.assertCountEqual(
-            [('queen', 3), ('fish', 2), ('pypo', 1), ('boxing', 1), ('bartender', 1), (None, 1)],
+            [(QUEEN, 3), ('fish', 2), ('pypo', 1), ('boxing', 1), ('bartender', 1)],
             tags)
 
     def test_tags_are_saved_as_a_list(self):
