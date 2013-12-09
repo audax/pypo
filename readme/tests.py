@@ -18,6 +18,7 @@ from readme import serializers, download
 from rest_framework.exceptions import ParseError
 from unittest import mock
 from readme.views import Tag
+import json
 
 EXAMPLE_COM = 'http://www.example.com/'
 QUEEN = 'queen with spaces änd umlauts'
@@ -334,6 +335,16 @@ class SearchIntegrationTest(TestCase):
         self.assertContains(response, 'Results')
         self.assertEqual(0, len(response.context['page'].object_list),
                          'Item from another user found in search')
+
+    def test_tags_are_added_to_form(self):
+        c = login()
+        add_tagged_items(self.user)
+        response = c.get('/add/')
+        tags = [QUEEN, 'fish', 'bartender', 'pypo']
+        for tag in tags:
+            json_tag = json.dumps(tag)
+            self.assertIn(json_tag, response.context['tags'])
+            self.assertContains(response, json_tag)
 
 
 @patch('requests.get')

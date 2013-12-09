@@ -5,11 +5,12 @@ from haystack.views import FacetedSearchView, search_view_factory
 from .models import Item
 from .forms import CreateItemForm, UpdateItemForm
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse_lazy, resolve, reverse
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.text import slugify
 from django.shortcuts import redirect, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+import json
 
 
 class LoginRequiredMixin(object):
@@ -89,14 +90,26 @@ def tags(request, tags=''):
     })
 
 
-
 class DeleteItemView(RestrictItemAccessMixin, generic.DeleteView):
     model = Item
     context_object_name = 'item'
     success_url = reverse_lazy('index')
 
 
-class UpdateItemView(RestrictItemAccessMixin, generic.UpdateView):
+class TagNamesToContextMixin:
+
+    def get_context_data(self, **kwargs):
+        context = super(TagNamesToContextMixin, self).get_context_data(**kwargs)
+
+        sqs = SearchQuerySet().filter(owner_id=self.request.user.id).facet('tags')
+
+        facets = sqs.facet_counts()
+        tags = [name for name, count in facets.get('fields', {}).get('tags', []) if name is not None]
+        context['tags'] = json.dumps(tags)
+        return context
+
+
+class UpdateItemView(TagNamesToContextMixin, RestrictItemAccessMixin, generic.UpdateView):
     model = Item
     context_object_name = 'item'
     success_url = reverse_lazy('index')
@@ -109,7 +122,8 @@ class UpdateItemView(RestrictItemAccessMixin, generic.UpdateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class AddView(LoginRequiredMixin, generic.CreateView):
+
+class AddView(TagNamesToContextMixin, LoginRequiredMixin, generic.CreateView):
     model = Item
     success_url = reverse_lazy('index')
 

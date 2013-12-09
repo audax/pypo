@@ -1,4 +1,5 @@
 import sys
+from time import sleep
 from unittest.mock import patch, Mock
 
 from django.core.management import call_command
@@ -70,6 +71,11 @@ class ExistingUserTest(PypoLiveServerTestCase):
         return_mock.iter_content.return_value = iter([b"example.com"])
         get_mock.return_value = return_mock
         haystack.connections.reload('default')
+        try:
+            user = User.objects.get(username='uther')
+        except User.DoesNotExist:
+            user = User.objects.create(username='uther')
+        self.user = user
 
     def tearDown(self):
         self.b.quit()
@@ -77,13 +83,8 @@ class ExistingUserTest(PypoLiveServerTestCase):
         call_command('clear_index', interactive=False, verbosity=0)
 
     def create_pre_authenticated_session(self):
-        try:
-            user = User.objects.get(username='uther')
-        except User.DoesNotExist:
-            user = User.objects.create(username='uther')
-        self.user = user
         session = SessionStore()
-        session[SESSION_KEY] = user.pk
+        session[SESSION_KEY] = self.user.pk
         session[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
         session.save()
         ## to set a cookie we need to first visit the domain.
@@ -113,6 +114,37 @@ class ExistingUserTest(PypoLiveServerTestCase):
         input_tags = self.b.find_element_by_name('tags')
         input_tags.send_keys(tags)
         input_tags.send_keys(Keys.ENTER)
+
+    def test_autocomplete_tags(self):
+        example_address = 'http://foobar.local/'
+        self.create_pre_authenticated_session()
+        self._add_tagged_items()
+        self.b.get(self.live_server_url + '/add')
+        input_url = self.b.find_element_by_name('url')
+        input_url.send_keys(example_address)
+        # He activates the input field for tags
+        self.b.find_element_by_css_selector('#id_tags-tokenfield').click()
+        # All tags that he used before show up
+        completions = [tag for tag in
+                       self.b.find_elements_by_css_selector('#ui-id-1 li a')]
+        self.assertCountEqual([QUEEN, 'fish', 'pypo', 'boxing', 'bartender'], (tag.text for tag in completions))
+
+        # He chooses the QUEEN tag
+        for tag in completions:
+            if tag.text == QUEEN:
+                tag.click()
+                break
+        # And then submits the form
+        self.b.find_element_by_id('submit-id-submit').click()
+
+        # The new item was added and is the first item
+        item = self.b.find_element_by_class_name('item_link')
+        self.assertEqual(example_address, item.get_attribute('href'))
+
+        # And QUEEN this is the only tag that was added
+        taglist = self.b.find_element_by_css_selector('.tag-list')
+        tags = [tag.text for tag in taglist.find_elements_by_css_selector('.tag')]
+        self.assertEqual(tags, [QUEEN])
 
     def test_login_dev_user(self):
         self.b.get(self.server_url)
