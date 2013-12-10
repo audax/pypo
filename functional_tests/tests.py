@@ -111,9 +111,11 @@ class ExistingUserTest(PypoLiveServerTestCase):
         # He submits a link
         input_url = self.b.find_element_by_name('url')
         input_url.send_keys(EXAMPLE_COM)
-        input_tags = self.b.find_element_by_name('tags')
+        input_tags = self.b.find_element_by_id('id_tags-tokenfield')
+        input_tags.click()
         input_tags.send_keys(tags)
-        input_tags.send_keys(Keys.ENTER)
+        input_tags.send_keys(',')
+        self.b.find_element_by_id('submit-id-submit').click()
 
     def test_autocomplete_tags(self):
         example_address = 'http://foobar.local/'
@@ -272,16 +274,16 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.assertIn('fish', tag_string)
 
     def test_can_update_tags_from_the_list(self):
-        self.create_pre_authenticated_session()
+        self.session = self.create_pre_authenticated_session()
         self._add_example_item()
         self.b.get(self.live_server_url)
         # Uther visits the listing page and adds a new tag to the example item
         self.b.find_element_by_css_selector('.item-content .tools a.tags_link').click()
-        tag_input = self.b.find_element_by_id('id_tags')
+        tag_input = self.b.find_element_by_id('id_tags-tokenfield')
         # There are currently to tags for this item
         self.assertEqual('', tag_input.text)
         # Uther adds 2 new tags: example and fish
-        tag_input.send_keys('example fish')
+        tag_input.send_keys('example,fish,')
         tag_input.send_keys(Keys.ENTER)
         # The new tags are added to the list
         tags = self.b.find_elements_by_css_selector('.tag')
