@@ -2,29 +2,30 @@
 import datetime
 from south.db import db
 from south.v2 import DataMigration
-from django.db import models
+from django.db import models, connection
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
+        cursor = connection.cursor()
+        table_names = connection.introspection.get_table_list(cursor)
+        # Nothing to migrate here
+        if not 'taggit_taggeditem' in table_names:
+            return
+
         tagged_item_model = orm['taggit.TaggedItem']
-        try:
-            tagged_items = tagged_item_model.objects.all()
-        except:
-            # The tables are not available, we don't need to migrate
-            pass
-        else:
-            for tagged_item in tagged_items:
-                tagged_object = orm.Item.objects.get(pk=tagged_item.object_id)
-                tag_name = tagged_item.tag.name
-                try:
-                    tag = orm.ItemTag.objects.get(name=tag_name)
-                except orm.ItemTag.DoesNotExist:
-                    tag = orm.ItemTag.objects.create(name=tag_name, slug=tag_name)
-                orm.TaggedItem.objects.create(content_object=tagged_object, tag=tag)
+        tagged_items = list(tagged_item_model.objects.all())
+        for tagged_item in tagged_items:
+            tagged_object = orm.Item.objects.get(pk=tagged_item.object_id)
+            tag_name = tagged_item.tag.name
+            try:
+                tag = orm.ItemTag.objects.get(name=tag_name)
+            except orm.ItemTag.DoesNotExist:
+                tag = orm.ItemTag.objects.create(name=tag_name, slug=tag_name)
+            orm.TaggedItem.objects.create(content_object=tagged_object, tag=tag)
 
     def backwards(self, orm):
-        "Write your backwards methods here."
+        pass
 
     models = {
         'auth.group': {
@@ -100,4 +101,4 @@ class Migration(DataMigration):
     }
 
     complete_apps = ['readme']
-    symmetrical = True
+    symmetrical = False
