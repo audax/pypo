@@ -20,7 +20,7 @@
     <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
         <div class="list-group">
             {% for tag in tags %}
-                <a id="tag-{{ tag.name|slugify }}" href="{{ tag.url }}" class="list-group-item taglink" >
+                <a data-tagname="{{ tag.name }}" href="{{ tag.url }}" class="list-group-item taglink" >
                     <span class="tagname">{{ tag.name|default_if_none:"Without a tag" }}</span>
                     (<span class="count">{{ tag.count }}</span>)
                 </a>

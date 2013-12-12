@@ -6,7 +6,6 @@ from .models import Item
 from .forms import CreateItemForm, UpdateItemForm
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.utils.text import slugify
 from django.shortcuts import redirect, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -60,8 +59,8 @@ class Tag:
         self.count = count
         self.tag_list = tag_list[:]
         if not name in self.tag_list:
-            self.tag_list.append(slugify(name))
-        self.url = reverse('tags', kwargs={'tags': '/'.join(self.tag_list)})
+            self.tag_list.append(name)
+        self.url = reverse('tags', kwargs={'tags': ','.join(self.tag_list)})
 
     def as_tuple(self):
         return self.name, self.count, self.url
@@ -75,9 +74,14 @@ class Tag:
 
 @login_required
 def tags(request, tags=''):
-    tag_list = [tag for tag in tags.split('/') if tag != '']
+    tag_list = [tag for tag in tags.split(',') if tag != '']
 
-    sqs = SearchQuerySet().filter(owner_id=request.user.id).filter(tag_slugs=tag_list)
+    # Due to a bug (or feature?) in Whoosh or haystack, we can't filter for all tags at once,
+    # the .filter(tags=[...]) method cannot handle spaces apparently
+    # It however works with tags__in, but that is an OR
+    sqs = SearchQuerySet().filter(owner_id=request.user.id)
+    for tag in tag_list:
+        sqs = sqs.filter(tags__in=[tag])
     sqs = sqs.order_by('-created').facet('tags')
 
     facets = sqs.facet_counts()

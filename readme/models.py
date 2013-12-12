@@ -5,6 +5,7 @@ from django.conf import settings
 from tld import get_tld
 from django.core.urlresolvers import reverse
 from taggit.managers import TaggableManager
+from taggit.models import TagBase, ItemBase
 from readme.download import download
 from readme.scrapers import parse
 
@@ -32,6 +33,25 @@ class ItemManager(models.Manager):
             raise AttributeError
         return getattr(self.get_query_set(), name, *args)
 
+class ItemTag(TagBase):
+
+    def slugify(self, tag, i=None):
+        return tag
+
+class TaggedItem(ItemBase):
+
+    tag = models.ForeignKey(ItemTag, related_name="%(app_label)s_%(class)s_items")
+    content_object = models.ForeignKey('Item')
+
+    @classmethod
+    def tags_for(cls, model, instance=None):
+        if instance is not None:
+            return cls.tag_model().objects.filter(**{
+                '%s__content_object' % cls.tag_relname(): instance
+            })
+        return cls.tag_model().objects.filter(**{
+            '%s__content_object__isnull' % cls.tag_relname(): False
+        }).distinct()
 
 class Item(models.Model):
     """
@@ -49,7 +69,7 @@ class Item(models.Model):
     #:param readable_article Processed content of the url
     readable_article = models.TextField(null=True)
     #:param tags User assigned tags
-    tags = TaggableManager(blank=True)
+    tags = TaggableManager(blank=True, through=TaggedItem)
 
     objects = ItemManager()
 

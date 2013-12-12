@@ -1,11 +1,10 @@
 import sys
-from time import sleep
 from unittest.mock import patch, Mock
 
 from django.core.management import call_command
 import haystack
 import os
-from django.utils.text import slugify
+from django.utils.http import urlquote
 from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY
 from django.contrib.auth.models import User
 from django.contrib.sessions.backends.db import SessionStore
@@ -353,7 +352,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.b.get(self.live_server_url)
         # Uther added his usual items and wants to see all of his queen-related entries
         # so he clicked on the tag on the index page
-        queen_tag = self.b.find_element_by_id("tag-{}".format(slugify(QUEEN)))
+        queen_tag = self.b.find_element_by_css_selector('[data-tagname="{}"]'.format(QUEEN))
         queen_tag.click()
         # Now only the queen tagged items are shown
         tags = self.find_tags_on_page()
@@ -365,7 +364,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         }, tags)
         # He clicks on the fish tag and sees only the one item
         # that is tagged with queen and fish
-        fish_tag = self.b.find_element_by_id("tag-fish")
+        fish_tag = self.b.find_element_by_css_selector('[data-tagname="{}"]'.format('fish'))
         fish_tag.click()
 
         tags = self.find_tags_on_page()
@@ -380,7 +379,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.b.get(self.live_server_url)
         tag_links = self.b.find_elements_by_css_selector('a.tag')
         for tag in tag_links:
-            self.assertTrue(tag.get_attribute('href').endswith(slugify(tag.text)),
-                            "Tag link doesn't end with the tag name: {}:{}".format(
-                                tag.get_attribute('href'), slugify(tag.text)
+            self.assertTrue(tag.get_attribute('href').endswith(urlquote(tag.text)),
+                            "Tag link doesn't end with the tag name: {} : {}".format(
+                                tag.get_attribute('href'), tag.text
                             ))
