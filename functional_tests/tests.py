@@ -4,7 +4,7 @@ from unittest.mock import patch, Mock
 from django.core.management import call_command
 import haystack
 import os
-from django.utils.text import slugify
+from django.utils.http import urlquote
 from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY
 from django.contrib.auth.models import User
 from django.contrib.sessions.backends.db import SessionStore
@@ -70,6 +70,11 @@ class ExistingUserTest(PypoLiveServerTestCase):
         return_mock.iter_content.return_value = iter([b"example.com"])
         get_mock.return_value = return_mock
         haystack.connections.reload('default')
+        try:
+            user = User.objects.get(username='uther')
+        except User.DoesNotExist:
+            user = User.objects.create(username='uther')
+        self.user = user
 
     def tearDown(self):
         self.b.quit()
@@ -77,13 +82,8 @@ class ExistingUserTest(PypoLiveServerTestCase):
         call_command('clear_index', interactive=False, verbosity=0)
 
     def create_pre_authenticated_session(self):
-        try:
-            user = User.objects.get(username='uther')
-        except User.DoesNotExist:
-            user = User.objects.create(username='uther')
-        self.user = user
         session = SessionStore()
-        session[SESSION_KEY] = user.pk
+        session[SESSION_KEY] = self.user.pk
         session[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
         session.save()
         ## to set a cookie we need to first visit the domain.
@@ -110,9 +110,42 @@ class ExistingUserTest(PypoLiveServerTestCase):
         # He submits a link
         input_url = self.b.find_element_by_name('url')
         input_url.send_keys(EXAMPLE_COM)
-        input_tags = self.b.find_element_by_name('tags')
+        input_tags = self.b.find_element_by_id('id_tags-tokenfield')
+        input_tags.click()
         input_tags.send_keys(tags)
-        input_tags.send_keys(Keys.ENTER)
+        input_tags.send_keys(',')
+        self.b.find_element_by_id('submit-id-submit').click()
+
+    def test_autocomplete_tags(self):
+        example_address = 'http://foobar.local/'
+        self.create_pre_authenticated_session()
+        self._add_tagged_items()
+        self.b.get(self.live_server_url + '/add')
+        input_url = self.b.find_element_by_name('url')
+        input_url.send_keys(example_address)
+        # He activates the input field for tags
+        self.b.find_element_by_css_selector('#id_tags-tokenfield').click()
+        # All tags that he used before show up
+        completions = [tag for tag in
+                       self.b.find_elements_by_css_selector('#ui-id-1 li a')]
+        self.assertCountEqual([QUEEN, 'fish', 'pypo', 'boxing', 'bartender'], (tag.text for tag in completions))
+
+        # He chooses the QUEEN tag
+        for tag in completions:
+            if tag.text == QUEEN:
+                tag.click()
+                break
+        # And then submits the form
+        self.b.find_element_by_id('submit-id-submit').click()
+
+        # The new item was added and is the first item
+        item = self.b.find_element_by_class_name('item_link')
+        self.assertEqual(example_address, item.get_attribute('href'))
+
+        # And QUEEN this is the only tag that was added
+        taglist = self.b.find_element_by_css_selector('.tag-list')
+        tags = [tag.text for tag in taglist.find_elements_by_css_selector('.tag')]
+        self.assertEqual(tags, [QUEEN])
 
     def test_login_dev_user(self):
         self.b.get(self.server_url)
@@ -240,16 +273,16 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.assertIn('fish', tag_string)
 
     def test_can_update_tags_from_the_list(self):
-        self.create_pre_authenticated_session()
+        self.session = self.create_pre_authenticated_session()
         self._add_example_item()
         self.b.get(self.live_server_url)
         # Uther visits the listing page and adds a new tag to the example item
         self.b.find_element_by_css_selector('.item-content .tools a.tags_link').click()
-        tag_input = self.b.find_element_by_id('id_tags')
+        tag_input = self.b.find_element_by_id('id_tags-tokenfield')
         # There are currently to tags for this item
         self.assertEqual('', tag_input.text)
         # Uther adds 2 new tags: example and fish
-        tag_input.send_keys('example fish')
+        tag_input.send_keys('example,fish,')
         tag_input.send_keys(Keys.ENTER)
         # The new tags are added to the list
         tags = self.b.find_elements_by_css_selector('.tag')
@@ -319,7 +352,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.b.get(self.live_server_url)
         # Uther added his usual items and wants to see all of his queen-related entries
         # so he clicked on the tag on the index page
-        queen_tag = self.b.find_element_by_id("tag-{}".format(slugify(QUEEN)))
+        queen_tag = self.b.find_element_by_css_selector('[data-tagname="{}"]'.format(QUEEN))
         queen_tag.click()
         # Now only the queen tagged items are shown
         tags = self.find_tags_on_page()
@@ -331,7 +364,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         }, tags)
         # He clicks on the fish tag and sees only the one item
         # that is tagged with queen and fish
-        fish_tag = self.b.find_element_by_id("tag-fish")
+        fish_tag = self.b.find_element_by_css_selector('[data-tagname="{}"]'.format('fish'))
         fish_tag.click()
 
         tags = self.find_tags_on_page()
@@ -346,7 +379,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.b.get(self.live_server_url)
         tag_links = self.b.find_elements_by_css_selector('a.tag')
         for tag in tag_links:
-            self.assertTrue(tag.get_attribute('href').endswith(slugify(tag.text)),
-                            "Tag link doesn't end with the tag name: {}:{}".format(
-                                tag.get_attribute('href'), slugify(tag.text)
+            self.assertTrue(tag.get_attribute('href').endswith(urlquote(tag.text)),
+                            "Tag link doesn't end with the tag name: {} : {}".format(
+                                tag.get_attribute('href'), tag.text
                             ))

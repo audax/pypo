@@ -1,7 +1,6 @@
 from functools import partial
 from unittest.mock import patch, Mock
 from django.core.management import call_command
-from django.utils.text import slugify
 import haystack
 from haystack.query import SearchQuerySet
 import os
@@ -18,6 +17,7 @@ from readme import serializers, download
 from rest_framework.exceptions import ParseError
 from unittest import mock
 from readme.views import Tag
+import json
 
 EXAMPLE_COM = 'http://www.example.com/'
 QUEEN = 'queen with spaces änd umlauts'
@@ -233,14 +233,16 @@ class ExistingUserIntegrationTest(TestCase):
     def test_tags_are_shown_in_the_list(self):
         c = login()
         item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=User.objects.get(pk=1))
-        item.tags.add('foo-tag', 'bar-tag')
+        item.tags.add('foo-tag', 'bar-tag', 'bar tag')
         item.save()
         response = c.get('/')
         self.assertContains(response, 'foo-tag')
         self.assertContains(response, 'bar-tag')
+        self.assertContains(response, 'bar tag')
         self.assertCountEqual(
             response.context['tags'], [
             Tag('foo-tag', 1, []),
+            Tag('bar tag', 1, []),
             Tag('bar-tag', 1, [])])
 
     def test_tag_view_has_abritary_many_arguments(self):
@@ -256,12 +258,19 @@ class ExistingUserIntegrationTest(TestCase):
         tags = [QUEEN, 'fish']
         queryset = Item.objects.filter(owner_id=1).tagged(*tags)
         matching_item = queryset.get()
-        tag_slugs = '/'.join(slugify(tag) for tag in tags)
-        response = c.get(reverse('tags', kwargs={'tags': tag_slugs}))
+        tag_names = ','.join(tags)
+        response = c.get(reverse('tags', kwargs={'tags': tag_names}))
         context = response.context
         self.assertCountEqual([(tag.name, tag.count) for tag in context['tags']],
                               [(QUEEN, 1), ('fish', 1)])
         self.assertCountEqual(context['current_item_list'], [matching_item])
+
+    def test_tags_can_have_the_same_slug(self):
+        user = User.objects.get(pk=1)
+        first = add_example_item(user, ['some-tag'])
+        second = add_example_item(user, ['some tag'])
+        self.assertEqual(first, Item.objects.tagged('some-tag').get())
+        self.assertEqual(second, Item.objects.tagged('some tag').get())
 
 @override_settings(HAYSTACK_CONNECTIONS=TEST_INDEX)
 class SearchIntegrationTest(TestCase):
@@ -299,7 +308,6 @@ class SearchIntegrationTest(TestCase):
         self.assertEqual(1, len(sqs))
         result = sqs[0]
         self.assertCountEqual(tags, result.tags)
-        self.assertCountEqual(tags, result.tag_slugs)
 
     def test_search_item_by_title(self):
         c = login()
@@ -334,6 +342,28 @@ class SearchIntegrationTest(TestCase):
         self.assertContains(response, 'Results')
         self.assertEqual(0, len(response.context['page'].object_list),
                          'Item from another user found in search')
+
+    def test_tags_are_added_to_form(self):
+        c = login()
+        add_tagged_items(self.user)
+        response = c.get('/add/')
+        tags = [QUEEN, 'fish', 'bartender', 'pypo']
+        for tag in tags:
+            json_tag = json.dumps(tag)
+            self.assertIn(json_tag, response.context['tags'])
+            self.assertContains(response, json_tag)
+
+    def test_can_query_for_tags(self):
+        add_tagged_items(self.user)
+        tags = [QUEEN, 'fish']
+        tagged_items = Item.objects.filter(owner=self.user).tagged(*tags)
+        # tags__in with multiple calls and single values each _should_ be the same
+        # as tags=[], but it isn't. Probably a bug in Haystack or Whoosh
+        sqs = SearchQuerySet().filter(owner_id=self.user.id)
+        for tag in tags:
+            sqs = sqs.filter(tags__in=[tag])
+        searched = [result.object for result in sqs]
+        self.assertCountEqual(tagged_items, searched)
 
 
 @patch('requests.get')
