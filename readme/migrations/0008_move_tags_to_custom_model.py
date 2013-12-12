@@ -3,7 +3,6 @@ import datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
-from django.db.utils import ProgrammingError
 
 class Migration(DataMigration):
 
@@ -11,7 +10,7 @@ class Migration(DataMigration):
         tagged_item_model = orm['taggit.TaggedItem']
         try:
             tagged_items = tagged_item_model.objects.all()
-        except ProgrammingError:
+        except:
             # The tables are not available, we don't need to migrate
             pass
         else:
