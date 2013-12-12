@@ -3,22 +3,26 @@ import datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
+from django.db.utils import ProgrammingError
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
         tagged_item_model = orm['taggit.TaggedItem']
-        for tagged_item in tagged_item_model.objects.all():
-            tagged_object = orm.Item.objects.get(pk=tagged_item.object_id)
-            tag_name = tagged_item.tag.name
-            try:
-                tag = orm.ItemTag.objects.get(name=tag_name)
-            except orm.ItemTag.DoesNotExist:
-                tag = orm.ItemTag.objects.create(name=tag_name, slug=tag_name)
-            orm.TaggedItem.objects.create(content_object=tagged_object, tag=tag)
-        # Note: Don't use "from appname.models import ModelName".
-        # Use orm.ModelName to refer to models in this application,
-        # and orm['appname.ModelName'] for models in other applications.
+        try:
+            tagged_items = tagged_item_model.objects.all()
+        except ProgrammingError:
+            # The tables are not available, we don't need to migrate
+            pass
+        else:
+            for tagged_item in tagged_items:
+                tagged_object = orm.Item.objects.get(pk=tagged_item.object_id)
+                tag_name = tagged_item.tag.name
+                try:
+                    tag = orm.ItemTag.objects.get(name=tag_name)
+                except orm.ItemTag.DoesNotExist:
+                    tag = orm.ItemTag.objects.create(name=tag_name, slug=tag_name)
+                orm.TaggedItem.objects.create(content_object=tagged_object, tag=tag)
 
     def backwards(self, orm):
         "Write your backwards methods here."
