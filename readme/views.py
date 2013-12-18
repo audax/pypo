@@ -40,7 +40,7 @@ class IndexView(LoginRequiredMixin, generic.ListView):
     context_object_name = 'current_item_list'
 
     def get_queryset(self):
-        return Item.objects.filter(owner=self.request.user).order_by('-created')
+        return Item.objects.filter(owner=self.request.user).order_by('-created').prefetch_related('tags')
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)

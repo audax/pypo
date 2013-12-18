@@ -26,7 +26,7 @@ class ItemQuerySet(models.query.QuerySet):
 class ItemManager(models.Manager):
 
     def get_queryset(self):
-        return ItemQuerySet(self.model).prefetch_related('tags')
+        return ItemQuerySet(self.model)
 
     def __getattr__(self, name, *args):
         if name.startswith("_"):
