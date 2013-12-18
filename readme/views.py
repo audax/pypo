@@ -74,6 +74,8 @@ class Tag:
 
 @login_required
 def tags(request, tags=''):
+    if tags == '':
+        return redirect(reverse('index'))
     tag_list = [tag for tag in tags.split(',') if tag != '']
 
     # Due to a bug (or feature?) in Whoosh or haystack, we can't filter for all tags at once,

@@ -265,6 +265,12 @@ class ExistingUserIntegrationTest(TestCase):
                               [(QUEEN, 1), ('fish', 1)])
         self.assertCountEqual(context['current_item_list'], [matching_item])
 
+    def test_tag_view_redirects_without_arguments(self):
+        c = login()
+        response = c.get(reverse('tags', kwargs={'tags': ''}))
+        self.assertRedirects(response, '/')
+
+
     def test_tags_can_have_the_same_slug(self):
         user = User.objects.get(pk=1)
         first = add_example_item(user, ['some-tag'])
