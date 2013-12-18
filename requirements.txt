@@ -1,16 +1,16 @@
-Django==1.6.0
-South==0.8.2
-Whoosh==2.5.4
-django-crispy-forms==1.4.0
-django-filter==0.7
-django-taggit==0.11.2
-djangorestframework==2.3.8
-psycopg2==2.5.1
-pycrypto==2.6
-lxml==3.2.4
-requests==2.0.0
-tld==0.6.1
-selenium==2.37.2
-cssselect==0.9.1
-https://github.com/audax/python-readability/archive/master.zip
-https://github.com/audax/django-haystack/archive/whoosh-basic-facets.zip
+Django>=1.6.0
+South>=0.8.2
+Whoosh>=2.5.4
+django-crispy-forms>=1.4.0
+django-filter>=0.7
+django-taggit>=0.11.2
+djangorestframework>=2.3.8
+psycopg2>=2.5.1
+pycrypto>=2.6
+lxml>=3.2.4
+requests>=2.0.0
+tld>=0.6.1
+selenium>=2.37.2
+cssselect>=0.9.1
+-e git+https://github.com/audax/python-readability/python-readability.git@aa7727de1335d016a32e92f4fe4216f277688124#egg=python-readability
+-e git+https://github.com/audax/python-haystack/python-haystack.git@b269f6826baa415d8dc7c1fd24e8879cd51ef202#egg=python-haystack
