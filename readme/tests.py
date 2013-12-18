@@ -30,7 +30,7 @@ TEST_INDEX = {
     }
 
 def add_example_item(user, tags=None):
-    item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=user)
+    item = Item.objects.create(url=EXAMPLE_COM, title='nothing', owner=user)
     if tags is not None:
         item.tags.add(*tags)
         item.save()
@@ -46,7 +46,7 @@ def add_tagged_items(user):
 
 def add_item_for_new_user(tags):
     another_user = User.objects.create(username='someone')
-    another_item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=another_user)
+    another_item = Item.objects.create(url=EXAMPLE_COM, title='nothing', owner=another_user)
     another_item.tags.add(*tags)
     another_item.save()
 
@@ -167,7 +167,7 @@ class ScraperText(TestCase):
     fixtures = ['users.json']
 
     def test_invalid_html(self):
-        item = Item.objects.create(url='http://some_invalid_localhost', domain='nothing', owner=User.objects.get(pk=1))
+        item = Item.objects.create(url='http://some_invalid_localhost', title='nothing', owner=User.objects.get(pk=1))
         self.assertEqual((item.url, ''), parse(item, content_type='text/html', text=None))
 
 
@@ -182,13 +182,13 @@ class UnknownUserTest(TestCase):
 
     def test_item_access_restricted_to_owners(self):
         c = login()
-        item = Item.objects.create(url='http://some_invalid_localhost', domain='nothing',
+        item = Item.objects.create(url='http://some_invalid_localhost', title='nothing',
                                    owner=User.objects.create(username='somebody', password='something'))
         response = c.get('/view/{}/'.format(item.id))
         self.assertEqual(302, response.status_code, 'User did not get redirected trying to access to a foreign item')
 
     def test_login_required(self):
-        item = Item.objects.create(url='http://some_invalid_localhost', domain='nothing',
+        item = Item.objects.create(url='http://some_invalid_localhost', title='nothing',
                                    owner=User.objects.create(username='somebody', password='something'))
         urls = ['', '/add/', '/view/{}/'.format(item.id), '/delete/{}/'.format(item.id), '/search/']
         c = Client()
@@ -222,7 +222,7 @@ class ExistingUserIntegrationTest(TestCase):
 
     def test_edit_item(self):
         c = login()
-        item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=User.objects.get(pk=1))
+        item = Item.objects.create(url=EXAMPLE_COM, title='nothing', owner=User.objects.get(pk=1))
         response = c.post('/update/{}/'.format(item.id), {'tags': 'some-tags are-posted'}, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'some-tags')
@@ -232,7 +232,7 @@ class ExistingUserIntegrationTest(TestCase):
 
     def test_tags_are_shown_in_the_list(self):
         c = login()
-        item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=User.objects.get(pk=1))
+        item = Item.objects.create(url=EXAMPLE_COM, title='nothing', owner=User.objects.get(pk=1))
         item.tags.add('foo-tag', 'bar-tag', 'bar tag')
         item.save()
         response = c.get('/')
@@ -449,19 +449,19 @@ class APITest(TestCase):
         return self.client.get('/api/items/{}'.format(item_id))
 
     def test_can_list_all_items(self):
-        item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=User.objects.get(pk=1))
-        item2 = Item.objects.create(url='something.local', domain='nothing', owner=User.objects.get(pk=1))
+        item = Item.objects.create(url=EXAMPLE_COM, title='nothing', owner=User.objects.get(pk=1))
+        item2 = Item.objects.create(url='something.local', title='nothing', owner=User.objects.get(pk=1))
         self.api_login()
         response = self.client.get('/api/items/')
         self.assertCountEqual(response.data, [
-            {'id': 1, 'url': 'http://www.example.com/', 'title': '',
+            {'id': 1, 'url': 'http://www.example.com/', 'title': 'nothing',
              'created': item.created, 'readable_article': None, 'tags': []},
-            {'id': 2, 'url': 'something.local', 'title': '',
+            {'id': 2, 'url': 'something.local', 'title': 'nothing',
              'created': item2.created, 'readable_article': None, 'tags': []}
         ])
 
     def test_can_update_item(self):
-        item = Item.objects.create(url=EXAMPLE_COM, domain='nothing', owner=User.objects.get(pk=1))
+        item = Item.objects.create(url=EXAMPLE_COM, title='nothing', owner=User.objects.get(pk=1))
         self.api_login()
         response = self.client.put('/api/items/{}/'.format(item.id), {'url': item.url, 'tags': ['test-tag', 'second-tag']},
                                format='json')

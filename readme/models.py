@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.html import strip_tags
 from django.conf import settings
+from django.utils.functional import cached_property
 from tld import get_tld
 from django.core.urlresolvers import reverse
 from taggit.managers import TaggableManager
@@ -73,14 +74,14 @@ class Item(models.Model):
 
     objects = ItemManager()
 
-    @property
+    @cached_property
     def summary(self):
         '''
         Shortened artile
         '''
         return strip_tags(self.readable_article)[:300]
 
-    @property
+    @cached_property
     def domain(self):
         """
         Domain of the url
