@@ -12,5 +12,5 @@ requests>=2.0.0
 tld>=0.6.1
 selenium>=2.37.2
 cssselect>=0.9.1
--e git+https://github.com/audax/python-readability/python-readability.git@aa7727de1335d016a32e92f4fe4216f277688124#egg=python-readability
--e git+https://github.com/audax/python-haystack/python-haystack.git@b269f6826baa415d8dc7c1fd24e8879cd51ef202#egg=python-haystack
+-e git+https://github.com/audax/python-readability.git@master#egg=python-readability
+-e git+https://github.com/audax/django-haystack.git@whoosh-basic-facets#egg=django-haystack
