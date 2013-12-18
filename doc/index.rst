@@ -9,6 +9,7 @@ Welcome to pypo's documentation!
 .. toctree::
    :maxdepth: 2
 
+   configuration
    readme_module
 
 .. include:: ../README.rst
