@@ -20,7 +20,7 @@ def download(url, max_content_length=1000):
     :raise DownloadException: for all errors
     """
     try:
-        req = requests.get(url, stream=True)
+        req = requests.get(url, stream=True, verify=False)
     except requests.RequestException as e:
         raise DownloadException("Request failed", parent=e)
 
