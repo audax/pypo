@@ -386,7 +386,7 @@ class DownloadTest(TestCase):
         get_mock.side_effect = requests.RequestException
         with self.assertRaises(download.DownloadException):
             download.download(EXAMPLE_COM)
-        get_mock.assert_called_with(EXAMPLE_COM, stream=True)
+        get_mock.assert_called_with(EXAMPLE_COM, stream=True, verify=False)
 
     def test_aborts_large_downloads(self, get_mock):
         max_length = 1000
