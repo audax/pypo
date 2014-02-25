@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ "$1" == "js" ]; then
     TESTS=( setup offcanvas)
-    wget https://raw.github.com/jquery/qunit/master/addons/phantomjs/runner.js
+    wget https://github.com/jonkemp/qunit-phantomjs-runner/raw/master/runner.js
     python manage.py runserver &
     sleep 3
     SERVER=$!
