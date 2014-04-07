@@ -12,5 +12,7 @@ requests>=2.0.0
 tld>=0.6.1
 selenium>=2.37.2
 cssselect>=0.9.1
+pytest>=2.5.2
+pytest-django>=2.6
 -e git+https://github.com/audax/python-readability.git@master#egg=python-readability
 -e git+https://github.com/audax/django-haystack.git@whoosh-basic-facets#egg=django-haystack
