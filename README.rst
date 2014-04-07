@@ -21,6 +21,7 @@ It's main components are built with:
 -  South
 -  requests
 -  djangorestframework
+-  py.test
 
 Documentation
 -------------
