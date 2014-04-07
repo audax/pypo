@@ -13,8 +13,6 @@ QUEEN = 'queen with spaces änd umlauts'
 EXAMPLE_COM = 'http://www.example.com/'
 
 
-sys.path.append(os.path.dirname(__file__))
-
 @pytest.fixture()
 def user(db):
     try:
