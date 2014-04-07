@@ -369,3 +369,27 @@ class ExistingUserTest(PypoLiveServerTestCase):
                             "Tag link doesn't end with the tag name: {} : {}".format(
                                 tag.get_attribute('href'), tag.text
                             ))
+
+    def test_default_protocol_for_url(self):
+        self.create_pre_authenticated_session()
+        self.b.get(self.live_server_url + '/add')
+        # He pastes an url without protocol
+        input_url = self.b.find_element_by_name('url')
+        input_url.send_keys('www.example.com')
+        # He "leaves" the url input field
+        input_tags = self.b.find_element_by_id('id_tags-tokenfield')
+        input_tags.click()
+        # and the protocol is added to the url
+        self.assertEqual('http://www.example.com', input_url.get_attribute('value'))
+
+    def test_default_protocol_does_not_replace_protocol(self):
+        self.create_pre_authenticated_session()
+        self.b.get(self.live_server_url + '/add')
+        # He pastes an url without protocol
+        input_url = self.b.find_element_by_name('url')
+        input_url.send_keys('https://www.example.com')
+        # He "leaves" the url input field
+        input_tags = self.b.find_element_by_id('id_tags-tokenfield')
+        input_tags.click()
+        # and the protocol is added to the url
+        self.assertEqual('https://www.example.com', input_url.get_attribute('value'))
