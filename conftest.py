@@ -13,7 +13,7 @@ QUEEN = 'queen with spaces änd umlauts'
 EXAMPLE_COM = 'http://www.example.com/'
 
 
-@pytest.fixture()
+@pytest.fixture(scope='module')
 def user(db):
     try:
         user = User.objects.get(username='admin')
@@ -25,7 +25,7 @@ def user(db):
         user.save()
     return user
 
-@pytest.fixture()
+@pytest.fixture(scope='module')
 def other_user(db):
     try:
         user = User.objects.get(username='other_user')
@@ -37,7 +37,7 @@ def other_user(db):
         user.save()
     return user
 
-@pytest.fixture()
+@pytest.fixture(scope='module')
 def api_user(db):
     try:
         user = User.objects.get(username='dev')
@@ -67,7 +67,7 @@ def add_example_item(user, tags=None):
         item.save()
     return item
 
-@pytest.yield_fixture
+@pytest.yield_fixture(scope='module')
 def tagged_items(db, user):
     items = [
         add_example_item(user, ('fish', 'boxing')),
