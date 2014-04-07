@@ -13,5 +13,5 @@ if [ "$1" == "js" ]; then
     rm runner.js
     exit $success
 else
-    py.test --cov-config .coveragerc --cov readme
+    exec py.test --cov-config .coveragerc --cov readme
 fi
