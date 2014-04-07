@@ -13,5 +13,5 @@ if [ "$1" == "js" ]; then
     rm runner.js
     exit $success
 else
-    exec coverage run --source='readme,pypo' --omit='pypo/wsgi.py,readme/migrations/*,readme/tests.py' manage.py test readme functional_tests
+    exec py.test --cov-config .coveragerc --cov readme
 fi

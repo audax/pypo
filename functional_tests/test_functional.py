@@ -14,7 +14,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 from pypo import settings
-from readme.tests import add_example_item, add_tagged_items, add_item_for_new_user, QUEEN
+from readme.test_item import add_example_item, add_tagged_items, add_item_for_new_user, QUEEN
 
 
 EXAMPLE_COM = 'http://www.example.com/'
@@ -54,10 +54,11 @@ TEST_INDEX = {
 
 @override_settings(HAYSTACK_CONNECTIONS=TEST_INDEX)
 class ExistingUserTest(PypoLiveServerTestCase):
-    fixtures = ['users.json']
+    fixtures = ['initial_data.json']
 
     def setUp(self):
         self.b = webdriver.Firefox()
+        #self.b = webdriver.PhantomJS()
         self.b.implicitly_wait(3)
         self.b.set_window_size(1024, 768)
         self.c = self.client
@@ -146,21 +147,6 @@ class ExistingUserTest(PypoLiveServerTestCase):
         taglist = self.b.find_element_by_css_selector('.tag-list')
         tags = [tag.text for tag in taglist.find_elements_by_css_selector('.tag')]
         self.assertEqual(tags, [QUEEN])
-
-    def test_login_dev_user(self):
-        self.b.get(self.server_url)
-
-        # He sees the login form and sends it
-        self.assertEqual('Username*', self.b.find_element_by_id('div_id_username').text,
-                         'Login form not found')
-        input_username = self.b.find_element_by_name('username')
-        input_username.send_keys('dev')
-        input_pass = self.b.find_element_by_name('password')
-        input_pass.send_keys('dev')
-        input_pass.send_keys(Keys.ENTER)
-
-        # He can see the navigation bar
-        self.assertIsNotNone(self.b.find_element_by_id('id_link_add'), 'Add item link not found')
 
     def test_can_add_an_item_and_see_it_in_the_list(self):
         self.create_pre_authenticated_session()

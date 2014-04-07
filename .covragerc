@@ -1,0 +1,8 @@
+[run]
+source=
+    readme
+    pypo
+omit=
+    pypo/wsgi.py
+    readme/migrations/*
+    readme/test_*.py
