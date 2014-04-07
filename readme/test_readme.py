@@ -1,9 +1,7 @@
-import haystack
 from haystack.query import SearchQuerySet
-from unittest.mock import patch, Mock
+from unittest.mock import Mock
 from django.test import TestCase
 from django.contrib.auth.models import User
-from django.test.utils import override_settings
 from django.core.urlresolvers import reverse, resolve
 import requests
 from .models import Item
