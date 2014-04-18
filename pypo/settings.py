@@ -87,6 +87,8 @@ STATICFILES_DIRS = (
     path.join(BOWER, 'bootstrap/dist'),
     path.join(BOWER, 'bootstrap-tokenfield/dist'),
     path.join(BOWER, 'jquery/dist'),
+    path.join(BOWER, 'jquery-ui/ui/minified'),
+    path.join(BOWER, 'jquery-ui/themes/smoothness'),
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
