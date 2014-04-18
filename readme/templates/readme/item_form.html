@@ -15,7 +15,7 @@
     <script src="{% static "bootstrap-tokenfield.min.js" %}"></script>
     <script type="application/javascript">
         $(document).ready(function() {
-            $('#id_tags').on('beforeCreateToken', function (e) {
+            $('#id_tags').on('tokenfield:preparetoken', function (e) {
                 var token = e.token.value.replace(/^["]/, "").replace(/["]$/, "");
                 e.token.value = '"'+token+'"';
                 e.token.label = token;
