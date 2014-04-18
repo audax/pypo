@@ -46,18 +46,23 @@ Installation
 3. You can overwrite the default settings by creating a
    settings\_local.py next to pypo/settings.py . Do not directly edit
    the settings.py.
-4. Setup the database
+4. Install js modules with bower
+
+   npm install -g bower
+   bower install
+
+5. Setup the database
 
    ./manage.py syncdb
    ./manage.py migrate
 
-5. Add a superuser
+6. Add a superuser
 
    ./manage.py createsuperuser
 
-6. Host the application, see `Deploying Django with WSGI`_
-7. Create normal users with the admin interface /admin
-8. That should do it.
+7. Host the application, see `Deploying Django with WSGI`_
+8. Create normal users with the admin interface /admin
+9. That should do it.
 
 Deploying
 ---------

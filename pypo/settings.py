@@ -80,8 +80,13 @@ STATIC_ROOT = path.join(PROJECT_ROOT, '../static')
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = '/static/'
 
+BOWER = path.join(PROJECT_ROOT, 'bower_components')
+
 # Additional locations of static files
 STATICFILES_DIRS = (
+    path.join(BOWER, 'bootstrap/dist'),
+    path.join(BOWER, 'bootstrap-tokenfield/dist'),
+    path.join(BOWER, 'jquery/dist'),
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
