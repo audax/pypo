@@ -1,9 +1,10 @@
+{% load static from staticfiles %}
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <title>Offcanvas test</title>
-    <link rel="stylesheet" href="/static/tests/qunit.css">
+    <link rel="stylesheet" href="{% static "qunit.css" %}">
 </head>
 <body>
 <div id="qunit"></div>
@@ -12,10 +13,10 @@
     <div id="id-offcanvas" class="row-offcanvas"></div>
 
 </div>
-<script src="/static/js/jquery.js"></script>
-<script src="/static/tests/qunit.js"></script>
-<script src="/static/tests/sinon.js"></script>
-<script src="/static/js/readme.js"></script>
+<script src="{% static "jquery.min.js" %}"></script>
+<script src="{% static "qunit.js" %}"></script>
+<script src="{% static "sinon.js" %}"></script>
+<script src="{% static "js/readme.js" %}"></script>
 <script>
 test("data-toggle-offcanvas toggles the active class", function() {
    var $toggle = $("#id-toggle"),

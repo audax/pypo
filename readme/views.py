@@ -1,4 +1,5 @@
 from django.views import generic
+from django.conf import settings
 from haystack.forms import FacetedSearchForm
 from haystack.query import SearchQuerySet
 from haystack.views import FacetedSearchView, search_view_factory
@@ -179,6 +180,14 @@ search = login_required(search_view_factory(
     view_class=ItemSearchView,
     form_class=FacetedSearchForm,
 ))
+
+
+def test(request, test_name):
+    if settings.DEBUG:
+        return render_to_response('readme/tests/{}.html'.format(test_name))
+    else:
+        return redirect(reverse('index'))
+
 
 # Class based views as normal view function
 

@@ -4,16 +4,16 @@
 {% load static from staticfiles %}
 
 {% block CSS %}
-    <link href="{% static "css/bootstrap-tokenfield.css" %}" rel="stylesheet" media="screen">
-    <link href="{% static "css/jquery-ui-1.10.3.custom.min.css" %}" rel="stylesheet" media="screen">
+    <link href="{% static "css/bootstrap-tokenfield.min.css" %}" rel="stylesheet" media="screen">
+    <link href="{% static "jquery-ui.min.css" %}" rel="stylesheet" media="screen">
 {% endblock %}
 
 {% block JS %}
-    <script src="{% static "js/jquery-ui-1.10.3.custom.min.js" %}"></script>
-    <script src="{% static "js/bootstrap-tokenfield.js" %}"></script>
+    <script src="{% static "jquery-ui.min.js" %}"></script>
+    <script src="{% static "bootstrap-tokenfield.min.js" %}"></script>
     <script type="application/javascript">
         $(document).ready(function() {
-            $('#id_tags').on('beforeCreateToken', function (e) {
+            $('#id_tags').on('tokenfield:preparetoken', function (e) {
                 var token = e.token.value.replace(/^["]/, "").replace(/["]$/, "");
                 e.token.value = '"'+token+'"';
                 e.token.label = token;

@@ -80,19 +80,34 @@ STATIC_ROOT = path.join(PROJECT_ROOT, '../static')
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = '/static/'
 
+BOWER = path.join(PROJECT_ROOT, 'bower_components')
+
 # Additional locations of static files
 STATICFILES_DIRS = (
+    path.join(BOWER, 'bootstrap/dist'),
+    path.join(BOWER, 'bootstrap-tokenfield/dist'),
+    path.join(BOWER, 'jquery/dist'),
+    path.join(BOWER, 'jquery-ui/ui/minified'),
+    path.join(BOWER, 'jquery-ui/themes/smoothness'),
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )
+
+# this will work when I have redone the config. For now the debug
+# mode will always be on at this point
+if DEBUG:
+    STATICFILES_DIRS += (
+        path.join(BOWER, 'qunit/qunit'),
+        path.join(BOWER, 'qunit-phantomjs-runner'),
+        path.join(BOWER, 'sinon/lib'),
+    )
 
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
