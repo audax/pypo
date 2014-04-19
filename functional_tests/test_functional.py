@@ -128,7 +128,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.b.find_element_by_css_selector('#id_tags-tokenfield').click()
         # All tags that he used before show up
         completions = [tag for tag in
-                       self.b.find_elements_by_css_selector('#ui-id-1 li a')]
+                       self.b.find_elements_by_css_selector('li.ui-menu-item a')]
         self.assertCountEqual([QUEEN, 'fish', 'pypo', 'boxing', 'bartender'], (tag.text for tag in completions))
 
         # He chooses the QUEEN tag
