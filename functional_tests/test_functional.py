@@ -121,9 +121,13 @@ class ExistingUserTest(PypoLiveServerTestCase):
         example_address = 'http://foobar.local/'
         self.create_pre_authenticated_session()
         self._add_tagged_items()
-        self.b.get(self.live_server_url + '/add/?url='+example_address)
-        # the input field for tags is already focused, so that
-        # all tags that he used before show up in the autocompletion
+        self.b.get(self.live_server_url + '/add')
+
+        input_url = self.b.find_element_by_name('url')
+        input_url.send_keys(example_address)
+
+        self.b.find_element_by_id('id_tags-tokenfield').click()
+
         completions = [tag for tag in
                        self.b.find_elements_by_css_selector('li.ui-menu-item a')]
         self.assertCountEqual([QUEEN, 'fish', 'pypo', 'boxing', 'bartender'], (tag.text for tag in completions))
