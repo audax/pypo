@@ -17,6 +17,11 @@
                 var token = e.token.value.replace(/^["]/, "").replace(/["]$/, "");
                 e.token.value = '"'+token+'"';
                 e.token.label = token;
+            }).on('tokenfield:initialize', function (e) {
+                var url = $('#id_url').val()
+                if (url !== '') {
+                    $('#id_tags-tokenfield').focus();
+                }
             }).tokenfield({
                 autocomplete : {
                     source: {{tags|safe}},
