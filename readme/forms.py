@@ -19,6 +19,11 @@ class CreateItemForm(forms.ModelForm):
         self.helper = h
         super(CreateItemForm, self).__init__(*args, **kwargs)
 
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        cleaned_data['tags'] = [tag[:99] for tag in cleaned_data['tags']]
+        return cleaned_data
+
     class Meta:
         model = Item
         fields = ('url', 'tags',)

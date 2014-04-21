@@ -94,6 +94,24 @@ class TestExistingUserIntegration:
         assert EXAMPLE_COM in response.rendered_content
         assert 'example-tag' in response.rendered_content
 
+    def test_long_tags_are_truncated(self, user, user_client):
+        long_tag = 'foobar'*100
+
+        items = Item.objects.all()
+        assert len(items) == 0
+
+        response = user_client.post('/add/', {
+            'url': EXAMPLE_COM,
+            'tags': long_tag
+        }, follow=True)
+        assert response.status_code == 200
+
+        items = Item.objects.all()
+        assert len(items) == 1
+        item = items[0]
+        assert item.tags.names()[0] == long_tag[:99]
+
+
     def test_edit_item(self, user_client, user):
         item = Item.objects.create(url=EXAMPLE_COM, title='nothing', owner=user)
         response = user_client.post('/update/{}/'.format(item.id), {'tags': 'some-tags are-posted'}, follow=True)
