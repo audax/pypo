@@ -51,18 +51,21 @@ Installation
    npm install -g bower
    bower install
 
-5. Setup the database
+5. Install yuglify for js and css minifiy
+
+    npm install -g yuglify
+
+6. Setup the database
 
    ./manage.py syncdb
    ./manage.py migrate
 
-6. Add a superuser
+7. Add a superuser
 
    ./manage.py createsuperuser
 
-7. Host the application, see `Deploying Django with WSGI`_
-8. Create normal users with the admin interface /admin
-9. That should do it.
+8. Host the application, see `Deploying Django with WSGI`_
+9. Create normal users with the admin interface /admin
 
 Deploying
 ---------
