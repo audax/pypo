@@ -90,7 +90,7 @@ STATICFILES_DIRS = (
 PIPELINE_JS = {
     'components': {
         'source_filenames': (
-            'jquery/dist/jquery.js',
+            'jquery/dist/jquery.min.js',
             'bootstrap/dist/js/bootstrap.js',
             'jquery-ui/ui/jquery-ui.js',
             'bootstrap-tokenfield/dist/js/bootstrap-tokenfield.js',
