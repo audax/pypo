@@ -9,6 +9,13 @@ from django.core.management import call_command
 from unittest.mock import patch, Mock
 from readme.models import User, Item
 
+from django.conf import settings
+
+def pytest_configure():
+    # workaround to avoid django pipeline issue
+    # refers to
+    settings.STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+
 QUEEN = 'queen with spaces änd umlauts'
 EXAMPLE_COM = 'http://www.example.com/'
 
