@@ -52,7 +52,10 @@ TEST_INDEX = {
         },
     }
 
-@override_settings(HAYSTACK_CONNECTIONS=TEST_INDEX)
+@override_settings(
+    HAYSTACK_CONNECTIONS=TEST_INDEX,
+    STATICFILES_STORAGE='pipeline.storage.PipelineStorage',
+    PIPELINE_ENABLED=False)
 class ExistingUserTest(PypoLiveServerTestCase):
     fixtures = ['initial_data.json']
 

@@ -93,7 +93,7 @@ PIPELINE_JS = {
             'jquery/dist/jquery.min.js',
             'bootstrap/dist/js/bootstrap.js',
             'jquery-ui/ui/jquery-ui.js',
-            'bootstrap-tokenfield/dist/js/bootstrap-tokenfield.js',
+            'bootstrap-tokenfield/dist/bootstrap-tokenfield.js',
             'js/readme.js',
             # you can choose to be specific to reduce your payload
         ),

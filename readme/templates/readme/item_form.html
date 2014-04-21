@@ -4,8 +4,6 @@
 {% load static from staticfiles %}
 
 {% block JS %}
-    <script src="{% static "jquery-ui.min.js" %}"></script>
-    <script src="{% static "bootstrap-tokenfield.min.js" %}"></script>
     <script type="application/javascript">
         $(document).ready(function() {
             $('#id_tags').on('tokenfield:preparetoken', function (e) {
