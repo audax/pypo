@@ -5,10 +5,12 @@
     <meta charset="utf-8">
     <title>Setup test</title>
     {% compressed_css 'testing' %}
+    {% compressed_css 'all' %}
 </head>
 <body>
 <div id="qunit"></div>
 <div id="qunit-fixture"></div>
+{% compressed_js 'components' %}
 {% compressed_js 'testing' %}
 <script>
 test("test setup is complete", function() {

@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <title>Offcanvas test</title>
     {% compressed_css 'testing' %}
+    {% compressed_css 'all' %}
 </head>
 <body>
 <div id="qunit"></div>
@@ -14,8 +15,8 @@
     <div id="id-offcanvas" class="row-offcanvas"></div>
 
 </div>
+{% compressed_js 'components' %}
 {% compressed_js 'testing' %}
-<script src="{% static "js/readme.js" %}"></script>
 <script>
 test("data-toggle-offcanvas toggles the active class", function() {
    var $toggle = $("#id-toggle"),

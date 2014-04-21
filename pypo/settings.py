@@ -94,14 +94,13 @@ PIPELINE_JS = {
             'bootstrap/dist/js/bootstrap.js',
             'jquery-ui/ui/jquery-ui.js',
             'bootstrap-tokenfield/dist/js/bootstrap-tokenfield.js',
-            'readme/js/readme.js',
+            'js/readme.js',
             # you can choose to be specific to reduce your payload
         ),
         'output_filename': 'js/components.js',
     },
     'testing': {
         'source_filenames': (
-            'jquery/jquery.js',
             'qunit/qunit/qunit.js',
             'sinon/lib/sinon.js',
         ),
