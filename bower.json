@@ -25,6 +25,7 @@
     "jquery-ui": "~1.10.4",
     "qunit": "~1.14.0",
     "sinon": "~1.9.1",
-    "qunit-phantomjs-runner": "jonkemp/qunit-phantomjs-runner#~1.2.0"
+    "qunit-phantomjs-runner": "jonkemp/qunit-phantomjs-runner#~1.2.0",
+    "fontawesome": "~4.0.3"
   }
 }

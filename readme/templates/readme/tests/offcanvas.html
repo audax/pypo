@@ -1,10 +1,11 @@
+{% load compressed %}
 {% load static from staticfiles %}
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <title>Offcanvas test</title>
-    <link rel="stylesheet" href="{% static "qunit.css" %}">
+    {% compressed_css 'testing' %}
 </head>
 <body>
 <div id="qunit"></div>
@@ -13,9 +14,7 @@
     <div id="id-offcanvas" class="row-offcanvas"></div>
 
 </div>
-<script src="{% static "jquery.min.js" %}"></script>
-<script src="{% static "qunit.js" %}"></script>
-<script src="{% static "sinon.js" %}"></script>
+{% compressed_js 'testing' %}
 <script src="{% static "js/readme.js" %}"></script>
 <script>
 test("data-toggle-offcanvas toggles the active class", function() {

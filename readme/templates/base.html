@@ -1,12 +1,10 @@
-{% load static from staticfiles %}
+{% load compressed %}
 <!DOCTYPE html>
 <html>
   <head>
     <title>{% block title %}PyPo{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap -->
-    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet" media="screen">
-    <link href="{% static "css/readme.css" %}" rel="stylesheet" media="screen">
+    {% compressed_css 'all' %}
     {% block CSS %}
     {% endblock %}
   </head>
@@ -41,10 +39,7 @@
     </div>
 
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="{% static "jquery.min.js" %}"></script>
-    <script src="{% static "js/bootstrap.min.js" %}"></script>
-    <script src="{% static "js/readme.js" %}"></script>
+    {% compressed_js 'components' %}
     {% block JS %}
     {% endblock %}
 

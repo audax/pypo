@@ -84,31 +84,60 @@ BOWER = path.join(PROJECT_ROOT, 'bower_components')
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    path.join(BOWER, 'bootstrap/dist'),
-    path.join(BOWER, 'bootstrap-tokenfield/dist'),
-    path.join(BOWER, 'jquery/dist'),
-    path.join(BOWER, 'jquery-ui/ui/minified'),
-    path.join(BOWER, 'jquery-ui/themes/smoothness'),
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+    BOWER,
 )
 
-# this will work when I have redone the config. For now the debug
-# mode will always be on at this point
-if DEBUG:
-    STATICFILES_DIRS += (
-        path.join(BOWER, 'qunit/qunit'),
-        path.join(BOWER, 'qunit-phantomjs-runner'),
-        path.join(BOWER, 'sinon/lib'),
-    )
+PIPELINE_JS = {
+    'components': {
+        'source_filenames': (
+            'jquery/dist/jquery.js',
+            'bootstrap/dist/js/bootstrap.js',
+            'jquery-ui/ui/jquery-ui.js',
+            'bootstrap-tokenfield/dist/js/bootstrap-tokenfield.js',
+            'readme/js/readme.js',
+            # you can choose to be specific to reduce your payload
+        ),
+        'output_filename': 'js/components.js',
+    },
+    'testing': {
+        'source_filenames': (
+            'jquery/jquery.js',
+            'qunit/qunit/qunit.js',
+            'sinon/lib/sinon.js',
+        ),
+        'output_filename': 'js/testing.js',
+    },
+}
+
+PIPELINE_CSS = {
+    'all': {
+        'source_filenames': (
+            'bootstrap/dist/css/bootstrap.css',
+            'bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css',
+            'jquery-ui/themes/base/jquery-ui.css',
+            'fontawesome/css/font-awesome.css',
+            'css/readme.css',
+        ),
+        'output_filename': 'css/all.css',
+    },
+    'testing': {
+        'source_filenames': (
+            'qunit/qunit/qunit.css',
+        ),
+        'output_filename': 'js/testing.js',
+        },
+}
+
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'pipeline.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
+
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '42'
@@ -154,6 +183,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'pipeline',
     'south',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
