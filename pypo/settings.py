@@ -90,7 +90,7 @@ STATICFILES_DIRS = (
 PIPELINE_JS = {
     'components': {
         'source_filenames': (
-            'jquery/dist/jquery.min.js',
+            'jquery/dist/jquery.js',
             'bootstrap/dist/js/bootstrap.js',
             'jquery-ui/ui/jquery-ui.js',
             'bootstrap-tokenfield/dist/bootstrap-tokenfield.js',
@@ -107,6 +107,10 @@ PIPELINE_JS = {
         'output_filename': 'js/testing.js',
     },
 }
+
+# Disable yuglify until it works with jquery again
+# https://github.com/yui/yuglify/issues/19
+PIPELINE_JS_COMPRESSOR = None
 
 PIPELINE_CSS = {
     'all': {
