@@ -1,3 +1,4 @@
+from django.core.paginator import Page
 from haystack.query import SearchQuerySet
 from unittest.mock import Mock
 from django.test import TestCase
@@ -152,6 +153,19 @@ class TestSearchIntegration:
         tags = {(tag.name, tag.count) for tag in response.context['tags']}
         # only his own tags are counted
         assert {(QUEEN, 3), ('fish', 2), ('pypo', 1), ('boxing', 1), ('bartender', 1)}, tags
+
+    def test_index_view_is_paginated(self, user, user_client, tagged_items):
+        response = user_client.get('/')
+        assert isinstance(response.context['current_item_list'], Page)
+
+        p = response.context['current_item_list']
+        # start at page 1
+        assert p.number == 1
+
+        response = user_client.get('/?page=100')
+        p = response.context['current_item_list']
+        # overflowing means that we get the last page
+        assert p.number == p.paginator.num_pages
 
     def test_tags_are_saved_as_a_list(self, user, test_index):
         item = Item.objects.create(url=EXAMPLE_COM, title='Example test',

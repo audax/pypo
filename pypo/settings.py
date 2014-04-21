@@ -234,6 +234,8 @@ REST_FRAMEWORK = {
 # 10MB
 PYPO_MAX_CONTENT_LENGTH = int(1.049e+7)
 
+PYPO_ITEMS_ON_PAGE = 50
+
 try:
     from .settings_local import *
 except ImportError:

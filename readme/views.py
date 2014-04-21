@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views import generic
 from django.conf import settings
 from haystack.forms import FacetedSearchForm
@@ -38,7 +39,7 @@ class RestrictItemAccessMixin(object):
 
 
 class IndexView(LoginRequiredMixin, generic.ListView):
-    context_object_name = 'current_item_list'
+    context_object_name = 'item_list'
 
     def get_queryset(self):
         return Item.objects.filter(owner=self.request.user).order_by('-created').prefetch_related('tags')
@@ -51,6 +52,15 @@ class IndexView(LoginRequiredMixin, generic.ListView):
             if name is not None:
                 tag_objects.append(Tag(name, count, []))
         context['tags'] = tag_objects
+
+        paginator = Paginator(context['item_list'], settings.PYPO_ITEMS_ON_PAGE)
+        try:
+            page = paginator.page(self.request.GET.get('page'))
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+        context['current_item_list'] = page
         return context
 
 
