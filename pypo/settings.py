@@ -180,6 +180,11 @@ TEMPLATE_DIRS = (
 
 LOGIN_REDIRECT_URL = '/'
 
+SOUTH_MIGRATION_MODULES = {
+    'taggit': 'taggit.south_migrations',
+}
+
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
