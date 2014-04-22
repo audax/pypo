@@ -303,6 +303,15 @@ class TestDownload:
         # expect the empty fallback text because the decode failed
         assert None == ret.text
 
+    def test_can_handle_empty_content(self, get_mock):
+        return_mock = Mock(headers={'content-type': 'text/html'})
+        return_mock.iter_content.return_value = iter([])
+        get_mock.return_value = return_mock
+
+        ret = download.download(EXAMPLE_COM)
+        # expect the empty fallback text because we couldn't download content
+        assert None == ret.text
+
 
 @pytest.mark.django_db
 class TestAPI:

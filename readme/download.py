@@ -35,12 +35,17 @@ def download(url, max_content_length=1000):
         if content_length > max_content_length:
             raise DownloadException('Aborting: content-length {} is larger than max content length {}'.format(
                 content_length, max_content_length))
-        # In case content_length lied to us
-        content = next(req.iter_content(max_content_length))
+        try:
+            # In case content_length lied to us
+            content = next(req.iter_content(max_content_length))
+        except StopIteration:
+            # And in case there is no content
+            content = None
+
         text = None
         # only decode text requests
         content_type = req.headers.get('content-type', '')
-        if content_type.startswith('text/'):
+        if content_type.startswith('text/') and content is not None:
             text = content.decode(req.encoding, errors='ignore')
         return DownloadedContent(content=content, text=text, content_type=content_type)
 
