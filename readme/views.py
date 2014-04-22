@@ -1,6 +1,8 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.template.response import TemplateResponse
 from django.views import generic
 from django.conf import settings
+from django.views.decorators.csrf import ensure_csrf_cookie
 from haystack.forms import FacetedSearchForm
 from haystack.query import SearchQuerySet
 from haystack.views import FacetedSearchView, search_view_factory
@@ -38,30 +40,30 @@ class RestrictItemAccessMixin(object):
         return super(RestrictItemAccessMixin, self).dispatch(request, *args, **kwargs)
 
 
-class IndexView(LoginRequiredMixin, generic.ListView):
-    context_object_name = 'item_list'
+@login_required
+@ensure_csrf_cookie
+def index(request):
+    queryset = Item.objects.filter(owner=request.user).order_by('-created').prefetch_related('tags')
+    facets = SearchQuerySet().filter(owner_id=request.user.id).facet('tags').facet_counts()
+    tag_objects = []
+    for name, count in facets.get('fields', {}).get('tags', []):
+        if name is not None:
+            tag_objects.append(Tag(name, count, []))
 
-    def get_queryset(self):
-        return Item.objects.filter(owner=self.request.user).order_by('-created').prefetch_related('tags')
-
-    def get_context_data(self, **kwargs):
-        context = super(IndexView, self).get_context_data(**kwargs)
-        facets = SearchQuerySet().filter(owner_id=self.request.user.id).facet('tags').facet_counts()
-        tag_objects = []
-        for name, count in facets.get('fields', {}).get('tags', []):
-            if name is not None:
-                tag_objects.append(Tag(name, count, []))
-        context['tags'] = tag_objects
-
-        paginator = Paginator(context['item_list'], settings.PYPO_ITEMS_ON_PAGE)
-        try:
-            page = paginator.page(self.request.GET.get('page'))
-        except PageNotAnInteger:
-            page = paginator.page(1)
-        except EmptyPage:
-            page = paginator.page(paginator.num_pages)
-        context['current_item_list'] = page
-        return context
+    paginator = Paginator(queryset, settings.PYPO_ITEMS_ON_PAGE)
+    try:
+        page = paginator.page(request.GET.get('page'))
+    except PageNotAnInteger:
+        page = paginator.page(1)
+    except EmptyPage:
+        page = paginator.page(paginator.num_pages)
+    context = {
+        'item_list': queryset,
+        'tags': tag_objects,
+        'current_item_list': page,
+        'user': request.user,
+    }
+    return TemplateResponse(request, 'readme/item_list.html', context)
 
 
 class Tag:
@@ -201,7 +203,6 @@ def test(request, test_name):
 
 # Class based views as normal view function
 
-index = IndexView.as_view()
 add = AddView.as_view()
 view = ItemView.as_view()
 delete = DeleteItemView.as_view()
