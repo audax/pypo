@@ -1,10 +1,14 @@
 {% load compressed %}
+{% load static from staticfiles %}
 <!DOCTYPE html>
 <html>
   <head>
     <title>{% block title %}PyPo{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% compressed_css 'all' %}
+    {% with "bootswatch/"|add:PYPO_THEME|add:"/bootstrap.min.css" as theme %}
+        <link href="{% static theme %}" rel="stylesheet" type="text/css" />
+    {% endwith %}
     {% block CSS %}
     {% endblock %}
   </head>

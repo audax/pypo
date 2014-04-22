@@ -116,7 +116,6 @@ PIPELINE_JS_COMPRESSOR = None
 PIPELINE_CSS = {
     'all': {
         'source_filenames': (
-            'bootstrap/dist/css/bootstrap.css',
             'bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css',
             'jquery-ui/themes/base/jquery-ui.css',
             'fontawesome/css/font-awesome.css',
@@ -153,6 +152,18 @@ TEMPLATE_LOADERS = (
         'django.template.loaders.app_directories.Loader',
     )),
 )
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.core.context_processors.tz",
+    "django.contrib.messages.context_processors.messages",
+    "settings_context_processor.context_processors.settings",
+)
+
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -202,7 +213,8 @@ INSTALLED_APPS = (
     'taggit',
     'rest_framework',
     'django.contrib.admin',
-    'functional_tests'
+    'settings_context_processor',
+    'functional_tests',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -270,10 +282,14 @@ REST_FRAMEWORK = {
     )
 }
 
+TEMPLATE_VISIBLE_SETTINGS = ('PYPO_THEME',)
+
 # 10MB
 PYPO_MAX_CONTENT_LENGTH = int(1.049e+7)
 
 PYPO_ITEMS_ON_PAGE = 51
+
+PYPO_THEME = 'slate'
 
 try:
     from .settings_local import *
