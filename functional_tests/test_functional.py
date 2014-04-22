@@ -247,6 +247,22 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
         self.assertIn('[example.com]', items[0].text)
 
+    def test_search_field_in_nav_bar(self):
+        self.create_pre_authenticated_session()
+        # Uther adds his usual item
+        self.create_example_item()
+
+        # Uther starts a search with the search bar in the navbar
+        search_input = self.b.find_element_by_name('q')
+        search_input.send_keys('super-tag')
+        search_input.send_keys(Keys.ENTER)
+
+        # He sees the example item with a link pointing to example.com
+        items = self.b.find_elements_by_class_name('item_link')
+        self.assertEqual(1, len(items), 'Item not found in results')
+        self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
+        self.assertIn('[example.com]', items[0].text)
+
     def test_added_items_are_searchable_by_domain(self):
         self.create_pre_authenticated_session()
         # He opens the add item page and sees the form
