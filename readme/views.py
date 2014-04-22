@@ -109,12 +109,6 @@ def tags(request, tags=''):
     })
 
 
-class DeleteItemView(RestrictItemAccessMixin, generic.DeleteView):
-    model = Item
-    context_object_name = 'item'
-    success_url = reverse_lazy('item_add')
-
-
 class TagNamesToContextMixin:
 
     def get_context_data(self, **kwargs):
@@ -205,5 +199,4 @@ def test(request, test_name):
 
 add = AddView.as_view()
 view = ItemView.as_view()
-delete = DeleteItemView.as_view()
 update = UpdateItemView.as_view()

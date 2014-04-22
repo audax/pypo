@@ -67,9 +67,13 @@ $(document).ready(function() {
             yesBtn: '<i class="fa fa-check">Yes</i>',
             noBtn: '<i class="fa fa-times">No</i>',
             yesCallBack: function (self) {
-                $.post(self.data('item-delete-url')).done(function () {
-                    self.closest('div.item').fadeOut();
-                });
+                $.ajax({
+                        url: self.data('item-api-url'),
+                        success: function () {
+                            self.closest('div.item').fadeOut();
+                        },
+                        type: 'DELETE'
+                })
             }
     });
 });

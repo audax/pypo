@@ -91,8 +91,8 @@ class Item(models.Model):
     def get_absolute_url(self):
         return reverse('item_view', args=[str(self.id)])
 
-    def get_delete_url(self):
-        return reverse('item_delete', args=[str(self.id)])
+    def get_api_url(self):
+        return '/api/items/{}/'.format(str(self.id))
 
     def get_update_url(self):
         return reverse('item_update', args=[str(self.id)])
