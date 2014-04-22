@@ -93,8 +93,8 @@ PIPELINE_JS = {
             'jquery/dist/jquery.js',
             'jquery-ui/ui/jquery-ui.js',
             'bootstrap/dist/js/bootstrap.js',
-            'bootstrap-tokenfield/dist/bootstrap-tokenfield.js',
             'PopConfirm/jquery.popconfirm.js',
+            'select2/select2.js',
             'js/readme.js',
             # you can choose to be specific to reduce your payload
         ),
@@ -116,6 +116,7 @@ PIPELINE_JS_COMPRESSOR = None
 PIPELINE_CSS = {
     'all': {
         'source_filenames': (
+            'select2/select2.css',
             'bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css',
             'jquery-ui/themes/base/jquery-ui.css',
             'fontawesome/css/font-awesome.css',

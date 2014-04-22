@@ -114,7 +114,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         # He submits a link
         input_url = self.b.find_element_by_name('url')
         input_url.send_keys(EXAMPLE_COM)
-        input_tags = self.b.find_element_by_id('id_tags-tokenfield')
+        input_tags = self.b.find_element_by_id('id_tags')
         input_tags.click()
         input_tags.send_keys(tags)
         input_tags.send_keys(',')
@@ -129,10 +129,9 @@ class ExistingUserTest(PypoLiveServerTestCase):
         input_url = self.b.find_element_by_name('url')
         input_url.send_keys(example_address)
 
-        self.b.find_element_by_id('id_tags-tokenfield').click()
+        self.b.find_element_by_css_selector('input.select2-input').click()
 
-        completions = [tag for tag in
-                       self.b.find_elements_by_css_selector('li.ui-menu-item a')]
+        completions = self.b.find_elements_by_css_selector('.select2-result-label')
         self.assertCountEqual([QUEEN, 'fish', 'pypo', 'boxing', 'bartender'], (tag.text for tag in completions))
 
         # He chooses the QUEEN tag
@@ -316,19 +315,12 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.b.get(self.live_server_url)
         # Uther visits the listing page and adds a new tag to the example item
         self.b.find_element_by_css_selector('.item-content .tools a.tags_link').click()
-        tag_input = self.b.find_element_by_id('id_tags-tokenfield')
-        # There are currently to tags for this item
-        self.assertEqual('', tag_input.text)
-
-        # the input field for tags is already focused, so that
-        # all tags that he used before show up in the autocompletion
-        completions = [tag for tag in
-                       self.b.find_elements_by_css_selector('li.ui-menu-item a')]
-        self.assertCountEqual(tags, (tag.text for tag in completions))
 
         # Uther adds 2 new tags: example and fish
+        tag_input = self.b.find_element_by_id('id_tags')
         tag_input.send_keys('example,fish,')
         tag_input.send_keys(Keys.ENTER)
+
         # The new tags are added to the list
         tags = self.b.find_elements_by_css_selector('.tag')
         tag_string = ''.join(t.text for t in tags)
@@ -436,7 +428,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         input_url = self.b.find_element_by_name('url')
         input_url.send_keys('www.example.com')
         # He "leaves" the url input field
-        input_tags = self.b.find_element_by_id('id_tags-tokenfield')
+        input_tags = self.b.find_element_by_id('id_tags')
         input_tags.click()
         # and the protocol is added to the url
         self.assertEqual('http://www.example.com', input_url.get_attribute('value'))
@@ -448,7 +440,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         input_url = self.b.find_element_by_name('url')
         input_url.send_keys('https://www.example.com')
         # He "leaves" the url input field
-        input_tags = self.b.find_element_by_id('id_tags-tokenfield')
+        input_tags = self.b.find_element_by_id('id_tags')
         input_tags.click()
         # and the protocol is added to the url
         self.assertEqual('https://www.example.com', input_url.get_attribute('value'))
