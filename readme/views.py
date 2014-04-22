@@ -112,7 +112,7 @@ def tags(request, tags=''):
 class DeleteItemView(RestrictItemAccessMixin, generic.DeleteView):
     model = Item
     context_object_name = 'item'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('item_add')
 
 
 class TagNamesToContextMixin:
