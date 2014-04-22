@@ -80,7 +80,7 @@ class TestUnknownUser:
     def test_login_required(self, client):
         item = Item.objects.create(url='http://some_invalid_localhost', title='nothing',
                                    owner=User.objects.create(username='somebody', password='something'))
-        urls = ['', '/add/', '/view/{}/'.format(item.id), '/delete/{}/'.format(item.id), '/search/']
+        urls = ['', '/add/', '/view/{}/'.format(item.id), '/search/']
         for url in urls:
             response = client.get(url)
             assert 302 == response.status_code, 'url "{}" did not redirect for an anonymus user'.format(url)
