@@ -102,7 +102,7 @@ def tags(request, tags=''):
     facets = sqs.facet_counts()
     result_objects = [result.object for result in sqs]
     tag_objects = [Tag(name, count, tag_list) for name, count in facets.get('fields', {}).get('tags', [])]
-    return render_to_response('readme/item_list.html', {
+    return TemplateResponse(request, 'readme/item_list.html', {
         'current_item_list': result_objects,
         'tags': tag_objects,
         'user': request.user,
