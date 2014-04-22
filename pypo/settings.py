@@ -91,9 +91,10 @@ PIPELINE_JS = {
     'components': {
         'source_filenames': (
             'jquery/dist/jquery.js',
-            'bootstrap/dist/js/bootstrap.js',
             'jquery-ui/ui/jquery-ui.js',
+            'bootstrap/dist/js/bootstrap.js',
             'bootstrap-tokenfield/dist/bootstrap-tokenfield.js',
+            'PopConfirm/jquery.popconfirm.js',
             'js/readme.js',
             # you can choose to be specific to reduce your payload
         ),

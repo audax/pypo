@@ -170,6 +170,36 @@ class ExistingUserTest(PypoLiveServerTestCase):
         # The domain is in the link text
         self.assertIn(u'[example.com]', items[0].text)
 
+    def test_can_delete_item_with_popover_confirmation(self):
+        self.create_pre_authenticated_session()
+
+        # User opens pypo and has no items in his list
+        self.b.get(self.live_server_url)
+        self.assertEqual(0, len(self.b.find_elements_by_class_name('item')))
+
+        # He adds an item
+        self.create_example_item()
+
+        # The link is now in his list
+        items = self.b.find_elements_by_class_name('item_link')
+        self.assertEqual(1, len(items), 'Item was not added')
+
+        self.b.find_element_by_class_name('delete_link').click()
+
+        # popover opens
+        self.assertTrue(self.b.find_element_by_class_name('popover'))
+
+        # Confirm the deletion
+        self.b.find_element_by_class_name('confirm-dialog-btn-confirm').click()
+
+        # Meta: the fadeOut is not tested because that is just ugly in selenium and
+        # not worth it.
+
+        # Item is deleted after reloading
+        self.b.get(self.live_server_url)
+        self.assertEqual(0, len(self.b.find_elements_by_class_name('item')))
+
+
     def test_unable_to_add_duplicate(self):
         self.create_pre_authenticated_session()
 
