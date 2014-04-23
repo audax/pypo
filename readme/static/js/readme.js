@@ -1,4 +1,4 @@
-var PYPO = {};
+window.PYPO = {};
 $(document).ready(function() {
     "use strict";
 
@@ -112,7 +112,7 @@ $(document).ready(function() {
         },
         params: paramFunctionForTags,
         select2: {
-            tags: PYPO.tags,
+            tags: window.PYPO.tags,
             width: '100%'
         }
     });
