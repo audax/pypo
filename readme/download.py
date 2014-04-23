@@ -46,6 +46,9 @@ def download(url, max_content_length=1000):
         # only decode text requests
         content_type = req.headers.get('content-type', '')
         if content_type.startswith('text/') and content is not None:
-            text = content.decode(req.encoding, errors='ignore')
+            try:
+                text = content.decode(req.encoding, errors='ignore')
+            except LookupError:
+                pass
         return DownloadedContent(content=content, text=text, content_type=content_type)
 
