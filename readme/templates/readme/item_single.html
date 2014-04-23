@@ -1,8 +1,16 @@
 <div class="col-md-4 item">
     <div class="panel panel-default">
         <div class="panel-heading item-header">
-            <a class="item_link" href="{{item.url}}">{{item.title}}
-                {% if item.domain %}[{{item.domain}}]{% endif %}</a>
+            <a data-type="text" data-pk="{{ item.id }}"
+               data-url="{{ item.get_api_url }}"
+               data-title="Enter link title"
+               data-name="title"
+               class="editable item_link" href="{{item.url}}">
+                {{item.title}}
+            </a>
+            <span class="item_domain">
+                {% if item.domain %}[{{item.domain}}]{% endif %}
+            </span>
         </div>
         <div class="panel-body item-content">
             <div class="row">
@@ -44,7 +52,14 @@
             {% endif %}
             <div class="row">
                 <div class="col-md-12">
-                    {{ item.summary | safe}}
+                    <span class="editable item_description"
+                       data-type="textarea" data-pk="{{ item.id }}"
+                       data-url="{{ item.get_api_url }}"
+                       data-title="Enter link description"
+                       data-name="readable_article"
+                       href="{{item.url}}">
+                       {{ item.summary | safe}}
+                    </span>
                 </div>
             </div>
         </div>

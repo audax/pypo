@@ -25,8 +25,10 @@ class ItemViewSet(viewsets.ModelViewSet):
 
         If the url was already fetched by this user, overwrite the old Item
         """
-        item.owner = self.request.user
-        item.fetch_article()
+        # Fetch article if the item is new
+        if item.id is None:
+            item.owner = self.request.user
+            item.fetch_article()
 
 
     def post_save(self, item, *args, **kwargs):

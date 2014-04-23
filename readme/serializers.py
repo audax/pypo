@@ -33,8 +33,8 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
 class ItemSerializer(serializers.ModelSerializer):
     tags = TagListSerializer(required=False)
-    title = serializers.CharField(required=False, read_only=True)
-    readable_article = serializers.CharField(required=False, read_only=True)
+    title = serializers.CharField(required=False)
+    readable_article = serializers.CharField(required=False)
 
     class Meta:
         model = Item

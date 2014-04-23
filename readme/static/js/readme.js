@@ -76,5 +76,27 @@ $(document).ready(function() {
                 })
             }
     });
+    $('.editable').editable({
+        placement: 'bottom',
+        disabled: true,
+        ajaxOptions: {
+            type: 'post',
+            dataType: 'json'
+        },
+        params: function (params) {
+            var data = {};
+            data['id'] = params.pk;
+            data[params.name] = params.value;
+            // emulate patch request, see
+            // https://github.com/ariya/phantomjs/issues/11384
+            data['_method'] = "PATCH";
+            return data;
+        }
+    });
+    $('#id_enable_editable').click(function() {
+        $(this).parent().toggleClass('active');
+        $('.editable').editable('toggleDisabled');
+        $('.editable-tags').editable('toggleDisabled');
+    });
 });
 

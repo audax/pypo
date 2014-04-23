@@ -337,6 +337,22 @@ class TestAPI:
         assert response.data['id'] == item.id
         assert set(response.data['tags']) == {'test-tag', 'second-tag'}
 
+    def test_can_patch_item(self, api_client, api_user):
+        item = Item.objects.create(url=EXAMPLE_COM, title='nothing', owner=api_user)
+        response = api_client.patch('/api/items/{}/'.format(item.id),
+                                    {'title': 'test'},
+                                    format='json')
+        assert response.data['id'] == item.id
+        assert response.data['title'] == 'test'
+
+    def test_can_patch_item_tags(self, api_client, api_user):
+        item = Item.objects.create(url=EXAMPLE_COM, title='nothing', owner=api_user)
+        response = api_client.patch('/api/items/{}/'.format(item.id),
+                                    {'tags': ['test']},
+                                    format='json')
+        assert response.data['id'] == item.id
+        assert response.data['tags'] == ['test']
+
     def test_items_are_searchable(self, api_client, api_user):
         response = api_client.post('/api/items/', {'url': EXAMPLE_COM, 'tags': ['test-tag', 'second-tag']},
                                     format='json')

@@ -14,6 +14,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 from pypo import settings
+from readme.models import Item
 from readme.test_item import add_example_item, add_tagged_items, add_item_for_new_user, QUEEN
 
 
@@ -58,6 +59,11 @@ TEST_INDEX = {
     PIPELINE_ENABLED=False)
 class ExistingUserTest(PypoLiveServerTestCase):
     fixtures = ['initial_data.json']
+
+    def wait_until(self, callback, timeout=10):
+        from selenium.webdriver.support.wait import WebDriverWait
+        WebDriverWait(self.b, timeout).until(callback)
+
 
     def setUp(self):
         self.b = webdriver.Firefox()
@@ -166,8 +172,9 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.assertEqual(1, len(items), 'Item was not added')
         self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
 
-        # The domain is in the link text
-        self.assertIn(u'[example.com]', items[0].text)
+        domains = self.b.find_elements_by_class_name('item_domain')
+        # The domain is next to the link text
+        self.assertIn(u'[example.com]', domains[0].text)
 
     def test_can_delete_item_with_popover_confirmation(self):
         self.create_pre_authenticated_session()
@@ -244,7 +251,10 @@ class ExistingUserTest(PypoLiveServerTestCase):
         items = self.b.find_elements_by_class_name('item_link')
         self.assertEqual(1, len(items), 'Item not found in results')
         self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
-        self.assertIn('[example.com]', items[0].text)
+
+        domains = self.b.find_elements_by_class_name('item_domain')
+        # The domain is next to the link text
+        self.assertIn('[example.com]', domains[0].text)
 
     def test_search_field_in_nav_bar(self):
         self.create_pre_authenticated_session()
@@ -260,7 +270,6 @@ class ExistingUserTest(PypoLiveServerTestCase):
         items = self.b.find_elements_by_class_name('item_link')
         self.assertEqual(1, len(items), 'Item not found in results')
         self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
-        self.assertIn('[example.com]', items[0].text)
 
     def test_added_items_are_searchable_by_domain(self):
         self.create_pre_authenticated_session()
@@ -277,7 +286,10 @@ class ExistingUserTest(PypoLiveServerTestCase):
         items = self.b.find_elements_by_class_name('item_link')
         self.assertEqual(1, len(items), 'Item not found in results')
         self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
-        self.assertIn('[example.com]', items[0].text)
+
+        domains = self.b.find_elements_by_class_name('item_domain')
+        # The domain is next to the link text
+        self.assertIn('[example.com]', domains[0].text)
 
     def test_invalid_searches_return_no_results(self):
         self.create_pre_authenticated_session()
@@ -444,3 +456,51 @@ class ExistingUserTest(PypoLiveServerTestCase):
         input_tags.click()
         # and the protocol is added to the url
         self.assertEqual('https://www.example.com', input_url.get_attribute('value'))
+
+    def test_can_update_title(self):
+        item = self._add_example_item([])
+        item_id = item.id
+
+        self.create_pre_authenticated_session()
+        self.b.get(self.live_server_url)
+
+        # Uther actives the edit mode
+        self.b.find_element_by_id('id_enable_editable').click()
+
+        # and clicks on the title of the first element
+        self.b.find_element_by_css_selector('.item_link').click()
+
+        title_input = self.b.find_element_by_css_selector('.editable-input input')
+        self.assertEqual(title_input.get_attribute('value'), item.title)
+        title_input.send_keys('-foobar')
+        title_input.send_keys(Keys.ENTER)
+
+        self.wait_until(
+            lambda b: b.find_element_by_css_selector('.item_link').text == item.title + '-foobar')
+
+        updated_item = Item.objects.get(pk=item_id)
+        self.assertEqual(updated_item.title, item.title+'-foobar')
+
+    def test_can_update_description(self):
+        item = self._add_example_item([])
+        item_id = item.id
+
+        self.create_pre_authenticated_session()
+        self.b.get(self.live_server_url)
+
+        # Uther actives the edit mode
+        self.b.find_element_by_id('id_enable_editable').click()
+
+        # and clicks on the description of the first element
+        self.b.find_element_by_css_selector('.item_description').click()
+
+        description_input = self.b.find_element_by_css_selector('.editable-input textarea')
+        description_input.send_keys('-foobar')
+
+        self.b.find_element_by_css_selector('button.editable-submit').click()
+
+        self.wait_until(
+            lambda b: b.find_element_by_css_selector('.item_description').text == '-foobar')
+
+        updated_item = Item.objects.get(pk=item_id)
+        self.assertEqual(updated_item.readable_article, '-foobar')

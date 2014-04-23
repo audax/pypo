@@ -95,6 +95,7 @@ PIPELINE_JS = {
             'bootstrap/dist/js/bootstrap.js',
             'PopConfirm/jquery.popconfirm.js',
             'select2/select2.js',
+            'x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js',
             'js/readme.js',
             # you can choose to be specific to reduce your payload
         ),
@@ -120,6 +121,7 @@ PIPELINE_CSS = {
             'bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css',
             'jquery-ui/themes/base/jquery-ui.css',
             'fontawesome/css/font-awesome.css',
+            'x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css'
             'css/readme.css',
         ),
         'output_filename': 'css/all.css',
