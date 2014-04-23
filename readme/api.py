@@ -31,14 +31,11 @@ class ItemViewSet(viewsets.ModelViewSet):
             item.fetch_article()
 
 
-    def post_save(self, item, *args, **kwargs):
+    def post_save(self, *args, **kwargs):
         """
         Special treatment of the tag attribute
         """
-        if type(item.tags) is list:
-            # If tags were provided in the request
-            saved_bookmark = Item.objects.get(pk=item.pk)
-            saved_bookmark.tags.add(*item.tags)
-            # refresh search index
-            saved_bookmark.save()
+        if 'tags' in self.request.DATA:
+            self.object.tags.set(*self.request.DATA['tags'])
+        return super(ItemViewSet, self).post_save(*args, **kwargs)
 

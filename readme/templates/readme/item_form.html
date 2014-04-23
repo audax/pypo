@@ -7,7 +7,7 @@
     <script type="application/javascript">
         $(document).ready(function() {
             $('#id_tags').select2({
-                tags: {{ tags|safe }},
+                tags: PYPO.tags,
                 width: '100%',
                 closeOnSelect: false,
                 selectOnBlur: true

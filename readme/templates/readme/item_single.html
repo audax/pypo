@@ -38,18 +38,19 @@
 
                 </div>
             </div>
-            {% if item.tags.count %}
-                <div class="row">
-                    <div class="col-xs-12">
-                        Tags:
-                        <span class="tag-list">
-                            {% for tag in item.tags.all %}
-                            <a class="tag" href="{% url 'tags' tags=tag.slug %}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
-                            {% endfor %}
-                        </span>
-                    </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <span data-pk="{{ item.id }}"
+                          data-url="{{ item.get_api_url }}"
+                          data-value="{% for tag in item.tags.all %}
+                        {{ tag.name }}{% if not forloop.last %},{% endif %}
+                        {% endfor %}" class="tag-list editable-tags">
+                        {% for tag in item.tags.all %}
+                        <a class="tag" href="{% url 'tags' tags=tag.slug %}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>
                 </div>
-            {% endif %}
+            </div>
             <div class="row">
                 <div class="col-md-12">
                     <span class="editable item_description"

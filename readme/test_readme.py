@@ -21,44 +21,6 @@ EXAMPLE_COM = 'http://www.example.com/'
 QUEEN = 'queen with spaces änd umlauts'
 
 
-class SerializerTest(TestCase):
-
-    tags = "foo bar baz".split()
-
-    def test_taglist_from_native_accepts_list(self):
-        serializer = serializers.TagListSerializer()
-        self.assertEqual(self.tags, serializer.from_native(self.tags))
-
-    def test_taglist_from_native_fails_for_non_lists(self):
-        serializer = serializers.TagListSerializer()
-        with self.assertRaises(ParseError):
-            serializer.from_native({'not': 'a list'})
-
-    def test_taglist_to_native_accepts_tag_manager(self):
-        mock_tag_manager = mock.Mock(all=mock.Mock())
-        mock_tags = []
-        for tag_name in self.tags:
-            tag = mock.Mock()
-            tag.name = tag_name
-            mock_tags.append(tag)
-        mock_tag_manager.all.return_value = mock_tags
-        serializer = serializers.TagListSerializer()
-        result = serializer.to_native(mock_tag_manager)
-        for tag in self.tags:
-            self.assertIn(tag, result)
-        mock_tag_manager.all.assert_called()
-
-    def test_taglist_to_native_accepts_lists(self):
-        serializer = serializers.TagListSerializer()
-        tags = "foo bar baz".split()
-        self.assertEqual(tags, serializer.to_native(tags))
-
-
-    def test_taglist_to_native_fails_otherwise(self):
-        serializer = serializers.TagListSerializer()
-        with self.assertRaises(ParseError):
-            serializer.to_native("not a list")
-
 @pytest.mark.django_db
 class TestScraperText:
 
@@ -226,7 +188,7 @@ class TestSearchIntegration:
         tags = [QUEEN, 'fish', 'bartender', 'pypo']
         for tag in tags:
             json_tag = json.dumps(tag)
-            assert json_tag in response.context['tags']
+            assert json_tag in response.context['tag_names']
             assert json_tag in response.content.decode('utf-8')
 
     def test_can_query_for_tags(self, user, test_index, tagged_items):
@@ -345,13 +307,35 @@ class TestAPI:
         assert response.data['id'] == item.id
         assert response.data['title'] == 'test'
 
-    def test_can_patch_item_tags(self, api_client, api_user):
-        item = Item.objects.create(url=EXAMPLE_COM, title='nothing', owner=api_user)
+    def test_can_add_item_tags(self, api_client, api_user):
+        item = add_example_item(api_user, ['foo'])
         response = api_client.patch('/api/items/{}/'.format(item.id),
-                                    {'tags': ['test']},
+                                    {'tags': ['foo', 'bar']},
                                     format='json')
         assert response.data['id'] == item.id
-        assert response.data['tags'] == ['test']
+        assert set(response.data['tags']) == {'foo', 'bar'}
+        updated = Item.objects.get(pk=item.id)
+        assert set(updated.tags.names()) == {'foo', 'bar'}
+
+    def test_can_patch_item_tags(self, api_client, api_user):
+        item = add_example_item(api_user, ['foo', 'bar'])
+        response = api_client.patch('/api/items/{}/'.format(item.id),
+                                    {'tags': ['foo']},
+                                    format='json')
+        assert response.data['id'] == item.id
+        assert response.data['tags'] == ['foo']
+        updated = Item.objects.get(pk=item.id)
+        assert set(updated.tags.names()) == {'foo'}
+
+    def test_can_clear_item_tags(self, api_client, api_user):
+        item = Item.objects.create(url=EXAMPLE_COM, title='nothing', owner=api_user)
+        response = api_client.patch('/api/items/{}/'.format(item.id),
+                                    {'tags': []},
+                                    format='json')
+        assert response.data['id'] == item.id
+        assert response.data['tags'] == []
+        updated = Item.objects.get(pk=item.id)
+        assert set(updated.tags.names()) == set()
 
     def test_items_are_searchable(self, api_client, api_user):
         response = api_client.post('/api/items/', {'url': EXAMPLE_COM, 'tags': ['test-tag', 'second-tag']},

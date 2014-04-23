@@ -97,6 +97,9 @@ class Item(models.Model):
     def get_update_url(self):
         return reverse('item_update', args=[str(self.id)])
 
+    def get_tag_names(self):
+        return self.tags.values_list('name', flat=True)
+
     def fetch_article(self):
         """
         Fetches a title and a readable_article for the current url.

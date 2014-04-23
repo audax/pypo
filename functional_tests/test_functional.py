@@ -504,3 +504,30 @@ class ExistingUserTest(PypoLiveServerTestCase):
 
         updated_item = Item.objects.get(pk=item_id)
         self.assertEqual(updated_item.readable_article, '-foobar')
+
+    def test_can_update_tags(self):
+        item = self._add_example_item([])
+        item_id = item.id
+
+        self.create_pre_authenticated_session()
+        self.b.get(self.live_server_url)
+
+        # Uther actives the edit mode
+        self.b.find_element_by_id('id_enable_editable').click()
+
+        # and clicks on the description of the first element
+        self.b.find_element_by_css_selector('.tag-list').click()
+
+        tag_input = self.b.find_element_by_css_selector('input.select2-input')
+        tag_input.send_keys('test')
+        tag_input.send_keys(Keys.ENTER)
+        tag_input.send_keys('foobar')
+        tag_input.send_keys(Keys.ENTER)
+
+        self.b.find_element_by_css_selector('button.editable-submit').click()
+
+        self.wait_until(
+            lambda b: b.find_element_by_css_selector('.tag-list').text == 'test, foobar')
+
+        updated_item = Item.objects.get(pk=item_id)
+        self.assertEqual(set(updated_item.tags.names()), {'test', 'foobar'})
