@@ -119,10 +119,8 @@ $(document).ready(function() {
         $(this).parent().toggleClass('active');
         $('.editable').editable('toggleDisabled');
     });
-    var ellipsisConfig = {
+    $('.panel-body').add('.panel-heading').ellipsis({
         ellipsis: '…'
-    }
-    $('.panel-heading').ellipsis(ellipsisConfig);
-    $('.panel-body').ellipsis(ellipsisConfig);
+    });
 });
 
