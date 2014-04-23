@@ -7,6 +7,9 @@
 .item {
   word-break: break-all;
 }
+body {
+  padding-top: 70px;
+}
 /*
  * Off Canvas
  * --------------------------------------------------
