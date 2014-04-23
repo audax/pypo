@@ -50,9 +50,6 @@ $(document).ready(function() {
 
     var protocol_regexp = new RegExp("^https?://");
 
-    $('[data-toggle=offcanvas]').click(function() {
-        $('.row-offcanvas').toggleClass('active');
-    });
     $('#id_url').blur(function() {
         var $this = $(this);
         var value = $this.val();

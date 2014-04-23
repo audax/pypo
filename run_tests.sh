@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ "$1" == "js" ]; then
-    TESTS=( setup offcanvas)
+    TESTS=( setup )
     python manage.py runserver &
     sleep 3
     SERVER=$!
