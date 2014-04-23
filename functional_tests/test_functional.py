@@ -492,6 +492,8 @@ class ExistingUserTest(PypoLiveServerTestCase):
         tag_input.send_keys('test,foobar')
 
         self.b.find_element_by_css_selector('button.editable-submit').click()
+        # TODO: first is just a deselect from select2
+        self.b.find_element_by_css_selector('button.editable-submit').click()
 
         self.wait_until(
             lambda b: b.find_element_by_css_selector('.tag-list').text == 'test, foobar')
