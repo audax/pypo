@@ -79,7 +79,11 @@ class Item(models.Model):
         '''
         Shortened artile
         '''
-        return strip_tags(self.readable_article)[:300]
+        summary = strip_tags(self.readable_article)[:300]
+        if len(summary) == 300:
+            # utf-8 elipse
+            summary += ' …'
+        return summary
 
     @cached_property
     def domain(self):
