@@ -122,5 +122,10 @@ $(document).ready(function() {
         $(this).parent().toggleClass('active');
         $('.editable').editable('toggleDisabled');
     });
+    var ellipsisConfig = {
+        ellipsis: '…'
+    }
+    $('.panel-heading').ellipsis(ellipsisConfig);
+    $('.panel-body').ellipsis(ellipsisConfig);
 });
 

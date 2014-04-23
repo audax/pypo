@@ -96,6 +96,7 @@ PIPELINE_JS = {
             'PopConfirm/jquery.popconfirm.js',
             'select2/select2.js',
             'x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js',
+            'jquery.autoellipsis/src/jquery.autoellipsis.js',
             'js/readme.js',
             # you can choose to be specific to reduce your payload
         ),
