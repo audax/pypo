@@ -1,4 +1,4 @@
-
+var PYPO = {};
 $(document).ready(function() {
     "use strict";
 
@@ -75,6 +75,50 @@ $(document).ready(function() {
                         type: 'DELETE'
                 })
             }
+    });
+    var paramFunction = function (params) {
+        var data = {};
+        data['id'] = params.pk;
+        data[params.name] = params.value;
+        // emulate patch request, see
+        // https://github.com/ariya/phantomjs/issues/11384
+        return JSON.stringify(data);
+    }
+    var paramFunctionForTags = function (params) {
+        params['name'] = 'tags';
+        return paramFunction(params);
+    }
+    $('.editable').editable({
+        placement: 'bottom',
+        disabled: true,
+        ajaxOptions: {
+            type: 'POST',
+            headers: {'X-HTTP-Method-Override': 'PATCH'},
+            dataType: 'JSON',
+            contentType: 'application/json'
+        },
+        params: paramFunction
+    });
+
+    $('.editable-tags').editable({
+        placement: 'bottom',
+        disabled: true,
+        type: 'select2',
+        ajaxOptions: {
+            type: 'POST',
+            headers: {'X-HTTP-Method-Override': 'PATCH'},
+            dataType: 'JSON',
+            contentType: 'application/json'
+        },
+        params: paramFunctionForTags,
+        select2: {
+            tags: PYPO.tags,
+            width: '100%'
+        }
+    });
+    $('#id_enable_editable').click(function() {
+        $(this).parent().toggleClass('active');
+        $('.editable').editable('toggleDisabled');
     });
 });
 

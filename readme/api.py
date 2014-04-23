@@ -25,18 +25,18 @@ class ItemViewSet(viewsets.ModelViewSet):
 
         If the url was already fetched by this user, overwrite the old Item
         """
-        item.owner = self.request.user
-        item.fetch_article()
+        # Fetch article if the item is new
+        if item.id is None:
+            item.owner = self.request.user
+            item.fetch_article()
 
 
-    def post_save(self, item, *args, **kwargs):
+    def post_save(self, *args, **kwargs):
         """
         Special treatment of the tag attribute
         """
-        if type(item.tags) is list:
-            # If tags were provided in the request
-            saved_bookmark = Item.objects.get(pk=item.pk)
-            saved_bookmark.tags.add(*item.tags)
-            # refresh search index
-            saved_bookmark.save()
+        if 'tags' in self.request.DATA:
+            self.object.tags.set(*self.request.DATA['tags'])
+            self.object.save()
+        return super(ItemViewSet, self).post_save(*args, **kwargs)
 

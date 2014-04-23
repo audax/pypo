@@ -3,22 +3,6 @@ from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 from .models import Item
 
-class TagListSerializer(serializers.WritableField):
-
-    def from_native(self, data):
-        if type(data) is not list:
-            raise ParseError("expected a list of data")
-        return data
-
-    def to_native(self, obj):
-        if type(obj) is not list:
-            try:
-                return [tag.name for tag in obj.all()]
-            except AttributeError:
-                raise ParseError("expected a list of data or a TaggableManager")
-        return obj
-
-
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
@@ -32,9 +16,9 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ItemSerializer(serializers.ModelSerializer):
-    tags = TagListSerializer(required=False)
-    title = serializers.CharField(required=False, read_only=True)
-    readable_article = serializers.CharField(required=False, read_only=True)
+    tags = serializers.Field(source='get_tag_names')
+    title = serializers.CharField(required=False)
+    readable_article = serializers.CharField(required=False)
 
     class Meta:
         model = Item

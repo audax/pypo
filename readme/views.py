@@ -60,6 +60,7 @@ def index(request):
     context = {
         'item_list': queryset,
         'tags': tag_objects,
+        'tag_names': json.dumps([tag.name for tag in tag_objects]),
         'current_item_list': page,
         'user': request.user,
     }
@@ -105,6 +106,7 @@ def tags(request, tags=''):
     return TemplateResponse(request, 'readme/item_list.html', {
         'current_item_list': result_objects,
         'tags': tag_objects,
+        'tag_names': json.dumps([tag.name for tag in tag_objects]),
         'user': request.user,
     })
 
@@ -118,7 +120,7 @@ class TagNamesToContextMixin:
 
         facets = sqs.facet_counts()
         tags = [name for name, count in facets.get('fields', {}).get('tags', []) if name is not None]
-        context['tags'] = json.dumps(tags)
+        context['tag_names'] = json.dumps(tags)
         return context
 
 

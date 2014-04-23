@@ -3,7 +3,7 @@ from functools import partial
 
 from .models import Item, User
 
-QUEEN = 'queen with spaces änd umlauts'
+QUEEN = 'queen-without-spaces-but_umläuts'
 EXAMPLE_COM = 'http://www.example.com/'
 
 def add_example_item(user, tags=None):
