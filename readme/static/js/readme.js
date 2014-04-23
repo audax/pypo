@@ -110,7 +110,7 @@ $(document).ready(function() {
         params: paramFunctionForTags,
         select2: {
             tags: window.PYPO.tags,
-            tokenSeparators: [",", " "],
+            tokenSeparators: [","],
             width: '100%'
         }
     });
