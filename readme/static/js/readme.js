@@ -116,7 +116,8 @@ $(document).ready(function() {
             width: '100%'
         }
     });
-    $('#id_enable_editable').click(function() {
+    $('#id_enable_editable').click(function(e) {
+        e.preventDefault();
         $(this).parent().toggleClass('active');
         $('.editable').editable('toggleDisabled');
     });
