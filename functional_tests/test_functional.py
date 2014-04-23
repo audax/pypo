@@ -11,6 +11,7 @@ from django.contrib.sessions.backends.db import SessionStore
 from django.test import LiveServerTestCase
 from django.test.utils import override_settings
 from selenium import webdriver
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.keys import Keys
 
 from pypo import settings
@@ -492,8 +493,12 @@ class ExistingUserTest(PypoLiveServerTestCase):
         tag_input.send_keys('test,foobar')
 
         self.b.find_element_by_css_selector('button.editable-submit').click()
-        # TODO: first is just a deselect from select2
-        self.b.find_element_by_css_selector('button.editable-submit').click()
+
+        # Ugly workaround for inconsistent behaviour between browsers
+        try:
+            self.b.find_element_by_css_selector('button.editable-submit').click()
+        except StaleElementReferenceException:
+            pass
 
         self.wait_until(
             lambda b: b.find_element_by_css_selector('.tag-list').text == 'test, foobar')
