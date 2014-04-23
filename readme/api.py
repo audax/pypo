@@ -37,5 +37,6 @@ class ItemViewSet(viewsets.ModelViewSet):
         """
         if 'tags' in self.request.DATA:
             self.object.tags.set(*self.request.DATA['tags'])
+            self.object.save()
         return super(ItemViewSet, self).post_save(*args, **kwargs)
 
