@@ -85,6 +85,11 @@ $(document).ready(function() {
         params['name'] = 'tags';
         return paramFunction(params);
     }
+
+    $('.item_link').tooltip({
+        placement: 'bottom'
+    });
+
     $('.editable').editable({
         placement: 'bottom',
         disabled: true,
