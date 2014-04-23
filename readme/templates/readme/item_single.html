@@ -17,25 +17,10 @@
                 <div class="col-xs-7">
                     {{item.created}}
                 </div>
-                <div class="col-xs-5">
-                    <div class="tools row pull-right">
-                        <div class="col-xs-4">
-                            <a class="tags_link" href="{{ item.get_update_url }}">
-                                <span class="fa fa-plus"></span>
-                            </a>
-                        </div>
-                        <div class="col-xs-4">
-                            <a href="{{ item.get_absolute_url }}">
-                                <span class="fa fa-eye"></span>
-                            </a>
-                        </div>
-                        <div class="col-xs-4">
-                            <a href="#" class="delete_link" data-item-api-url="{{ item.get_api_url }}" data-toggle="confirmation" >
-                                <span class="fa fa-minus"></span>
-                            </a>
-                        </div>
-                    </div>
-
+                <div class="col-xs-4">
+                    <a href="#" class="delete_link" data-item-api-url="{{ item.get_api_url }}" data-toggle="confirmation" >
+                        <span class="fa fa-minus"></span>
+                    </a>
                 </div>
             </div>
             <div class="row">

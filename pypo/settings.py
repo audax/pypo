@@ -121,7 +121,6 @@ PIPELINE_CSS = {
             'bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css',
             'jquery-ui/themes/base/jquery-ui.css',
             'fontawesome/css/font-awesome.css',
-            'x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css'
             'css/readme.css',
         ),
         'output_filename': 'css/all.css',

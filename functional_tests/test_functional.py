@@ -319,36 +319,6 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.assertIn('example', tag_string)
         self.assertIn('fish', tag_string)
 
-    def test_can_update_tags_from_the_list(self):
-        tags = [QUEEN, 'pypo', 'boxing', 'bartender']
-        self._add_example_item(tags)
-
-        self.create_pre_authenticated_session()
-        self.b.get(self.live_server_url)
-        # Uther visits the listing page and adds a new tag to the example item
-        self.b.find_element_by_css_selector('.item-content .tools a.tags_link').click()
-
-        # Uther adds 2 new tags: example and fish
-        tag_input = self.b.find_element_by_id('id_tags')
-        tag_input.send_keys('example,fish,')
-        tag_input.send_keys(Keys.ENTER)
-
-        # The new tags are added to the list
-        tags = self.b.find_elements_by_css_selector('.tag')
-        tag_string = ''.join(t.text for t in tags)
-        self.assertIn('example', tag_string)
-        self.assertIn('fish', tag_string)
-
-        self.b.find_element_by_id('id_link_search').click()
-        search_input = self.b.find_element_by_name('q')
-        search_input.send_keys('fish')
-        search_input.send_keys(Keys.ENTER)
-
-        # He sees the example item with a link pointing to example.com
-        items = self.b.find_elements_by_class_name('item_link')
-        self.assertEqual(1, len(items), 'Item not found in results')
-        self.assertEqual(EXAMPLE_COM, items[0].get_attribute('href'))
-
     def find_tags_on_page(self):
         tags = {}
         for tag in self.b.find_elements_by_css_selector('.taglink'):
