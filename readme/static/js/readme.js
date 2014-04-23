@@ -113,9 +113,7 @@ $(document).ready(function() {
         params: paramFunctionForTags,
         select2: {
             tags: PYPO.tags,
-            width: '100%',
-            closeOnSelect: false,
-            selectOnBlur: true
+            width: '100%'
         }
     });
     $('#id_enable_editable').click(function() {
