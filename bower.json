@@ -30,7 +30,6 @@
     "bootstrap": "~3.1.1",
     "bootswatch": "~3.1.1",
     "select2": "~3.4.6",
-    "x-editable": "~1.5.1",
-    "trunk8": "~1.3.3"
+    "x-editable": "~1.5.1"
   }
 }

@@ -75,13 +75,6 @@ class Item(models.Model):
     objects = ItemManager()
 
     @cached_property
-    def summary(self):
-        '''
-        Shortened artile
-        '''
-        return strip_tags(self.readable_article)[:300]
-
-    @cached_property
     def domain(self):
         """
         Domain of the url

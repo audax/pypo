@@ -5,8 +5,9 @@
                data-url="{{ item.get_api_url }}"
                data-title="Enter link title"
                data-name="title"
+               data-value="{{ item.title|default:"" }}"
                class="editable item_link" href="{{item.url}}">
-                {{item.title}}
+                {{item.title|default:""|truncatechars:64}}
             </a>
             <p class="item_domain">
                 {% if item.domain %}[{{item.domain}}]{% endif %}
@@ -44,7 +45,7 @@
                        data-title="Enter link description"
                        data-name="readable_article"
                        href="{{item.url}}">
-                       {{ item.summary | safe}}
+                       {{ item.readable_article|default:""|striptags|truncatechars:150}}
                     </span>
                 </div>
             </div>

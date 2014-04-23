@@ -43,11 +43,6 @@ class TestBasic:
         item.save()
         assert item.owner
 
-    def test_summary(self):
-        item = Item()
-        item.readable_article = 'lorem_ipsum' * 100
-        assert len(item.summary) == 300
-
     def test_unknown_tld(self):
         item = Item()
         item.url = 'foobar'
