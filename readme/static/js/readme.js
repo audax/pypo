@@ -86,11 +86,6 @@ $(document).ready(function() {
         return paramFunction(params);
     }
 
-    $('.item_link').tooltip({
-        animation: false,
-        placement: 'bottom'
-    });
-
     $('.editable').editable({
         placement: 'bottom',
         disabled: true,

@@ -7,7 +7,6 @@
                data-name="title"
                data-value="{{ item.title|default:"" }}"
                class="editable item_link" href="{{item.url}}"
-               data-toggle="tooltip"
                title="{{ item.title|default:"" }}">
                 {{item.title|default:""|truncatechars:64}}
             </a>
