@@ -2,6 +2,15 @@ window.PYPO = {};
 $(document).ready(function() {
     "use strict";
 
+    $('.item_link').trunk8({
+        lines: 2,
+        fill: '…'
+    });
+    $('.item_description').trunk8({
+        lines: 5,
+        fill: '…'
+    });
+
     function getCookie(name) {
         var cookieValue = null;
         if (document.cookie && document.cookie != '') {
@@ -118,9 +127,6 @@ $(document).ready(function() {
         e.preventDefault();
         $(this).parent().toggleClass('active');
         $('.editable').editable('toggleDisabled');
-    });
-    $('.panel-body').add('.panel-heading').ellipsis({
-        ellipsis: '…'
     });
 });
 
