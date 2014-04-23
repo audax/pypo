@@ -87,6 +87,7 @@ $(document).ready(function() {
     }
 
     $('.item_link').tooltip({
+        animation: false,
         placement: 'bottom'
     });
 
