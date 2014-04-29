@@ -6,6 +6,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from haystack.forms import FacetedSearchForm
 from haystack.query import SearchQuerySet
 from haystack.views import FacetedSearchView, search_view_factory
+from sitegate.signup_flows.modern import InvitationSignup
 from .models import Item
 from .forms import CreateItemForm, UpdateItemForm
 from django.http import HttpResponseRedirect
@@ -13,6 +14,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import redirect, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from sitegate.decorators import signup_view, signin_view
 import json
 
 
@@ -195,6 +197,25 @@ def test(request, test_name):
         return render_to_response('readme/tests/{}.html'.format(test_name))
     else:
         return redirect(reverse('index'))
+
+
+_entrance_widget_attrs =  {
+        "class": "form-control",
+        'placeholder': lambda f: f.label
+    }
+
+@signup_view(
+    widget_attrs=_entrance_widget_attrs,
+    flow=InvitationSignup,
+    template='form_bootstrap3')
+@signin_view(
+    widget_attrs=_entrance_widget_attrs,
+    template='readme/form_signin.html')
+def entrance(request):
+    return TemplateResponse(request, 'entrance.html', {
+        'title': 'Sign in & Sign up',
+    })
+
 
 
 # Class based views as normal view function
