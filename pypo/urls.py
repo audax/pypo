@@ -11,6 +11,7 @@ readme_patterns = patterns('readme.views',
     url(r'^update/(?P<pk>\d+)/$', 'update', name='item_update'),
     url(r'^view/(?P<pk>\d+)/$', 'view', name='item_view'),
     url(r'^search/', 'search', name='haystack_search'),
+    url(r'^invite/$', 'invite', name='invite'),
     url(r'^test/(?P<test_name>\w+)$', 'test', name='test_view'),
 )
 

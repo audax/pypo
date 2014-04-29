@@ -507,3 +507,31 @@ class ExistingUserTest(PypoLiveServerTestCase):
 
         updated_item = Item.objects.get(pk=item_id)
         self.assertEqual(set(updated_item.tags.names()), {'test', 'foobar'})
+
+    def test_can_invite_a_friend(self):
+        self.create_pre_authenticated_session()
+        # Uther wants to invite his friend Hans to pypo
+
+        # he opens the invite-page
+        self.b.get(self.live_server_url+'/invite')
+
+        # and creates a new invite code
+        self.b.find_element_by_id('id_create_invite').submit()
+
+        code = self.b.find_element_by_class_name('invite_code').text
+
+        # and logs out
+        self.b.find_element_by_id('id_link_logout').click()
+
+
+        self.b.get(self.live_server_url)
+
+        self.b.find_element_by_id('id_code').send_keys(code)
+        self.b.find_element_by_id('id_email').send_keys('testmail@localhost.lan')
+        password_input = self.b.find_element_by_id('id_password1')
+        password_input.send_keys('dev')
+        password_input.send_keys(Keys.ENTER)
+
+        # he is now registered, logged in and can create an item
+        self.assertTrue(self.b.find_element_by_id('id_link_add'))
+        self.create_example_item()

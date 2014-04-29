@@ -6,6 +6,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from haystack.forms import FacetedSearchForm
 from haystack.query import SearchQuerySet
 from haystack.views import FacetedSearchView, search_view_factory
+from sitegate.models import InvitationCode
 from sitegate.signup_flows.modern import InvitationSignup
 from .models import Item
 from .forms import CreateItemForm, UpdateItemForm
@@ -199,10 +200,18 @@ def test(request, test_name):
         return redirect(reverse('index'))
 
 
-_entrance_widget_attrs =  {
-        "class": "form-control",
-        'placeholder': lambda f: f.label
-    }
+@login_required
+def invite(request):
+    if request.POST:
+        InvitationCode.add(request.user)
+    codes = InvitationCode.objects.filter(creator=request.user)
+    return TemplateResponse(request, 'readme/invite.html', {'codes': codes})
+
+
+_entrance_widget_attrs = {
+    "class": "form-control",
+    'placeholder': lambda f: f.label
+}
 
 @signup_view(
     widget_attrs=_entrance_widget_attrs,
