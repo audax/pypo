@@ -21,3 +21,6 @@ before_install:
 after_success:
   - coverage combine
   - coveralls
+matrix:
+  allow_failures:
+    - python: "3.4"
