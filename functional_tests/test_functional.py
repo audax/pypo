@@ -477,8 +477,6 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.assertEqual(updated_item.readable_article, '-foobar')
 
     def test_can_update_tags(self):
-        self.skipTest('This test is somehow broken on travis.')
-
         item = self._add_example_item([])
         item_id = item.id
 
@@ -493,14 +491,9 @@ class ExistingUserTest(PypoLiveServerTestCase):
 
         tag_input = self.b.find_element_by_css_selector('input.select2-input')
         tag_input.send_keys('test,foobar')
+        tag_input.send_keys(Keys.ENTER)
 
-        self.b.find_element_by_css_selector('button.editable-submit').click()
-
-        # Ugly workaround for inconsistent behaviour between browsers
-        try:
-            self.b.find_element_by_css_selector('button.editable-submit').click()
-        except StaleElementReferenceException:
-            pass
+        self.b.find_element_by_css_selector('button.editable-submit').submit()
 
         self.wait_until(
             lambda b: b.find_element_by_css_selector('.tag-list').text == 'test, foobar')
