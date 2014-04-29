@@ -214,6 +214,8 @@ INSTALLED_APPS = (
     'haystack',
     'taggit',
     'rest_framework',
+    'django_admin_bootstrapped.bootstrap3',
+    'django_admin_bootstrapped',
     'django.contrib.admin',
     'settings_context_processor',
     'functional_tests',
