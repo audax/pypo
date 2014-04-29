@@ -235,6 +235,17 @@ class TestDownload:
         assert 'convert' in cm.value.message
         assert isinstance(cm.value.parent, ValueError)
 
+    def test_item_model_handles_error(self, get_mock, user):
+        return_mock = Mock(headers={'content-length': "invalid"})
+        get_mock.return_value = return_mock
+
+        item = Item()
+        item.url = EXAMPLE_COM
+        item.owner = user
+        item.fetch_article()
+        assert item.title == EXAMPLE_COM
+        assert item.readable_article is None
+
     def test_only_downloads_up_to_a_maximum_length(self, get_mock):
         content = Mock()
         max_length = 1

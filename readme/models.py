@@ -7,7 +7,7 @@ from tld import get_tld
 from django.core.urlresolvers import reverse
 from taggit.managers import TaggableManager
 from taggit.models import TagBase, ItemBase
-from readme.download import download
+from readme.download import download, DownloadException
 from readme.scrapers import parse
 
 import logging
@@ -98,7 +98,13 @@ class Item(models.Model):
         Fetches a title and a readable_article for the current url.
         It uses the scrapers module for this and only downloads the content.
         """
-        dl = download(self.url, max_content_length=settings.PYPO_MAX_CONTENT_LENGTH)
-        self.title, self.readable_article = parse(self, content_type=dl.content_type,
+        try:
+            dl = download(self.url, max_content_length=settings.PYPO_MAX_CONTENT_LENGTH)
+        except DownloadException:
+            # TODO show a message that the download failed?
+            self.title = self.url
+            self.readable_article = None
+        else:
+            self.title, self.readable_article = parse(self, content_type=dl.content_type,
                                                   text=dl.text, content=dl.content)
 
