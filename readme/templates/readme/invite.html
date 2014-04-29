@@ -10,6 +10,7 @@
                     <th>Created</th>
                     <th>Accepted</th>
                     <th>Used by</th>
+                    <th>Delete</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -19,6 +20,18 @@
                         <td>{{ code.time_created }}</td>
                         <td>{{ code.time_accepted|default_if_none:"" }}</td>
                         <td>{{ code.acceptor.name }}</td>
+                        <td>
+                            {% if not code.expired %}
+                                <form method="POST">
+                                <input type="hidden"  name="id" value="{{ code.id }}">
+                                    {% csrf_token %}
+                                    <button id="id_delete_code_{{ code.id }}"
+                                            type="submit" class="delete_code btn btn-danger btn-sm">
+                                        Delete
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}</tbody>
             </table>

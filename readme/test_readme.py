@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse, resolve
 import requests
+from sitegate.models import InvitationCode
 from .models import Item
 from readme.scrapers import parse
 from readme import serializers, download
@@ -122,6 +123,30 @@ class TestExistingUserIntegration:
         second = add_example_item(user, ['some tag'])
         assert first == Item.objects.tagged('some-tag').get()
         assert second == Item.objects.tagged('some tag').get()
+
+    def test_create_invite_codes(self, user_client, user):
+        assert len(InvitationCode.objects.all()) == 0
+        response = user_client.post(reverse('invite'))
+        assert len(response.context['codes']) == 1
+        code = InvitationCode.objects.all().first()
+        assert code.creator == user
+
+    def test_delete_invite_codes(self, user_client, user):
+        code = InvitationCode.add(user)
+        assert len(InvitationCode.objects.all()) == 1
+        response = user_client.post(reverse('invite'), {'id': code.id})
+        assert len(response.context['codes']) == 0
+        assert len(InvitationCode.objects.all()) == 0
+
+    def test_protect_exipred_invite_codes(self, user_client, user):
+        assert len(InvitationCode.objects.all()) == 0
+        code = InvitationCode.add(user)
+        code.expired = True
+        code.save()
+        assert len(InvitationCode.objects.all()) == 1
+        response = user_client.post(reverse('invite'), {'id': code.id})
+        assert len(response.context['codes']) == 1
+        assert len(InvitationCode.objects.all()) == 1
 
 @pytest.mark.django_db
 class TestSearchIntegration:

@@ -202,8 +202,18 @@ def test(request, test_name):
 
 @login_required
 def invite(request):
-    if request.POST:
-        InvitationCode.add(request.user)
+    if request.method == 'POST':
+        invite_id = request.POST.get('id', None)
+        if invite_id is not None:
+            try:
+                code = InvitationCode.objects.get(creator=request.user, id=invite_id, expired=False)
+            except InvitationCode.DoesNotExist:
+                # ignore invalid request
+                pass
+            else:
+                code.delete()
+        else:
+            InvitationCode.add(request.user)
     codes = InvitationCode.objects.filter(creator=request.user)
     return TemplateResponse(request, 'readme/invite.html', {'codes': codes})
 

@@ -11,8 +11,9 @@ from django.contrib.sessions.backends.db import SessionStore
 from django.test import LiveServerTestCase
 from django.test.utils import override_settings
 from selenium import webdriver
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+from sitegate.models import InvitationCode
 
 from pypo import settings
 from readme.models import Item
@@ -535,3 +536,34 @@ class ExistingUserTest(PypoLiveServerTestCase):
         # he is now registered, logged in and can create an item
         self.assertTrue(self.b.find_element_by_id('id_link_add'))
         self.create_example_item()
+
+    def test_can_delete_free_invite_codes(self):
+        self.create_pre_authenticated_session()
+
+        # Uther created an invitation code that he now wants to delete,
+        # he also has an expired code
+        valid_code = InvitationCode.add(self.user)
+        expired_code = InvitationCode.add(self.user)
+        expired_code.expired = True
+        expired_code.save()
+
+        codes = [expired_code.code, valid_code.code]
+
+        # he opens the invite-page
+        self.b.get(self.live_server_url+'/invite')
+
+        # sees both codes
+        self.assertEqual(codes, [c.text for c in self.b.find_elements_by_class_name('invite_code')])
+
+        # and deletes the first code
+        self.b.find_element_by_id('id_delete_code_{}'.format(valid_code.id)).submit()
+
+        # now only the expired code is left
+        self.assertEqual([expired_code.code],
+                         [c.text for c in self.b.find_elements_by_class_name('invite_code')])
+
+        # which he can't delete
+        with self.assertRaises(NoSuchElementException):
+            self.b.find_element_by_class_name('delete_code')
+
+
