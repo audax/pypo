@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load sitegate %}
+{% block content %}
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    Login
+                </h4>
+            </div>
+            <div class="panel-body">
+                {% sitegate_signin_form %}
+            </div>
+        </div>
+
+
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    Signup
+                </h4>
+            </div>
+            <div class="panel-body">
+                {% sitegate_signup_form %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

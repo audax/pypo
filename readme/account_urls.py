@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 from django.core.urlresolvers import reverse_lazy
 
 urlpatterns = patterns('',
-   url(r'^login/$', 'django.contrib.auth.views.login', name='login'),
+   url(r'^login/$', 'readme.views.entrance', name='login'),
    url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': reverse_lazy('index')}, name='logout'),
    url(r'^password_change/$', 'django.contrib.auth.views.password_change',
        {'post_change_redirect': reverse_lazy('index')}, name='password_change'),

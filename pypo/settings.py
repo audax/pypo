@@ -164,6 +164,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
     "settings_context_processor.context_processors.settings",
+    "django.core.context_processors.request",
 )
 
 
@@ -218,6 +219,7 @@ INSTALLED_APPS = (
     'django_admin_bootstrapped',
     'django.contrib.admin',
     'settings_context_processor',
+    'sitegate',
     'functional_tests',
 )
 

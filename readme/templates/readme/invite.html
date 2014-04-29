@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-10">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Created</th>
+                    <th>Accepted</th>
+                    <th>Used by</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for code in codes %}
+                    <tr>
+                        <td class="invite_code">{{ code.code }}</td>
+                        <td>{{ code.time_created }}</td>
+                        <td>{{ code.time_accepted|default_if_none:"" }}</td>
+                        <td>{{ code.acceptor.name }}</td>
+                        <td>
+                            {% if not code.expired %}
+                                <form method="POST">
+                                <input type="hidden"  name="id" value="{{ code.id }}">
+                                    {% csrf_token %}
+                                    <button id="id_delete_code_{{ code.id }}"
+                                            type="submit" class="delete_code btn btn-danger btn-sm">
+                                        Delete
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}</tbody>
+            </table>
+        </div>
+        <div class="col-md-2">
+            <form method="POST">
+                {% csrf_token %}
+                <button id="id_create_invite" type="submit" class="btn btn-default">Create code</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
