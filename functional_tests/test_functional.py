@@ -491,9 +491,10 @@ class ExistingUserTest(PypoLiveServerTestCase):
 
         tag_input = self.b.find_element_by_css_selector('input.select2-input')
         tag_input.send_keys('test,foobar')
+        # first enter to complete the tag
         tag_input.send_keys(Keys.ENTER)
-
-        self.b.find_element_by_css_selector('button.editable-submit').submit()
+        # the second to submit the form
+        tag_input.send_keys(Keys.ENTER)
 
         self.wait_until(
             lambda b: b.find_element_by_css_selector('.tag-list').text == 'test, foobar')

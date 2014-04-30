@@ -112,7 +112,8 @@ $(document).ready(function() {
         select2: {
             tags: window.PYPO.tags,
             tokenSeparators: [","],
-            width: '100%'
+            width: '100%',
+            openOnEnter: false
         }
     });
     $('#id_enable_editable').click(function(e) {
