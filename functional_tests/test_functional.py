@@ -66,10 +66,8 @@ class ExistingUserTest(PypoLiveServerTestCase):
         from selenium.webdriver.support.wait import WebDriverWait
         WebDriverWait(self.b, timeout).until(callback)
 
-
     def setUp(self):
-        self.b = webdriver.Firefox()
-        #self.b = webdriver.PhantomJS()
+        self.b = getattr(webdriver,  os.environ.get('WEBDRIVER', 'Firefox'))()
         self.b.implicitly_wait(3)
         self.b.set_window_size(1024, 768)
         self.c = self.client
