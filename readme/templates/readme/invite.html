@@ -19,7 +19,7 @@
                         <td class="invite_code">{{ code.code }}</td>
                         <td>{{ code.time_created }}</td>
                         <td>{{ code.time_accepted|default_if_none:"" }}</td>
-                        <td>{{ code.acceptor.name }}</td>
+                        <td class="invite_acceptor">{{ code.acceptor.username }}</td>
                         <td>
                             {% if not code.expired %}
                                 <form method="POST">

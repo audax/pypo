@@ -93,14 +93,15 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.patcher.stop()
         call_command('clear_index', interactive=False, verbosity=0)
 
-    def create_pre_authenticated_session(self):
+    def create_pre_authenticated_session(self, create_session=True):
         session = SessionStore()
         session[SESSION_KEY] = self.user.pk
         session[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
         session.save()
         ## to set a cookie we need to first visit the domain.
         ## 404 pages load the quickest!
-        self.b.get(self.live_server_url + "/404_no_such_url/")
+        if create_session:
+            self.b.get(self.live_server_url + "/404_no_such_url/")
         self.b.add_cookie(dict(
             name=settings.SESSION_COOKIE_NAME,
             value=session.session_key,
@@ -529,6 +530,19 @@ class ExistingUserTest(PypoLiveServerTestCase):
         # he is now registered, logged in and can create an item
         self.assertTrue(self.b.find_element_by_id('id_link_add'))
         self.create_example_item()
+
+        # and logs out
+        self.b.find_element_by_id('id_link_logout').click()
+
+        # Uther logs back in
+        self.create_pre_authenticated_session(create_session=False)
+
+        # he opens the invite-page
+        self.b.get(self.live_server_url+'/invite')
+
+        # and sees Hans' username in the table
+        self.assertEqual('testmail@localhost.lan',
+                         self.b.find_element_by_class_name('invite_acceptor').text)
 
     def test_can_delete_free_invite_codes(self):
         self.create_pre_authenticated_session()
