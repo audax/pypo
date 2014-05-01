@@ -112,7 +112,7 @@ class Item(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True)
-    theme = models.CharField('Custom Theme', max_length=30)
+    theme = models.CharField('Custom Theme', max_length=30, default=settings.PYPO_DEFAULT_THEME)
     can_invite = models.BooleanField(default=True)
 
 @receiver(post_save, sender=User)
