@@ -8,8 +8,8 @@ from haystack.query import SearchQuerySet
 from haystack.views import FacetedSearchView, search_view_factory
 from sitegate.models import InvitationCode
 from sitegate.signup_flows.modern import InvitationSignup
-from .models import Item
-from .forms import CreateItemForm, UpdateItemForm
+from .models import Item, User, UserProfile
+from .forms import CreateItemForm, UpdateItemForm, UserProfileForm
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import redirect, render_to_response
@@ -140,6 +140,23 @@ class UpdateItemView(TagNamesToContextMixin, RestrictItemAccessMixin, generic.Up
         return HttpResponseRedirect(self.get_success_url())
 
 
+class UpdateUserProfileView(LoginRequiredMixin, generic.UpdateView):
+    model = UserProfile
+    context_object_name = 'user_profile'
+    template_name = 'readme/profile.html'
+
+    form_class = UserProfileForm
+
+    success_url = reverse_lazy('profile')
+
+    def get_object(self, queryset=None):
+        return self.request.user.userprofile
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
 
 class AddView(TagNamesToContextMixin, LoginRequiredMixin, generic.CreateView):
     model = Item
@@ -212,11 +229,11 @@ def invite(request):
                 pass
             else:
                 code.delete()
-        else:
+        elif request.user.userprofile.can_invite:
             InvitationCode.add(request.user)
+
     codes = InvitationCode.objects.filter(creator=request.user)
     return TemplateResponse(request, 'readme/invite.html', {'codes': codes})
-
 
 _entrance_widget_attrs = {
     "class": "form-control",
@@ -242,3 +259,4 @@ def entrance(request):
 add = AddView.as_view()
 view = ItemView.as_view()
 update = UpdateItemView.as_view()
+profile = UpdateUserProfileView.as_view()

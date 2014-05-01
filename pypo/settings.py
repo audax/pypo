@@ -82,6 +82,7 @@ STATIC_URL = '/static/'
 
 BOWER = path.join(PROJECT_ROOT, 'bower_components')
 
+
 # Additional locations of static files
 STATICFILES_DIRS = (
     BOWER,
@@ -289,14 +290,30 @@ REST_FRAMEWORK = {
     )
 }
 
-TEMPLATE_VISIBLE_SETTINGS = ('PYPO_THEME',)
+TEMPLATE_VISIBLE_SETTINGS = ('PYPO_DEFAULT_THEME',)
 
 # 10MB
 PYPO_MAX_CONTENT_LENGTH = int(1.049e+7)
 
 PYPO_ITEMS_ON_PAGE = 51
 
-PYPO_THEME = 'slate'
+PYPO_DEFAULT_THEME = 'slate'
+
+PYPO_THEMES = (
+    ('amelia', 'Amelia'),
+    ('cerulean', 'Cerulean'),
+    ('cosmo', 'Cosmo'),
+    ('cyborg', 'Cyborg'),
+    ('flatly', 'Flatly'),
+    ('journal', 'Journal'),
+    ('readable', 'Readable'),
+    ('simplex', 'Simplex'),
+    ('slate', 'Slate'),
+    ('spacelab', 'SpaceLab'),
+    ('united', 'United'),
+    ('superhero', 'Superhero'),
+    ('lumen', 'Lumen'),
+)
 
 try:
     from .settings_local import *

@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.html import strip_tags
 from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.functional import cached_property
 from tld import get_tld
 from django.core.urlresolvers import reverse
@@ -108,3 +109,14 @@ class Item(models.Model):
             self.title, self.readable_article = parse(self, content_type=dl.content_type,
                                                   text=dl.text, content=dl.content)
 
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, primary_key=True)
+    theme = models.CharField('Custom Theme', max_length=30)
+    can_invite = models.BooleanField(default=True)
+
+@receiver(post_save, sender=User)
+def create_profile_for_new_user(sender, created, instance, **kwargs):
+    if created:
+        profile = UserProfile(user=instance)
+        profile.save()

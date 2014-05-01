@@ -138,6 +138,15 @@ class TestExistingUserIntegration:
         assert len(response.context['codes']) == 0
         assert len(InvitationCode.objects.all()) == 0
 
+    def test_restricted_users_can_delete_invite_codes(self, user_client, user):
+        code = InvitationCode.add(user)
+        assert len(InvitationCode.objects.all()) == 1
+        user.userprofile.can_invite = False
+        user.userprofile.save()
+        response = user_client.post(reverse('invite'), {'id': code.id})
+        assert len(response.context['codes']) == 0
+        assert len(InvitationCode.objects.all()) == 0
+
     def test_protect_exipred_invite_codes(self, user_client, user):
         assert len(InvitationCode.objects.all()) == 0
         code = InvitationCode.add(user)
@@ -147,6 +156,21 @@ class TestExistingUserIntegration:
         response = user_client.post(reverse('invite'), {'id': code.id})
         assert len(response.context['codes']) == 1
         assert len(InvitationCode.objects.all()) == 1
+
+    def test_restrict_invite_creation(self, user_client, user):
+        user.userprofile.can_invite = False
+        user.userprofile.save()
+        assert len(InvitationCode.objects.all()) == 0
+        response = user_client.post(reverse('invite'))
+        assert len(response.context['codes']) == 0
+        assert len(InvitationCode.objects.all()) == 0
+
+    def test_can_change_his_profile(self, user_client, user):
+        user_client.post(reverse('profile'), {
+            'theme': 'journal',
+        })
+        user = User.objects.get(id=user.id)
+        assert user.userprofile.theme == 'journal'
 
 @pytest.mark.django_db
 class TestSearchIntegration:

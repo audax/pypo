@@ -6,8 +6,10 @@
     <title>{% block title %}PyPo{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% compressed_css 'all' %}
-    {% with "bootswatch/"|add:PYPO_THEME|add:"/bootstrap.min.css" as theme %}
-        <link href="{% static theme %}" rel="stylesheet" type="text/css" />
+    {% with user.userprofile.theme|default:PYPO_DEFAULT_THEME as theme_name %}
+        {% with "bootswatch/"|add:theme_name|add:"/bootstrap.min.css" as theme %}
+            <link href="{% static theme %}" rel="stylesheet" type="text/css" />
+        {% endwith %}
     {% endwith %}
     {% block CSS %}
     {% endblock %}
@@ -28,10 +30,8 @@
                   {% if user.is_authenticated %}
                   <li><a id="id_link_index" href="{% url "index" %}">Home</a></li>
                   <li><a id="id_link_add" href="{% url "item_add" %}">Add new item</a></li>
-                  <li><a id="id_link_search" href="{% url "haystack_search" %}">Search</a></li>
                   <li><a id="id_enable_editable" href="#">Edit mode</a></li>
-                  <li><a id="id_link_invite" href="{% url "invite" %}">Invite codes</a></li>
-                  <li><a id="id_link_pw_change" href="{% url "password_change" %}">Password change</a></li>
+                  <li><a id="id_link_profile" href="{% url "profile" %}">User Profile</a></li>
                   <li><a id="id_link_logout" href="{% url "logout" %}">Logout</a></li>
                   {% endif %}
               {% endblock %}

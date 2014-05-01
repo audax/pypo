@@ -244,7 +244,6 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.create_example_item()
 
         # Uther visits the search page and searches for the example page
-        self.b.find_element_by_id('id_link_search').click()
         search_input = self.b.find_element_by_name('q')
         search_input.send_keys('super-tag')
         search_input.send_keys(Keys.ENTER)
@@ -279,7 +278,6 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.create_example_item()
 
         # Uther visits the search page and searches for the example page
-        self.b.find_element_by_id('id_link_search').click()
         search_input = self.b.find_element_by_name('q')
         search_input.send_keys('example.com')
         search_input.send_keys(Keys.ENTER)
@@ -298,7 +296,6 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self._add_example_item()
         self.b.get(self.live_server_url)
         # Uther visits the search page and searches for an unknown term
-        self.b.find_element_by_id('id_link_search').click()
         search_input = self.b.find_element_by_name('q')
         search_input.send_keys('invalid_search')
         search_input.send_keys(Keys.ENTER)

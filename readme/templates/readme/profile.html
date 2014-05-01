@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+{% load static from staticfiles %}
+
+{% block content %}
+    <div class="col-lg-10">
+        {% crispy form %}
+    </div>
+    <div class="col-lg-2">
+
+        <div class="list-group">
+            <a class="list-group-item" id="id_link_invite" href="{% url "invite" %}">
+                Invite codes
+            </a>
+            <a class="list-group-item" id="id_link_pw_change" href="{% url "password_change" %}">
+                Password change
+            </a>
+        </div>
+
+    </div>
+{% endblock %}

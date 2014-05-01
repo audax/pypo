@@ -1,4 +1,4 @@
-Django>=1.6.3
+Django==1.6.4
 South>=0.8.2
 Whoosh>=2.5.4
 django-crispy-forms>=1.4.0
