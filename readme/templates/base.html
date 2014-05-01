@@ -22,17 +22,17 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">PyPo</a>
+          <a class="navbar-brand" href="https://github.com/audax/pypo">PyPo</a>
       </div>
       <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
               {% block navbar %}
                   {% if user.is_authenticated %}
-                  <li><a id="id_link_index" href="{% url "index" %}">Home</a></li>
-                  <li><a id="id_link_add" href="{% url "item_add" %}">Add new item</a></li>
-                  <li><a id="id_enable_editable" href="#">Edit mode</a></li>
-                  <li><a id="id_link_profile" href="{% url "profile" %}">User Profile</a></li>
-                  <li><a id="id_link_logout" href="{% url "logout" %}">Logout</a></li>
+                  <li><a id="id_link_index" href="{% url "index" %}"><i class="fa fa-list"></i> List</a></li>
+                  <li><a id="id_link_add" href="{% url "item_add" %}"><i class="fa fa-link"></i> Add</a></li>
+                  <li><a id="id_enable_editable" href="#"><i class="fa fa-edit"></i> Edit</a></li>
+                  <li><a id="id_link_profile" href="{% url "profile" %}"><i class="fa fa-user"></i> Profile</a></li>
+                  <li><a id="id_link_logout" href="{% url "logout" %}"><i class="fa fa-sign-out"></i></a></li>
                   {% endif %}
               {% endblock %}
           </ul>
@@ -42,7 +42,7 @@
               <div class="form-group">
                   <input name="q" type="text" class="form-control" placeholder="Search">
               </div>
-              <button type="submit" class="btn btn-default">Submit</button>
+              <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
           </form>
           {% endif %}
       </div>
