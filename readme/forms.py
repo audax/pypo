@@ -1,7 +1,7 @@
-from crispy_forms import bootstrap, layout
-from crispy_forms.layout import Submit
+from crispy_forms import layout
 from django import forms
 from django.conf import settings
+from haystack.forms import FacetedSearchForm
 import six
 from taggit.forms import TagWidget
 from .models import Item, User
@@ -32,7 +32,7 @@ class CreateItemForm(forms.ModelForm):
         h.error_text_inline = True
         h.html5_required = True
 
-        h.add_input(Submit('submit', 'Submit'))
+        h.add_input(layout.Submit('submit', 'Submit'))
         self.helper = h
         super(CreateItemForm, self).__init__(*args, **kwargs)
 
@@ -67,7 +67,6 @@ class UserProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         h = FormHelper()
         h.form_id = 'user-profile-form'
-        h.form_method = 'post'
         h.form_class = 'form-horizontal'
         h.label_class = 'col-lg-2'
         h.field_class = 'col-lg-8'
@@ -75,7 +74,7 @@ class UserProfileForm(forms.ModelForm):
             'theme',
             layout.Div(
                 layout.Div(
-                    Submit('Save', value='Save', css_class='btn-default'),
+                    layout.Submit('Save', value='Save', css_class='btn-default'),
                     css_class='col-lg-offset-2 col-lg-8'
                 ),
                 css_class='form-group',
@@ -91,3 +90,42 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['theme']
+
+
+class SearchForm(FacetedSearchForm):
+
+    sort = forms.Select()
+
+    def __init__(self, *args, **kwargs):
+        h = FormHelper()
+        h.form_id = 'item-search-form'
+        h.form_method = 'GET'
+        h.form_class = 'form-horizontal'
+        h.label_class = 'col-lg-2'
+        h.field_class = 'col-lg-8'
+        h.layout = layout.Layout(
+            'q',
+            layout.Div(
+                layout.Div(
+                    layout.Button('Search', value='Search', css_class='btn-primary'),
+                    layout.Div(
+                        layout.HTML('<button id="id_oldest" class="btn btn-default" name="sort"'
+                                    ' value="oldest" type="submit">'
+                                    '<i class="fa fa-sort-asc"></i> Oldest first'
+                                    '</button>'),
+                        layout.HTML('<button id="id_newest" class="btn btn-default" name="sort"'
+                                    ' value="newest" type="submit">'
+                                    '<i class="fa fa-sort-desc"></i> Newest first'
+                                    '</button>'),
+                        css_class="pull-right"),
+                    css_class='col-lg-offset-2 col-lg-8'
+                ),
+                css_class='form-group',
+            )
+        )
+        h.help_text_inline = True
+        h.error_text_inline = True
+        h.html5_required = True
+
+        self.helper = h
+        super(SearchForm, self).__init__(*args, **kwargs)
