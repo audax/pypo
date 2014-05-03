@@ -211,7 +211,6 @@ class TestSearchIntegration:
         Item.objects.create(url=EXAMPLE_COM, title='Example test',
                             owner=user, readable_article='test')
         response = user_client.get('/search/', {'q': 'Example test'})
-        assert 'Results' in response.content.decode('utf8')
         assert 1 == len(response.context['page'].object_list), 'Could not find the test item'
 
     def test_search_item_by_tag(self, user_client, user, test_index):
@@ -220,7 +219,6 @@ class TestSearchIntegration:
         item.tags.add('example-tag')
         item.save()
         response = user_client.get('/search/', {'q': 'example-tag'})
-        assert 'Results' in response.content.decode('utf8')
         assert 1 == len(response.context['page'].object_list), 'Could not find the test item'
 
     def test_user_can_only_search_own_items(self, user_client, user, other_user, test_index):
@@ -229,7 +227,6 @@ class TestSearchIntegration:
         item.tags.add('example-tag')
         item.save()
         response = user_client.get('/search/', {'q': 'example-tag'})
-        assert 'Results' in response.content.decode('utf8')
         assert 0 == len(response.context['page'].object_list), 'Item from another user found in search'
 
     def test_tags_are_added_to_form(self, test_index, user_client, tagged_items):
