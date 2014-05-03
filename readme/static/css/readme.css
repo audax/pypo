@@ -3,18 +3,52 @@
     height: 256px;
     margin-bottom: 16px;
   }
-  .panel {
+  .item .panel {
     height: 100%;
+    overflow-y: hidden;
   }
-  .panel-heading {
-    height: 33%;
+  .item .panel .panel-heading {
+    height: 56px;
+    transition: 0.5s ease;
+    overflow: hidden;
   }
-  .panel-body {
-    height: 67%;
+  .item .panel .panel-heading .item_title {
+    height: 24px;
+  }
+  .item .panel .panel-heading .item_domain {
+    height: 32px;
+  }
+  .item .panel .panel-heading .item_tools {
+    height: 228px;
+  }
+  .item .panel .panel-heading .header_buttons {
+    display: block;
+  }
+  .item .panel .panel-body {
+    height: 200px;
+  }
+  .item.active_item .panel-heading {
+    height: 150px;
+  }
+  .item.active_item .panel-body {
+    height: 106px;
   }
 }
 .item {
   word-break: break-all;
+}
+.header_buttons {
+  display: none;
+}
+.item_title {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.item_domain {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 body {
   padding-top: 70px;

@@ -1,44 +1,59 @@
+{% load humanize %}
 <div class="col-md-4 item">
     <div class="panel panel-default">
         <div class="panel-heading item-header">
-            <a data-type="text" data-pk="{{ item.id }}"
-               data-url="{{ item.get_api_url }}"
-               data-title="Enter link title"
-               data-name="title"
-               data-value="{{ item.title|default:"" }}"
-               class="editable item_link" href="{{item.url}}"
-               title="{{ item.title|default:"" }}">
-                {{item.title|default:""|truncatechars:64}}
-            </a>
-            <p class="item_domain">
-                {% if item.domain %}[{{item.domain}}]{% endif %}
-            </p>
-        </div>
-        <div class="panel-body item-content">
-            <div class="row">
-                <div class="col-xs-10">
-                    {{item.created}}
-                </div>
-                <div class="col-xs-2">
-                    <a href="#" class="delete_link" data-item-api-url="{{ item.get_api_url }}" data-toggle="confirmation" >
-                        <span class="fa fa-minus"></span>
-                    </a>
-                </div>
+        <div class="col-md-10">
+            <div class="item_title">
+                <a data-type="text" data-pk="{{ item.id }}"
+                   data-url="{{ item.get_api_url }}"
+                   data-title="Enter link title"
+                   data-name="title"
+                   data-value="{{ item.title|default:"" }}"
+                   class="editable item_link" href="{{ item.url }}"
+                   title="{{ item.title|default:"" }}">
+                    {{ item.title|default:""|truncatechars:64 }}
+                </a>
             </div>
-            <div class="row">
-                <div class="col-xs-12">
+            <p class="item_domain">
+                {% if item.domain %}[{{ item.domain }}]{% endif %}
+            </p></div>
+        <div class="header_buttons col-md-2 pull-right">
+
+            <a class="link_toolbox btn btn-primary" href="#">
+                <i class="fa fa fa-ellipsis-v"></i>
+                <i class="fa fa fa-ellipsis-v"></i>
+            </a>
+        </div>
+            <div class="item_tools">
+                <div class="row">
+                    <div class="col-xs-10">
+                        {{ item.created|naturaltime }}
+                    </div>
+                    <div class="col-xs-2">
+                        <a href="#" class="btn btn-default btn-xs delete_link" data-item-api-url="{{ item.get_api_url }}"
+                           data-toggle="confirmation">
+                            <i class="fa fa-minus"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
                     <span data-pk="{{ item.id }}"
                           data-url="{{ item.get_api_url }}"
                           data-value="{% for tag in item.tags.all %}
                         {{ tag.name }}{% if not forloop.last %},{% endif %}
                         {% endfor %}" class="tag-list editable-tags">
                         {% for tag in item.tags.all %}
-                        <a class="tag" href="{% url 'tags' tags=tag.slug %}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
+                            <a class="tag" href="{% url 'tags' tags=tag.slug %}">{{ tag.name }}</a>
+                            {% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </span>
+                    </div>
                 </div>
             </div>
-            <div class="row">
+        </div>
+        <div class="panel-body item-content">
+            <div class="item_content row">
                 <div class="col-md-12">
                     <span class="editable item_description"
                        data-type="textarea" data-pk="{{ item.id }}"
@@ -46,7 +61,7 @@
                        data-title="Enter link description"
                        data-name="readable_article"
                        href="{{item.url}}">
-                       {{ item.readable_article|default:""|striptags|truncatechars:150}}
+                       {{ item.readable_article|default:""|striptags|truncatechars:250}}
                     </span>
                 </div>
             </div>

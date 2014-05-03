@@ -1,0 +1,66 @@
+@media (min-width: 978px) {
+  .item {
+    height: 256px;
+    margin-bottom: 16px;
+
+    .panel {
+      height: 100%;
+      overflow-y: hidden;
+
+      .panel-heading {
+        height: 56px;
+        transition: 0.5s ease;
+        overflow: hidden;
+        .item_title {
+          height: 24px;
+        }
+        .item_domain {
+          height: 32px;
+        }
+        .item_tools {
+          height: 228px;
+        }
+        .header_buttons {
+          display: block;
+        }
+
+      }
+      .panel-body {
+        height: 200px;
+      }
+    }
+  }
+
+  .item.active_item {
+    .panel-heading {
+      height: 150px;
+    }
+    .panel-body {
+      height: 106px;
+    }
+  }
+}
+
+.item {
+  word-break: break-all;
+}
+.header_buttons {
+  display: none;
+}
+
+.item_title {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.item_domain {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+body {
+  // padding for the nav bar
+  padding-top: 70px;
+}
+

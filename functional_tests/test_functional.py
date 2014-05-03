@@ -14,6 +14,7 @@ from selenium import webdriver
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from sitegate.models import InvitationCode
+import time
 
 from pypo import settings
 from readme.models import Item
@@ -112,9 +113,17 @@ class ExistingUserTest(PypoLiveServerTestCase):
     def _add_tagged_items(self):
         add_tagged_items(self.user)
 
+    def _toggle_toolboxes(self):
+        for btn in self.b.find_elements_by_class_name('link_toolbox'):
+            btn.click()
+        time.sleep(0.5)
+
     def _find_tags_from_detail(self):
-        tags = self.b.find_elements_by_css_selector('.tag-list .tag')
-        return [t.text for t in tags]
+        self._toggle_toolboxes()
+        tags = [t.text for t in
+                self.b.find_elements_by_css_selector('.tag-list .tag')]
+        self._toggle_toolboxes()
+        return tags
 
     def create_example_item(self, tags='super-tag'):
         self.b.get(self.live_server_url + '/add')
@@ -191,6 +200,8 @@ class ExistingUserTest(PypoLiveServerTestCase):
         # The link is now in his list
         items = self.b.find_elements_by_class_name('item_link')
         self.assertEqual(1, len(items), 'Item was not added')
+
+        self._toggle_toolboxes()
 
         self.b.find_element_by_class_name('delete_link').click()
 
@@ -313,6 +324,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         item.save()
 
         self.b.get(self.live_server_url)
+
         tag_string = ''.join(self._find_tags_from_detail())
         # Uther sees the two tags for his example entry in a list
         self.assertIn('example', tag_string)

@@ -31,7 +31,7 @@ def _update_virtualenv(source_folder):
 
 def _update_static_files(source_folder):
     run('cd %s && bower install' % source_folder)
-    run('cd %s && lessc readme/static/less/readme.less readme/static/css/readme.css' % source_folder)
+    run('cd %s && lessc readme/static/css/readme.less readme/static/css/readme.css' % source_folder)
     run('cd %s && ../virtualenv/bin/python3 manage.py collectstatic --noinput -i test' % source_folder)
 
 

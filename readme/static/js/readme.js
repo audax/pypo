@@ -87,8 +87,9 @@ $(document).ready(function() {
     }
 
     $('.editable').editable({
-        placement: 'bottom',
         disabled: true,
+        placement: 'auto',
+        container: 'body',
         ajaxOptions: {
             type: 'POST',
             headers: {'X-HTTP-Method-Override': 'PATCH'},
@@ -102,6 +103,7 @@ $(document).ready(function() {
         placement: 'bottom',
         disabled: true,
         type: 'select2',
+        showbuttons: false,
         ajaxOptions: {
             type: 'POST',
             headers: {'X-HTTP-Method-Override': 'PATCH'},
@@ -121,5 +123,11 @@ $(document).ready(function() {
         $(this).parent().toggleClass('active');
         $('.editable').editable('toggleDisabled');
     });
+    $('.link_toolbox').click(function (e) {
+        e.preventDefault();
+        var $this = $(this);
+        $this.closest('.item').toggleClass('active_item');
+        $this.toggleClass('active');
+    })
 });
 
