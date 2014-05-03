@@ -67,13 +67,13 @@
           {% if user.is_authenticated %}
           <form action="{%  url "haystack_search" %}" class="navbar-form navbar-left" role="search">
               <div class="form-group">
-                  <input name="q" type="text" class="form-control" placeholder="Search">
+                  <input title="Search" name="q" type="text" class="form-control" placeholder="Search">
               </div>
               <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-              <button id="id_oldest" class="btn btn-default" name="sort" value="oldest" type="submit">
+              <button title="Oldest first" id="id_oldest" class="btn btn-default" name="sort" value="oldest" type="submit">
                   <i class="fa fa-sort-asc"></i>
                   </button>
-              <button id="id_newest" class="btn btn-default" name="sort" value="newest" type="submit">
+              <button title="Newest first" id="id_newest" class="btn btn-default" name="sort" value="newest" type="submit">
                   <i class="fa fa-sort-desc"></i>
               </button>
           </form>
