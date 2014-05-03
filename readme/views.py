@@ -3,13 +3,12 @@ from django.template.response import TemplateResponse
 from django.views import generic
 from django.conf import settings
 from django.views.decorators.csrf import ensure_csrf_cookie
-from haystack.forms import FacetedSearchForm
 from haystack.query import SearchQuerySet
 from haystack.views import FacetedSearchView, search_view_factory
 from sitegate.models import InvitationCode
 from sitegate.signup_flows.modern import InvitationSignup
-from .models import Item, User, UserProfile
-from .forms import CreateItemForm, UpdateItemForm, UserProfileForm
+from .models import Item, UserProfile
+from .forms import CreateItemForm, UpdateItemForm, UserProfileForm, SearchForm
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import redirect, render_to_response
@@ -202,11 +201,17 @@ class ItemSearchView(FacetedSearchView):
     def build_form(self, form_kwargs=None):
         user_id = self.request.user.id
         self.searchqueryset = SearchQuerySet().filter(owner_id=user_id).facet('tags')
+        sorting = self.request.GET.get('sort', '')
+        if sorting == 'newest':
+            self.searchqueryset = self.searchqueryset.order_by('-created')
+        elif sorting == 'oldest':
+            self.searchqueryset = self.searchqueryset.order_by('created')
+
         return super(ItemSearchView, self).build_form(form_kwargs)
 
 search = login_required(search_view_factory(
     view_class=ItemSearchView,
-    form_class=FacetedSearchForm,
+    form_class=SearchForm,
 ))
 
 

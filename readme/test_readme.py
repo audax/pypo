@@ -251,6 +251,17 @@ class TestSearchIntegration:
         searched = {result.object for result in sqs}
         assert set(tagged_items) == searched
 
+    def test_can_sort_by_creation_time(self, user, user_client, test_index):
+        items = [add_example_item(user, ['foobar']) for _ in range(10)]
+
+        response = user_client.get('/search/', {'q': 'foobar', 'sort': 'oldest'})
+        results = [result.object for result in response.context['page'].object_list]
+        assert items == results
+
+        response = user_client.get('/search/', {'q': 'foobar', 'sort': 'newest'})
+        results = [result.object for result in response.context['page'].object_list]
+        assert list(reversed(items)) == results
+
 
 class TestDownload:
 

@@ -1,30 +1,37 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <h2>Search</h2>
-
-    <form method="get" action=".">
-        {{ form|crispy }}
-        <input type="submit" value="Search">
-
-    </form>
-    {% if query %}
-        <h3>Results</h3>
-
-        <div class="row">
-            {% for result in page.object_list %}
-                {% with result.object as item %}
-                    {% include "readme/item_single.html" %}
-                {% endwith %}
-            {% empty %}
-                <p>No results found.</p>
-            {% endfor %}
+    <div class="row">
+        <div class="col-sm-8">
+        {% crispy form %}
         </div>
+    </div>
 
-        {% if facets.fields.tags %}
-        <h3>Tags</h3>
+    {% if query %}
 
-        <div class="row">
+    <div class="row">
+        <div class="col-xs-12 col-sm-9">
+            <div id="id_item_list" class="row">
+                {% for result in page.object_list %}
+                    {% with result.object as item %}
+                        {% include "readme/item_single.html" %}
+                    {% endwith %}
+                {% empty %}
+                    <p>No results found.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-3" id="sidebar">
+            <ul class="pager">
+                {% if page.has_previous or page.has_next %}
+                    <div>
+                        {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
+                        |
+                        {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
+                    </div>
+                {% endif %}
+            </ul>
+            {% if facets.fields.tags %}
             <div class="list-group">
                 {% for tag in facets.fields.tags %}
                     {% with name=tag.0 count=tag.1 %}
@@ -35,14 +42,9 @@
                     {% endwith %}
                 {% endfor %}
             </div>
+            {% endif %}
         </div>
-        {% endif %}
-        {% if page.has_previous or page.has_next %}
-            <div>
-                {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
-                |
-                {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
-            </div>
-        {% endif %}
+    </div>
     {% endif %}
+
 {% endblock %}
