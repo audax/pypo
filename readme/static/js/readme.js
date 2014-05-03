@@ -101,9 +101,9 @@ $(document).ready(function() {
 
     $('.editable-tags').editable({
         placement: 'bottom',
+        container: 'body',
         disabled: true,
         type: 'select2',
-        showbuttons: false,
         ajaxOptions: {
             type: 'POST',
             headers: {'X-HTTP-Method-Override': 'PATCH'},
@@ -114,7 +114,7 @@ $(document).ready(function() {
         select2: {
             tags: window.PYPO.tags,
             tokenSeparators: [","],
-            width: '100%',
+            width: '256px',
             openOnEnter: false
         }
     });

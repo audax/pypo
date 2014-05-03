@@ -16,7 +16,8 @@
     height: 24px;
   }
   .item .panel .panel-heading .item_domain {
-    height: 32px;
+    height: 24px;
+    margin: 0 0 0 0;
   }
   .item .panel .panel-heading .item_tools {
     height: 228px;
@@ -25,13 +26,13 @@
     display: block;
   }
   .item .panel .panel-body {
-    height: 200px;
+    height: 216px;
   }
   .item.active_item .panel-heading {
-    height: 150px;
+    height: 130px;
   }
   .item.active_item .panel-body {
-    height: 106px;
+    height: 126px;
   }
 }
 .item {
@@ -40,11 +41,13 @@
 .header_buttons {
   display: none;
 }
-.item_title {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
+.panel .panel-heading {
+  padding-left: 0;
 }
+.panel .panel-heading .item_tools {
+  padding-left: 14px;
+}
+.item_title,
 .item_domain {
   text-overflow: ellipsis;
   white-space: nowrap;
