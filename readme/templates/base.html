@@ -30,11 +30,36 @@
           <ul class="nav navbar-nav">
               {% block navbar %}
                   {% if user.is_authenticated %}
-                  <li><a id="id_link_index" href="{% url "index" %}"><i class="fa fa-list"></i> List</a></li>
-                  <li><a id="id_link_add" href="{% url "item_add" %}"><i class="fa fa-link"></i> Add</a></li>
-                  <li><a id="id_enable_editable" href="#"><i class="fa fa-edit"></i> Edit</a></li>
-                  <li><a id="id_link_profile" href="{% url "profile" %}"><i class="fa fa-user"></i> Profile</a></li>
-                  <li><a id="id_link_logout" href="{% url "logout" %}"><i class="fa fa-sign-out"></i></a></li>
+                      <li><a id="id_link_index" href="{% url "index" %}">
+                          <i class="fa fa-list"></i> List
+                      </a>
+                      </li>
+                      <li><a id="id_link_add" href="{% url "item_add" %}">
+                          <i class="fa fa-link"></i> Add
+                      </a>
+                      </li>
+                      <li><a id="id_enable_editable" href="#">
+                          <i class="fa fa-edit"></i> Edit
+                      </a>
+                      </li>
+                      <li><a id="id_link_profile" href="{% url "profile" %}">
+                          <span class="hidden-xs">
+                              <i class="fa fa-user"></i>
+                          </span>
+                          <span class="hidden-sm hidden-md hidden-lg">
+                              <i class="fa fa-user"></i> Profile
+                          </span>
+                      </a>
+                      </li>
+                      <li><a id="id_link_logout" href="{% url "logout" %}">
+                          <span class="hidden-xs">
+                              <i class="fa fa-user"></i>
+                          </span>
+                          <span class="hidden-sm hidden-md hidden-lg">
+                              <i class="fa fa-sign-out"></i> Logout
+                          </span>
+                      </a>
+                      </li>
                   {% endif %}
               {% endblock %}
           </ul>
