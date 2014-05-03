@@ -25,6 +25,10 @@
   .item .panel .panel-heading .header_buttons {
     display: block;
   }
+  .item .panel .panel-heading .delete_link {
+    position: absolute;
+    left: 2px;
+  }
   .item .panel .panel-body {
     height: 216px;
   }
