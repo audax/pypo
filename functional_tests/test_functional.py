@@ -585,4 +585,12 @@ class ExistingUserTest(PypoLiveServerTestCase):
         with self.assertRaises(NoSuchElementException):
             self.b.find_element_by_class_name('delete_code')
 
+    def test_item_html_is_bleached(self):
+        self.create_pre_authenticated_session()
+        content = b'\r\n<script>alert(1);</script>foobar\r\n3>5'
+        item = Item.objects.create(url='http://some_invalid_localhost', title='nothing', owner=self.user,
+                                   readable_article=content)
+        self.b.get(self.live_server_url)
+        item_content = self.b.find_element_by_class_name('item-content').text
+        assert 'alert(1);foobar 3>5' == item_content
 

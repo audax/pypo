@@ -12,6 +12,7 @@ from readme.download import download, DownloadException
 from readme.scrapers import parse
 
 import logging
+import bleach
 
 request_log = logging.getLogger('readme.requests')
 
@@ -93,6 +94,12 @@ class Item(models.Model):
 
     def get_tag_names(self):
         return self.tags.values_list('name', flat=True)
+
+    def safe_article(self):
+        if self.readable_article:
+            return bleach.clean(self.readable_article, strip=True)
+        else:
+            return ''
 
     def fetch_article(self):
         """

@@ -29,6 +29,11 @@ class TestScraperText:
         item = Item.objects.create(url='http://some_invalid_localhost', title='nothing', owner=user)
         assert (item.url, '') == parse(item, content_type='text/html', text=None)
 
+    def test_html_is_bleached(self, user):
+        content = b'\r\n<script>alert(1);</script>foobar\r\n3>5'
+        item = Item.objects.create(url='http://some_invalid_localhost', title='nothing', owner=user,
+                                   readable_article=content)
+        assert '\nalert(1);foobar\n3&gt;5' == item.safe_article()
 
 
 @pytest.mark.django_db

@@ -61,7 +61,7 @@
                        data-title="Enter link description"
                        data-name="readable_article"
                        href="{{item.url}}">
-                       {{ item.readable_article|default:""|striptags|truncatechars:250}}
+                       {{ item.safe_article|truncatechars:250|safe}}
                     </span>
                 </div>
             </div>
