@@ -71,6 +71,8 @@ class Item(models.Model):
     owner = models.ForeignKey(User)
     #:param readable_article Processed content of the url
     readable_article = models.TextField(null=True)
+    #:param safe_article Escaped and stripped of tags
+    safe_article = models.TextField(null=True)
     #:param tags User assigned tags
     tags = TaggableManager(blank=True, through=TaggedItem)
 
@@ -95,11 +97,15 @@ class Item(models.Model):
     def get_tag_names(self):
         return self.tags.values_list('name', flat=True)
 
-    def safe_article(self):
+    def get_safe_article(self):
         if self.readable_article:
             return bleach.clean(self.readable_article, strip=True, tags=[])
         else:
             return ''
+
+    def save(self, *args, **kwargs):
+        self.safe_article = self.get_safe_article()
+        super(Item, self).save(*args, **kwargs)
 
     def fetch_article(self):
         """
