@@ -97,7 +97,7 @@ class Item(models.Model):
 
     def safe_article(self):
         if self.readable_article:
-            return bleach.clean(self.readable_article, strip=True)
+            return bleach.clean(self.readable_article, strip=True, tags=[])
         else:
             return ''
 
