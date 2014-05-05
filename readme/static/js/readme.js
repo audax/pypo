@@ -48,15 +48,6 @@ $(document).ready(function() {
     });
 
 
-    var protocol_regexp = new RegExp("^https?://");
-
-    $('#id_url').blur(function() {
-        var $this = $(this);
-        var value = $this.val();
-        if (!protocol_regexp.test(value)) {
-            $this.val('http://'+value);
-        }
-    })
     $('[data-toggle="confirmation"]').popConfirm({
             title: 'Do you want to delete this item?',
             content: '',
@@ -129,5 +120,44 @@ $(document).ready(function() {
         $this.closest('.item').toggleClass('active_item');
         $this.toggleClass('active');
     })
+
+    var protocol_regexp = new RegExp("^https?://");
+
+    var setup_item_form = function (url_field, tags_field) {
+        tags_field.select2({
+            tags: window.PYPO.tags,
+            width: '100%',
+            tokenSeparators: [","],
+            openOnEnter: false,
+            selectOnBlur: true
+        });
+
+        url_field.blur(function() {
+            var $this = $(this);
+            var value = $this.val();
+            if (!protocol_regexp.test(value)) {
+                $this.val('http://'+value);
+            }
+        })
+    }
+
+    if ($('#id_url')) {
+        setup_item_form($('#id_url'), $('#id_tags'));
+    }
+
+    $('#id_add_form').popover({
+        html : true,
+        placement: 'bottom',
+        container: '#add_item_popover',
+        title: 'Add a new link',
+        content: function() {
+            return $("#add_item_popover_content").html();
+        }
+    }).on('shown.bs.popover', function () {
+        setup_item_form($('.popover-content input[name="url"]'), $('.popover-content input[name="tags"]'));
+        $('#id_add_form').parent().addClass('active');
+    }).on('hidden.bs.popover', function() {
+        $('#id_add_form').parent().removeClass('active');
+    });
 });
 

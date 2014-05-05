@@ -6,13 +6,6 @@
 {% block JS %}
     <script type="application/javascript">
         $(document).ready(function() {
-            $('#id_tags').select2({
-                tags: window.PYPO.tags,
-                width: '100%',
-                tokenSeparators: [","],
-                openOnEnter: false,
-                selectOnBlur: true
-            });
             var url = $('#id_url').val()
             if (url !== '') {
                 $('#id_tags').select2('open');

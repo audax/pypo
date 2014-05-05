@@ -126,15 +126,18 @@ class ExistingUserTest(PypoLiveServerTestCase):
         return tags
 
     def create_example_item(self, tags='super-tag'):
-        self.b.get(self.live_server_url + '/add')
+        self.b.get(self.live_server_url)
+
+        # open the in place adding form
+        self.b.find_element_by_id('id_add_form').click()
+
         # He submits a link
-        input_url = self.b.find_element_by_name('url')
+        input_url = self.b.find_element_by_css_selector('.popover input[name="url"]')
         input_url.send_keys(EXAMPLE_COM)
-        input_tags = self.b.find_element_by_id('id_tags')
+        input_tags = self.b.find_element_by_css_selector('.popover input[name="tags"]')
         input_tags.click()
         input_tags.send_keys(tags)
-        input_tags.send_keys(',')
-        self.b.find_element_by_id('submit-id-submit').click()
+        input_tags.send_keys(Keys.ENTER)
 
     def test_autocomplete_tags(self):
         example_address = 'http://foobar.local/'
@@ -142,7 +145,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self._add_tagged_items()
         self.b.get(self.live_server_url + '/add')
 
-        input_url = self.b.find_element_by_name('url')
+        input_url = self.b.find_element_by_id('id_url')
         input_url.send_keys(example_address)
 
         self.b.find_element_by_css_selector('input.select2-input').click()
@@ -226,9 +229,6 @@ class ExistingUserTest(PypoLiveServerTestCase):
         # User opens pypo and has no items in his list
         self.b.get(self.live_server_url)
         self.assertEqual(0, len(self.b.find_elements_by_class_name('item')))
-
-        # He opens the add item page and sees the form
-        self.b.get(self.live_server_url+'/add')
 
         # He submits a link
         self.create_example_item()
@@ -419,7 +419,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.create_pre_authenticated_session()
         self.b.get(self.live_server_url + '/add')
         # He pastes an url without protocol
-        input_url = self.b.find_element_by_name('url')
+        input_url = self.b.find_element_by_id('id_url')
         input_url.send_keys('www.example.com')
         # He "leaves" the url input field
         input_tags = self.b.find_element_by_id('id_tags')
@@ -431,7 +431,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self.create_pre_authenticated_session()
         self.b.get(self.live_server_url + '/add')
         # He pastes an url without protocol
-        input_url = self.b.find_element_by_name('url')
+        input_url = self.b.find_element_by_id('id_url')
         input_url.send_keys('https://www.example.com')
         # He "leaves" the url input field
         input_tags = self.b.find_element_by_id('id_tags')
@@ -540,7 +540,7 @@ class ExistingUserTest(PypoLiveServerTestCase):
         password_input.send_keys(Keys.ENTER)
 
         # he is now registered, logged in and can create an item
-        self.assertTrue(self.b.find_element_by_id('id_link_add'))
+        self.assertTrue(self.b.find_element_by_id('id_add_form'))
         self.create_example_item()
 
         # and logs out

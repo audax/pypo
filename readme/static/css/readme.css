@@ -1,4 +1,11 @@
 @media (min-width: 768px) {
+  #add_item_popover .popover {
+    width: 600px;
+    max-width: none;
+  }
+  #add_item_popover .popover .arrow {
+    display: none;
+  }
   .item {
     height: 256px;
     margin-bottom: 16px;

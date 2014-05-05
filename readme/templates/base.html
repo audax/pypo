@@ -37,11 +37,19 @@
                       </a>
                       </li>
                       {% url 'item_add' as url %}
-                      <li {% if request.path == url %} class="active" {% endif %}>
-                      <a id="id_link_add" href="{{ url }}">
-                          <i class="fa fa-link"></i> Add
-                      </a>
+                      <li class="hidden-sm hidden-md hidden-lg {% if request.path == url %}active{% endif %}">
+                          <a id="id_link_add" href="{{ url }}">
+                              <i class="fa fa-link"></i> Add
+                          </a>
                       </li>
+
+                      {# inplace adding #}
+                      <li class="hidden-xs">
+                          <a id="id_add_form" href="#">
+                              <i class="fa fa-link"></i> Add
+                          </a>
+                      </li>
+
                       <li><a id="id_enable_editable" href="#">
                           <i class="fa fa-edit"></i> Edit
                       </a>
@@ -91,13 +99,40 @@
         {% block content %}{% endblock %}
     </div>
 
+  <div id="add_item_popover_content" class="hide">
+      <form class="form-horizontal" method="post" action="{% url 'item_add' %}">
+          {% csrf_token %}
+          <div class="form-group">
+              <label for="url" class="control-label col-lg-2 requiredField"> Url</label>
+
+              <div class="controls col-lg-8">
+                  <input class="urlinput form-control" maxlength="2000"
+                         name="url" required="required" type="url"/>
+              </div>
+          </div>
+          <div class="form-group">
+              <label for="tags" class="control-label col-lg-2"> Tags</label>
+
+              <div class="controls col-lg-8">
+                  <input class="quotelesstagwidget form-control" name="tags" type="text"/>
+              </div>
+          </div>
+          <div class="form-actions">
+              <input type="submit" name="submit" value="Submit" class="btn btn-primary" />
+          </div>
+      </form>
+
+  </div>
+
+  <div id="add_item_popover">
+
+  </div>
+
 
     {% compressed_js 'components' %}
-    {% if tag_names %}
-        <script type="application/javascript">
-            PYPO.tags = {{ tag_names|safe }};
-        </script>
-    {% endif %}
+    <script type="application/javascript">
+        PYPO.tags = {{ tag_names|safe|default:"[]" }};
+    </script>
     {% block JS %}
     {% endblock %}
 

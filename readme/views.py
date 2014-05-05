@@ -159,9 +159,11 @@ class UpdateUserProfileView(LoginRequiredMixin, generic.UpdateView):
 
 class AddView(TagNamesToContextMixin, LoginRequiredMixin, generic.CreateView):
     model = Item
-    success_url = reverse_lazy('index')
-
     form_class = CreateItemForm
+
+    def get_success_url(self):
+        return reverse('index')
+
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
