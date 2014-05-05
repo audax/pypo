@@ -30,11 +30,15 @@
           <ul class="nav navbar-nav">
               {% block navbar %}
                   {% if user.is_authenticated %}
-                      <li><a id="id_link_index" href="{% url "index" %}">
+                      {% url 'index' as url %}
+                      <li {% if request.path == url %} class="active" {% endif %}>
+                      <a id="id_link_index" href="{{ url }}">
                           <i class="fa fa-list"></i> List
                       </a>
                       </li>
-                      <li><a id="id_link_add" href="{% url "item_add" %}">
+                      {% url 'item_add' as url %}
+                      <li {% if request.path == url %} class="active" {% endif %}>
+                      <a id="id_link_add" href="{{ url }}">
                           <i class="fa fa-link"></i> Add
                       </a>
                       </li>
@@ -42,7 +46,9 @@
                           <i class="fa fa-edit"></i> Edit
                       </a>
                       </li>
-                      <li><a id="id_link_profile" href="{% url "profile" %}">
+                      {% url 'profile' as url %}
+                      <li {% if request.path == url %} class="active" {% endif %}>
+                      <a id="id_link_profile" href="{{ url }}">
                           <span class="hidden-xs">
                               <i class="fa fa-user"></i>
                           </span>

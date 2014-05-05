@@ -594,3 +594,31 @@ class ExistingUserTest(PypoLiveServerTestCase):
         item_content = self.b.find_element_by_class_name('item-content').text
         assert 'alert(1);foobar 3>5' == item_content
 
+    def test_active_page_is_highlighted_in_navbar(self):
+
+        def check_active_nav(name):
+            link = self.b.find_element_by_id('id_link_'+name)
+            list_entry = link.find_element_by_xpath('..')
+            return 'active' in list_entry.get_attribute('class')
+
+        self.create_pre_authenticated_session()
+        self.b.get(self.live_server_url)
+        assert check_active_nav('index')
+        assert not check_active_nav('add')
+        assert not check_active_nav('profile')
+
+        self.b.get(self.live_server_url+'/profile')
+        assert not check_active_nav('index')
+        assert not check_active_nav('add')
+        assert check_active_nav('profile')
+
+        self.b.get(self.live_server_url+'/invite')
+        assert not check_active_nav('index')
+        assert not check_active_nav('add')
+        assert not check_active_nav('profile')
+
+        self.b.get(self.live_server_url+'/add')
+        assert not check_active_nav('index')
+        assert check_active_nav('add')
+        assert not check_active_nav('profile')
+
