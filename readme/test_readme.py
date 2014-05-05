@@ -324,6 +324,12 @@ class TestDownload:
         content.decode.assert_called_with(encoding, errors='ignore')
         assert 'text' == ret.text
 
+    def test_guess_encoding_from_content(self, get_mock):
+        content = '<meta charset="UTF-8"/>fübar'
+        self._mock_content(get_mock, content=content.encode('utf-8'), content_type='text/html', encoding='latin1')
+        ret = download.download(EXAMPLE_COM)
+        assert content == ret.text
+
     def test_ignores_invalid_decode(self, get_mock):
         content, encoding = "üöä".encode('utf-8'), 'ascii'
         self._mock_content(get_mock, content=content, content_type='text/html', encoding=encoding)

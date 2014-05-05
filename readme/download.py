@@ -45,10 +45,21 @@ def download(url, max_content_length=1000):
         text = None
         # only decode text requests
         content_type = req.headers.get('content-type', '')
+
         if content_type.startswith('text/') and content is not None:
+            encoding = req.encoding
             try:
-                text = content.decode(req.encoding, errors='ignore')
+                text = content.decode(encoding, errors='ignore')
             except LookupError:
                 pass
+            else:
+                content_encodings = requests.utils.get_encodings_from_content(text)
+                # if we detect more than the fallback encoding, use that one
+                if content_encodings != ['ISO-8859-1']:
+                    try:
+                        text = content.decode(content_encodings[0], errors='ignore')
+                    except LookupError:
+                        pass
+
         return DownloadedContent(content=content, text=text, content_type=content_type)
 
