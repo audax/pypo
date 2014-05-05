@@ -22,6 +22,7 @@ It's main components are built with:
 -  requests
 -  djangorestframework
 -  py.test
+-  bleach
 
 Documentation
 -------------
@@ -40,7 +41,10 @@ Installation
 
 1. Create a virtualenv and
 
-   pip install -r requirements.txt && pip install -e .
+.. code-block:: bash
+
+   $ pip install -r requirements.txt
+   $ pip install -e .
 
 2. Setup a postgresql db
 3. You can overwrite the default settings by creating a
@@ -48,21 +52,29 @@ Installation
    the settings.py.
 4. Install js modules with bower
 
-   npm install -g bower
-   bower install
+.. code-block:: bash
+
+   $ npm install -g bower
+   $ bower install
 
 5. Install yuglify for js and css minifiy
 
-    npm install -g yuglify
+.. code-block:: bash
+
+   $ npm install -g yuglify
 
 6. Setup the database
 
-   ./manage.py syncdb
-   ./manage.py migrate
+.. code-block:: bash
+
+   $ ./manage.py syncdb
+   $ ./manage.py migrate
 
 7. Add a superuser
 
-   ./manage.py createsuperuser
+.. code-block:: bash
+
+   $ ./manage.py createsuperuser
 
 8. Host the application, see `Deploying Django with WSGI`_
 9. Create normal users with the admin interface /admin
