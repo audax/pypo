@@ -1,6 +1,9 @@
-window.PYPO = {};
 $(document).ready(function() {
     "use strict";
+
+    if (window.PYPO === undefined) {
+        window.PYPO = {};
+    }
 
     function getCookie(name) {
         var cookieValue = null;
@@ -141,7 +144,7 @@ $(document).ready(function() {
         })
     }
 
-    if ($('#id_url')) {
+    if ($('#id_url').length === 1) {
         setup_item_form($('#id_url'), $('#id_tags'));
     }
 

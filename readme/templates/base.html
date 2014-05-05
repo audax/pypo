@@ -129,10 +129,11 @@
   </div>
 
 
-    {% compressed_js 'components' %}
     <script type="application/javascript">
-        PYPO.tags = {{ tag_names|safe|default:"[]" }};
+       window.PYPO = {}
+       window.PYPO.tags = {{ tag_names|safe|default:"[]" }};
     </script>
+    {% compressed_js 'components' %}
     {% block JS %}
     {% endblock %}
 
