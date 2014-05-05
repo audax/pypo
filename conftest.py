@@ -119,3 +119,14 @@ def test_index(settings):
     call_command('clear_index', interactive=False, verbosity=0)
     haystack.connections.reload('default')
 
+@pytest.yield_fixture(scope='module')
+def simple_items(db, user):
+    items = {
+        'item_fish': add_example_item(user, [QUEEN, 'fish', 'cookie']),
+        'item_box': add_example_item(user, [QUEEN, 'box']),
+        'filter': Item.objects.filter(owner_id=user.id),
+    }
+    yield items
+    items['item_fish'].delete()
+    items['item_box'].delete()
+
