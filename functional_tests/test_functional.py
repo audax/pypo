@@ -18,7 +18,7 @@ import time
 
 from pypo import settings
 from readme.models import Item
-from readme.test_item import add_example_item, add_tagged_items, add_item_for_new_user, QUEEN
+from conftest import add_example_item, QUEEN
 
 
 EXAMPLE_COM = 'http://www.example.com/'
@@ -111,7 +111,12 @@ class ExistingUserTest(PypoLiveServerTestCase):
         return add_example_item(self.user, tags)
 
     def _add_tagged_items(self):
-        add_tagged_items(self.user)
+        user = self.user
+        add_example_item(user, ('fish', 'boxing')),
+        add_example_item(user, ('fish', QUEEN)),
+        add_example_item(user, (QUEEN, 'bartender')),
+        add_example_item(user, (QUEEN, 'pypo')),
+        add_example_item(user, tuple())
 
     def _toggle_toolboxes(self):
         for btn in self.b.find_elements_by_class_name('link_toolbox'):
@@ -344,7 +349,9 @@ class ExistingUserTest(PypoLiveServerTestCase):
         self._add_tagged_items()
 
         # Another user also adds an item with the same tag
-        add_item_for_new_user([QUEEN])
+        other_user = User.objects.create_user('other_user', 'other_user@example.com',
+                                        'password')
+        add_example_item(other_user, [QUEEN])
 
         # Uther starts a search for his queen-tagged items
         self.b.get(self.live_server_url+'/search')

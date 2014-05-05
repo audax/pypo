@@ -6,16 +6,16 @@ from django.core.urlresolvers import reverse, resolve
 import requests
 from sitegate.models import InvitationCode
 from .models import Item
+from readme.forms import CreateItemForm
 from readme.scrapers import parse
 from readme import download
 from readme.views import Tag
-from conftest import add_example_item
+from conftest import add_example_item, QUEEN
 import json
 
 import pytest
 
 EXAMPLE_COM = 'http://www.example.com/'
-QUEEN = 'queen with spaces änd umlauts'
 
 def test_invalid_html(user):
     item = Item.objects.create(url='http://some_invalid_localhost', title='nothing', owner=user)
@@ -67,7 +67,7 @@ def test_long_tags_are_truncated(user, user_client):
 
 def test_edit_item(user_client, user):
     item = Item.objects.create(url=EXAMPLE_COM, title='nothing', owner=user)
-    response = user_client.post('/update/{}/'.format(item.id), {'tags': 'some-tags are-posted'}, follow=True)
+    response = user_client.post('/update/{}/'.format(item.id), {'tags': 'some-tags , are-posted'}, follow=True)
     assert response.status_code == 200
     assert 'some-tags' in response.rendered_content
     assert 'are-posted' in response.rendered_content
@@ -399,3 +399,9 @@ def test_items_are_searchable(api_client, api_user):
     assert 'id' in response.data
     sqs = SearchQuerySet().filter(owner_id=api_user.id).auto_query('second-tag')
     assert sqs.count() == 1, 'New item is not in the searchable by tag'
+
+def test_item_form_allows_tags_with_spaces():
+    form = CreateItemForm({'url': EXAMPLE_COM, 'tags': 'i have spaces, foo'}, instance=Item())
+    assert form.is_valid()
+    cleaned = form.clean()
+    assert cleaned['tags'] == ['foo', 'i have spaces']

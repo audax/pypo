@@ -1,6 +1,7 @@
 from crispy_forms import layout
 from django import forms
 from django.conf import settings
+from django.utils.encoding import force_text
 from haystack.forms import FacetedSearchForm
 import six
 from taggit.forms import TagWidget
@@ -11,6 +12,14 @@ from crispy_forms.helper import FormHelper
 def edit_string_for_tags(tags):
     return ', '.join(sorted(tag.name for tag in tags))
 
+def parse_tags(tagstring):
+    if not tagstring:
+        return []
+
+    tagstring = force_text(tagstring)
+
+    words = [word.strip() for word in tagstring.split(',')]
+    return sorted(set(words))
 
 class QuotelessTagWidget(TagWidget):
     def render(self, name, value, attrs=None):
@@ -18,8 +27,19 @@ class QuotelessTagWidget(TagWidget):
             value = edit_string_for_tags([o.tag for o in value.select_related("tag")])
         return super(QuotelessTagWidget, self).render(name, value, attrs)
 
+class TagField(forms.CharField):
+    widget = TagWidget
+
+    def clean(self, value):
+        value = super(TagField, self).clean(value)
+        try:
+            return parse_tags(value)
+        except ValueError:
+            raise forms.ValidationError("Please provide a comma-separated list of tags.")
 
 class CreateItemForm(forms.ModelForm):
+
+    tags = TagField()
 
     def __init__(self, *args, **kwargs):
         h = FormHelper()
