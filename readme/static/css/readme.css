@@ -24,6 +24,7 @@
   }
   .item .panel .panel-heading .header_buttons {
     display: block;
+    left: -4px;
   }
   .item .panel .panel-heading .delete_link {
     position: absolute;
