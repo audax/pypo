@@ -40,8 +40,7 @@ Installation
 
 1. Create a virtualenv and
 
-   pip install -r requirements.txt
-   pip install -e .
+   pip install -r requirements.txt && pip install -e .
 
 2. Setup a postgresql db
 3. You can overwrite the default settings by creating a
