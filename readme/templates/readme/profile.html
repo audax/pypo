@@ -18,3 +18,17 @@
         {% crispy form %}
     </div>
 {% endblock %}
+
+{% block JS %}
+    <script type="application/javascript">
+        $(document).ready(function() {
+            $('#id_excluded_tags').select2({
+                tags: window.PYPO.tags,
+                width: '100%',
+                tokenSeparators: [","],
+                openOnEnter: false,
+                selectOnBlur: true
+            });
+        })
+    </script>
+{% endblock %}

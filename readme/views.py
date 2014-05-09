@@ -45,14 +45,24 @@ class RestrictItemAccessMixin(object):
 @login_required
 @ensure_csrf_cookie
 def index(request):
+    profile = request.user.userprofile
+
     queryset = Item.objects.filter(owner=request.user).order_by('-created').prefetch_related('tags')
-    facets = SearchQuerySet().filter(owner_id=request.user.id).facet('tags').facet_counts()
+    sqs = SearchQuerySet().filter(owner_id=request.user.id)
+
+    if not profile.show_excluded:
+        excluded_tags = profile.excluded_tags.names()
+        queryset = queryset.without(*excluded_tags)
+        for tag in excluded_tags:
+            sqs = sqs.exclude(tags__in=[tag])
+
+    facets = sqs.facet('tags').facet_counts()
     tag_objects = []
     for name, count in facets.get('fields', {}).get('tags', []):
         if name is not None:
             tag_objects.append(Tag(name, count, []))
 
-    paginator = Paginator(queryset, request.user.userprofile.items_per_page)
+    paginator = Paginator(queryset, profile.items_per_page)
     try:
         page = paginator.page(request.GET.get('page'))
     except PageNotAnInteger:
@@ -100,6 +110,14 @@ def tags(request, tags=''):
     sqs = SearchQuerySet().filter(owner_id=request.user.id)
     for tag in tag_list:
         sqs = sqs.filter(tags__in=[tag])
+
+    profile = request.user.userprofile
+
+    if not profile.show_excluded:
+        excluded_tags = profile.excluded_tags.names()
+        for tag in excluded_tags:
+            sqs = sqs.exclude(tags__in=[tag])
+
     sqs = sqs.order_by('-created').facet('tags')
 
     facets = sqs.facet_counts()
@@ -139,7 +157,7 @@ class UpdateItemView(TagNamesToContextMixin, RestrictItemAccessMixin, generic.Up
         return HttpResponseRedirect(self.get_success_url())
 
 
-class UpdateUserProfileView(LoginRequiredMixin, generic.UpdateView):
+class UpdateUserProfileView(TagNamesToContextMixin, LoginRequiredMixin, generic.UpdateView):
     model = UserProfile
     context_object_name = 'user_profile'
     template_name = 'readme/profile.html'
@@ -203,6 +221,12 @@ class ItemSearchView(FacetedSearchView):
     def build_form(self, form_kwargs=None):
         user_id = self.request.user.id
         self.searchqueryset = SearchQuerySet().filter(owner_id=user_id).facet('tags')
+
+        profile = self.request.user.userprofile
+        if not profile.show_excluded:
+            for tag in profile.excluded_tags.names():
+                self.searchqueryset = self.searchqueryset.exclude(tags__in=[tag])
+
         sorting = self.request.GET.get('sort', '')
         if sorting == 'newest':
             self.searchqueryset = self.searchqueryset.order_by('-created')

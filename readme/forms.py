@@ -90,6 +90,11 @@ class UserProfileForm(forms.ModelForm):
         min_value=1,
         max_value=100)
 
+    excluded_tags = TagField(
+        label='Excluded tags',
+        help_text='Items with these tags will not be shown',
+        required=False)
+
     def __init__(self, *args, **kwargs):
         h = FormHelper()
         h.form_id = 'user-profile-form'
@@ -100,6 +105,8 @@ class UserProfileForm(forms.ModelForm):
             'theme',
             'new_window',
             'items_per_page',
+            'excluded_tags',
+            'show_excluded',
             layout.Div(
                 layout.Div(
                     layout.Submit('Save', value='Save', css_class='btn-default'),
@@ -117,7 +124,7 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['theme', 'new_window', 'items_per_page']
+        fields = ['theme', 'new_window', 'items_per_page', 'excluded_tags', 'show_excluded']
 
 
 class SearchForm(FacetedSearchForm):

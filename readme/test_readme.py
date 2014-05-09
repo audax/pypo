@@ -164,13 +164,50 @@ def test_can_change_his_profile(user_client, user):
     assert user.userprofile.theme == 'journal'
     assert user.userprofile.items_per_page == 1
 
-def test_facets_are_included_in_the_index_view(user_client, other_user, tagged_items, test_index):
+
+def test_can_exclude_tags(test_index, user_client, user, tagged_items):
+    user.userprofile.excluded_tags.add('fish')
+    user.userprofile.save()
+
+    response = user_client.get('/')
+    assert len(response.context['item_list']) == 3
+    tags = {(tag.name, tag.count) for tag in response.context['tags']}
+    # only his own tags are counted
+    assert {(QUEEN, 2), ('pypo', 1), ('bartender', 1)} == tags
+
+    response = user_client.get('/search/', {'q': 'fish'})
+    assert len(response.context['page'].object_list) == 0
+
+    response = user_client.get('/tags/fish')
+    assert len(response.context['current_item_list']) == 0
+
+
+def test_can_disable_excluding(test_index, user_client, user, tagged_items):
+    user.userprofile.excluded_tags.add(QUEEN)
+    user.userprofile.show_excluded = True
+    user.userprofile.save()
+
+    response = user_client.get('/')
+    assert len(response.context['item_list']) == 5
+    tags = {(tag.name, tag.count) for tag in response.context['tags']}
+    # only his own tags are counted
+    assert {(QUEEN, 3), ('fish', 2), ('pypo', 1), ('boxing', 1), ('bartender', 1)} == tags
+
+    response = user_client.get('/search/', {'q': 'fish'})
+    assert len(response.context['page'].object_list) == 2
+
+    response = user_client.get('/tags/fish')
+    assert len(response.context['current_item_list']) == 2
+
+
+
+def test_facets_are_included_in_the_index_view(test_index, user_client, other_user, tagged_items):
     # another item with the same tag by another user
     add_example_item(other_user, [QUEEN])
     response = user_client.get('/')
     tags = {(tag.name, tag.count) for tag in response.context['tags']}
     # only his own tags are counted
-    assert {(QUEEN, 3), ('fish', 2), ('pypo', 1), ('boxing', 1), ('bartender', 1)}, tags
+    assert {(QUEEN, 3), ('fish', 2), ('pypo', 1), ('boxing', 1), ('bartender', 1)} == tags
 
 def test_index_view_is_paginated(user, user_client, tagged_items):
     response = user_client.get('/')

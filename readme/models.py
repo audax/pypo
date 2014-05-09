@@ -25,6 +25,12 @@ class ItemQuerySet(models.query.QuerySet):
             filtered = filtered.filter(tags__name=tag)
         return filtered
 
+    def without(self, *tags):
+        filtered = self
+        for tag in tags:
+            filtered = filtered.exclude(tags__name=tag)
+        return filtered
+
 
 class ItemManager(models.Manager):
 
@@ -129,6 +135,16 @@ class UserProfile(models.Model):
     can_invite = models.BooleanField(default=True)
     new_window = models.BooleanField('Open links in a new page', default=False)
     items_per_page = models.PositiveIntegerField('Number of items shown on a page', default=50)
+    excluded_tags = TaggableManager('Tags that can be excluded', blank=True)
+    show_excluded = models.BooleanField('Show excluded items anyway', default=False)
+
+
+    @property
+    def id(self):
+        """
+        Just to tell the TaggableManager what the primary key of this model is
+        """
+        return self.user.id
 
 @receiver(post_save, sender=User)
 def create_profile_for_new_user(sender, created, instance, **kwargs):
