@@ -42,9 +42,6 @@ def _update_database(source_folder):
     run('cd %s && ../virtualenv/bin/python3 manage.py migrate --noinput' % (
         source_folder,
         ))
-    run('cd %s && ../virtualenv/bin/python3 manage.py update_index' % (
-        source_folder,
-        ))
 
 def _get_latest_source(source_folder):
     if exists(path.join(source_folder, '.git')):
@@ -56,3 +53,9 @@ def _get_latest_source(source_folder):
 
 def reload_wsgi():
     run("sudo service {}.gunicorn restart".format(env.host))
+
+def update_index():
+    source_folder = path.join(SITES_FOLDER, env.host, 'source')
+    run('cd %s && ../virtualenv/bin/python3 manage.py update_index' % (
+        source_folder,
+        ))
