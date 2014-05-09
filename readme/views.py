@@ -52,7 +52,7 @@ def index(request):
         if name is not None:
             tag_objects.append(Tag(name, count, []))
 
-    paginator = Paginator(queryset, settings.PYPO_ITEMS_ON_PAGE)
+    paginator = Paginator(queryset, request.user.userprofile.items_per_page)
     try:
         page = paginator.page(request.GET.get('page'))
     except PageNotAnInteger:

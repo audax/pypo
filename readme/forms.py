@@ -85,19 +85,25 @@ class UserProfileForm(forms.ModelForm):
         label='Choose your theme',
         choices=settings.PYPO_THEMES)
 
+    items_per_page = forms.IntegerField(
+        label='Select how many items should be shown on a page',
+        min_value=1,
+        max_value=100)
+
     def __init__(self, *args, **kwargs):
         h = FormHelper()
         h.form_id = 'user-profile-form'
         h.form_class = 'form-horizontal'
         h.label_class = 'col-lg-2'
-        h.field_class = 'col-lg-8'
+        h.field_class = 'col-lg-4'
         h.layout = layout.Layout(
             'theme',
             'new_window',
+            'items_per_page',
             layout.Div(
                 layout.Div(
                     layout.Submit('Save', value='Save', css_class='btn-default'),
-                    css_class='col-lg-offset-2 col-lg-8'
+                    css_class='col-lg-offset-2 col-lg-4'
                 ),
                 css_class='form-group',
             )
@@ -111,7 +117,7 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['theme', 'new_window']
+        fields = ['theme', 'new_window', 'items_per_page']
 
 
 class SearchForm(FacetedSearchForm):

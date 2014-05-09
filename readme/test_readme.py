@@ -158,9 +158,11 @@ def test_restrict_invite_creation(user_client, user):
 def test_can_change_his_profile(user_client, user):
     user_client.post(reverse('profile'), {
         'theme': 'journal',
+        'items_per_page': '1',
     })
     user = User.objects.get(id=user.id)
     assert user.userprofile.theme == 'journal'
+    assert user.userprofile.items_per_page == 1
 
 def test_facets_are_included_in_the_index_view(user_client, other_user, tagged_items, test_index):
     # another item with the same tag by another user

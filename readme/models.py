@@ -128,6 +128,7 @@ class UserProfile(models.Model):
     theme = models.CharField('Custom Theme', max_length=30, default=settings.PYPO_DEFAULT_THEME)
     can_invite = models.BooleanField(default=True)
     new_window = models.BooleanField('Open links in a new page', default=False)
+    items_per_page = models.PositiveIntegerField('Number of items shown on a page', default=50)
 
 @receiver(post_save, sender=User)
 def create_profile_for_new_user(sender, created, instance, **kwargs):

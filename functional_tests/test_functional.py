@@ -663,3 +663,16 @@ class ExistingUserTest(PypoLiveServerTestCase):
 
         item_link = self.b.find_element_by_class_name('item_link')
         self.assertEqual(item_link.get_attribute('target'), '_blank')
+
+    def test_config_pagination(self):
+        self.create_pre_authenticated_session()
+        # Uther adds 5 items
+        self._add_tagged_items()
+
+        ## This is done in code we don't need to test the form itself.
+        self.user.userprofile.items_per_page = 1
+        self.user.userprofile.save()
+
+        # Now he only sees one item on the main page
+        self.b.get(self.live_server_url)
+        self.assertEqual(len(self.b.find_elements_by_class_name('item_link')), 1)
