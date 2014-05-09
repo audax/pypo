@@ -144,6 +144,21 @@ class ExistingUserTest(PypoLiveServerTestCase):
         input_tags.send_keys(tags)
         input_tags.send_keys(Keys.ENTER)
 
+    def test_create_item_without_tags(self):
+        self.create_pre_authenticated_session()
+        self.b.get(self.live_server_url)
+
+        # open the in place adding form
+        self.b.find_element_by_id('id_add_form').click()
+
+        # He submits a link without a tag
+        input_url = self.b.find_element_by_css_selector('.popover input[name="url"]')
+        input_url.send_keys(EXAMPLE_COM)
+        input_url.send_keys(Keys.ENTER)
+
+        # and the link is added
+        self.assertEqual(len(self.b.find_elements_by_class_name('item_link')), 1)
+
     def test_autocomplete_tags(self):
         example_address = 'http://foobar.local/'
         self.create_pre_authenticated_session()

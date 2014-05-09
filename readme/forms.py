@@ -39,7 +39,7 @@ class TagField(forms.CharField):
 
 class CreateItemForm(forms.ModelForm):
 
-    tags = TagField()
+    tags = TagField(required=False)
 
     def __init__(self, *args, **kwargs):
         h = FormHelper()
@@ -58,7 +58,8 @@ class CreateItemForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        cleaned_data['tags'] = [tag[:99] for tag in cleaned_data['tags']]
+        if cleaned_data['tags']:
+            cleaned_data['tags'] = [tag[:99] for tag in cleaned_data['tags']]
         return cleaned_data
 
     class Meta:
