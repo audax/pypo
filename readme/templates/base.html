@@ -22,7 +22,7 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="https://github.com/audax/pypo">
+          <a title="Fork me on github!" class="navbar-brand" href="https://github.com/audax/pypo">
               <i class="fa fa-github"></i> PyPo
           </a>
       </div>
@@ -32,13 +32,13 @@
                   {% if user.is_authenticated %}
                       {% url 'index' as url %}
                       <li {% if request.path == url %} class="active" {% endif %}>
-                      <a id="id_link_index" href="{{ url }}">
+                      <a title="Index" id="id_link_index" href="{{ url }}">
                           <i class="fa fa-list"></i> List
                       </a>
                       </li>
                       {% url 'item_add' as url %}
                       <li class="hidden-sm hidden-md hidden-lg {% if request.path == url %}active{% endif %}">
-                          <a id="id_link_add" href="{{ url }}">
+                          <a title="Add a new item" id="id_link_add" href="{{ url }}">
                               <i class="fa fa-link"></i> Add
                           </a>
                       </li>
@@ -50,13 +50,13 @@
                           </a>
                       </li>
 
-                      <li><a id="id_enable_editable" href="#">
+                      <li><a title="Enable edit mode to in place edit all items" id="id_enable_editable" href="#">
                           <i class="fa fa-edit"></i> Edit
                       </a>
                       </li>
                       {% url 'profile' as url %}
                       <li {% if request.path == url %} class="active" {% endif %}>
-                      <a id="id_link_profile" href="{{ url }}">
+                      <a title="Profile and config" id="id_link_profile" href="{{ url }}">
                           <span class="hidden-xs">
                               <i class="fa fa-user"></i>
                           </span>
@@ -65,7 +65,7 @@
                           </span>
                       </a>
                       </li>
-                      <li><a id="id_link_logout" href="{% url "logout" %}">
+                      <li><a title="Logout" id="id_link_logout" href="{% url "logout" %}">
                           <span class="hidden-xs">
                               <i class="fa fa-sign-out"></i>
                           </span>
@@ -84,10 +84,10 @@
                   <input title="Search" name="q" type="text" class="form-control" placeholder="Search">
               </div>
               <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-              <button title="Oldest first" id="id_oldest" class="btn btn-default" name="sort" value="oldest" type="submit">
+              <button title="Search and display the oldest entries first" id="id_oldest" class="btn btn-default" name="sort" value="oldest" type="submit">
                   <i class="fa fa-sort-asc"></i>
                   </button>
-              <button title="Newest first" id="id_newest" class="btn btn-default" name="sort" value="newest" type="submit">
+              <button title="Search and display the newest entries first" id="id_newest" class="btn btn-default" name="sort" value="newest" type="submit">
                   <i class="fa fa-sort-desc"></i>
               </button>
           </form>

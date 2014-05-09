@@ -82,11 +82,13 @@ class UpdateItemForm(CreateItemForm):
 
 class UserProfileForm(forms.ModelForm):
     theme = forms.ChoiceField(
-        label='Choose your theme',
+        label='Theme',
+        help_text='Choose a color theme',
         choices=settings.PYPO_THEMES)
 
     items_per_page = forms.IntegerField(
-        label='Select how many items should be shown on a page',
+        label='Page size',
+        help_text='Select how many items should be shown on a page',
         min_value=1,
         max_value=100)
 
