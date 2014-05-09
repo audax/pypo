@@ -5,7 +5,7 @@ from django.utils.encoding import force_text
 from haystack.forms import FacetedSearchForm
 import six
 from taggit.forms import TagWidget
-from .models import Item, User
+from .models import Item, UserProfile
 from crispy_forms.helper import FormHelper
 
 
@@ -93,6 +93,7 @@ class UserProfileForm(forms.ModelForm):
         h.field_class = 'col-lg-8'
         h.layout = layout.Layout(
             'theme',
+            'new_window',
             layout.Div(
                 layout.Div(
                     layout.Submit('Save', value='Save', css_class='btn-default'),
@@ -109,8 +110,8 @@ class UserProfileForm(forms.ModelForm):
         super(UserProfileForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = User
-        fields = ['theme']
+        model = UserProfile
+        fields = ['theme', 'new_window']
 
 
 class SearchForm(FacetedSearchForm):

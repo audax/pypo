@@ -127,6 +127,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True)
     theme = models.CharField('Custom Theme', max_length=30, default=settings.PYPO_DEFAULT_THEME)
     can_invite = models.BooleanField(default=True)
+    new_window = models.BooleanField('Open links in a new page', default=False)
 
 @receiver(post_save, sender=User)
 def create_profile_for_new_user(sender, created, instance, **kwargs):

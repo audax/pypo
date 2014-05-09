@@ -644,3 +644,22 @@ class ExistingUserTest(PypoLiveServerTestCase):
         assert check_active_nav('add')
         assert not check_active_nav('profile')
 
+    def test_config_to_open_links_in_a_new_window(self):
+        self.create_pre_authenticated_session()
+        self.create_example_item()
+
+        self.b.get(self.live_server_url)
+        item_link = self.b.find_element_by_class_name('item_link')
+        self.assertEqual(item_link.get_attribute('target'), '')
+
+        self.b.get(self.live_server_url+'/profile/')
+
+        input_window = self.b.find_element_by_name('new_window')
+        input_window.click()
+
+        self.b.find_element_by_id('submit-id-save').click()
+
+        self.b.get(self.live_server_url)
+
+        item_link = self.b.find_element_by_class_name('item_link')
+        self.assertEqual(item_link.get_attribute('target'), '_blank')

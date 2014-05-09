@@ -10,7 +10,8 @@
                    data-name="title"
                    data-value="{{ item.title|default:"" }}"
                    class="editable item_link" href="{{ item.url }}"
-                   title="{{ item.title|default:"" }}">
+                   title="{{ item.title|default:"" }}"
+                   {% if user.userprofile.new_window %}target="_blank"{% endif %}>
                     {{ item.title|default:""|truncatechars:64 }}
                 </a>
             </div>
