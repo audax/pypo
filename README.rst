@@ -1,7 +1,7 @@
 About Pypo
 ==========
 
-|Build Status| |Coverage Status|
+|Build Status| |Requirements Status|
 
 
 Pypo is a self hosted bookmarking service like `Pocket`_.
@@ -96,5 +96,6 @@ This project is licensed under the terms of the Apache License version
 .. _readthedocs: http://pypo.readthedocs.org/
 .. |Build Status| image:: https://travis-ci.org/audax/pypo.png?branch=master
     :target: https://travis-ci.org/audax/pypo
-.. |Coverage Status| image:: https://coveralls.io/repos/audax/pypo/badge.png?branch=master
-    :target: https://coveralls.io/r/audax/pypo?branch=master
+.. |Requirements Status| image:: https://requires.io/github/audax/pypo/requirements.png?branch=master
+   :target: https://requires.io/github/audax/pypo/requirements/?branch=master
+   :alt: Requirements Status
