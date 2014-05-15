@@ -7,3 +7,7 @@ doc/build
 doc/_build
 .coverage
 bower_components/*
+node_modules/*
+ghostdriver.log
+pypo.db
+pypo.egg-info
