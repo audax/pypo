@@ -76,9 +76,9 @@ class Item(models.Model):
     #:param owner Owning user
     owner = models.ForeignKey(User)
     #:param readable_article Processed content of the url
-    readable_article = models.TextField(null=True)
+    readable_article = models.TextField(blank=True)
     #:param safe_article Escaped and stripped of tags
-    safe_article = models.TextField(null=True)
+    safe_article = models.TextField(blank=True)
     #:param tags User assigned tags
     tags = TaggableManager(blank=True, through=TaggedItem)
 

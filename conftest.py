@@ -68,7 +68,7 @@ def api_client(api_user):
     return client
 
 def add_example_item(user, tags=None):
-    item = Item.objects.create(url=EXAMPLE_COM, title='nothing', owner=user, readable_article="empty")
+    item = Item.objects.create(url=EXAMPLE_COM, title='nothing', owner=user, readable_article="")
     if tags is not None:
         item.tags.add(*tags)
         item.save()
