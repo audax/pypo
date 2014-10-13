@@ -68,6 +68,10 @@ class ExistingUserTest(PypoLiveServerTestCase):
         WebDriverWait(self.b, timeout).until(callback)
 
     def setUp(self):
+        if os.environ.get('SILENT', '') == 'TRUE':
+            from pyvirtualdisplay import Display
+            display = Display(visible=0, size=(800, 600))
+            display.start()
         self.b = getattr(webdriver,  os.environ.get('WEBDRIVER', 'Firefox'))()
         self.b.implicitly_wait(3)
         self.b.set_window_size(1024, 768)
