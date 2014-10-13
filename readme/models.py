@@ -70,7 +70,7 @@ class Item(models.Model):
     #:param url Page url
     url = models.URLField(max_length=2000)
     #:param title Page title
-    title = models.TextField()
+    title = models.TextField(blank=True)
     #:param created Creating date of the item
     created = models.DateTimeField(auto_now_add=True)
     #:param owner Owning user
