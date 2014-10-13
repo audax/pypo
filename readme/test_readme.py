@@ -381,9 +381,9 @@ def test_can_list_all_items(api_client, api_user):
     response.data[1].pop('id')
     assert response.data == [
         {'url': 'something.local', 'title': 'nothing',
-         'created': item2.created, 'readable_article': None, 'tags': []},
+         'created': item2.created, 'readable_article': '', 'tags': []},
         {'url': 'http://www.example.com/', 'title': 'nothing',
-         'created': item.created, 'readable_article': None, 'tags': []},
+         'created': item.created, 'readable_article': '', 'tags': []},
     ]
 
 def test_can_update_item(api_client, api_user):

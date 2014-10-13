@@ -70,15 +70,15 @@ class Item(models.Model):
     #:param url Page url
     url = models.URLField(max_length=2000)
     #:param title Page title
-    title = models.TextField()
+    title = models.TextField(blank=True)
     #:param created Creating date of the item
     created = models.DateTimeField(auto_now_add=True)
     #:param owner Owning user
     owner = models.ForeignKey(User)
     #:param readable_article Processed content of the url
-    readable_article = models.TextField(null=True)
+    readable_article = models.TextField(blank=True)
     #:param safe_article Escaped and stripped of tags
-    safe_article = models.TextField(null=True)
+    safe_article = models.TextField(blank=True)
     #:param tags User assigned tags
     tags = TaggableManager(blank=True, through=TaggedItem)
 
