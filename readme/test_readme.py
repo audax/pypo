@@ -379,11 +379,11 @@ def test_can_list_all_items(api_client, api_user):
     response = api_client.get('/api/items/')
     response.data[0].pop('id')
     response.data[1].pop('id')
-    assert response.data == [
+    assert list(map(dict, response.data)) == [
         {'url': 'something.local', 'title': 'nothing',
-         'created': item2.created, 'readable_article': '', 'tags': []},
+         'created': item2.created_as_str, 'readable_article': '', 'tags': []},
         {'url': 'http://www.example.com/', 'title': 'nothing',
-         'created': item.created, 'readable_article': '', 'tags': []},
+         'created': item.created_as_str, 'readable_article': '', 'tags': []},
     ]
 
 def test_can_update_item(api_client, api_user):

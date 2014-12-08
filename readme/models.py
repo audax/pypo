@@ -83,6 +83,11 @@ class Item(models.Model):
     tags = TaggableManager(blank=True, through=TaggedItem)
 
     objects = ItemManager()
+    
+    @property
+    def created_as_str(self):
+        created = self.created.isoformat().split('+')[0]
+        return created + 'Z'
 
     @cached_property
     def domain(self):
@@ -101,7 +106,21 @@ class Item(models.Model):
         return reverse('item_update', args=[str(self.id)])
 
     def get_tag_names(self):
-        return self.tags.values_list('name', flat=True)
+        return sorted(self.tags.values_list('name', flat=True))
+        
+    @property
+    def tag_names(self):
+        try:
+            return self.get_tag_names()
+        except ValueError:
+            return self._tags_to_save
+        
+    @tag_names.setter
+    def tag_names(self, names):
+        if self.tag_names or names:
+            self.tags.set(*names)
+        else:
+            self._tags_to_save = names
 
     def get_safe_article(self):
         if self.readable_article:

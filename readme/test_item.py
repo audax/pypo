@@ -37,3 +37,8 @@ def test_excluding_tags(user, tagged_items):
     queryset = Item.objects.filter(owner_id=user.id).tagged(QUEEN).without(QUEEN)
     assert len(queryset) == 0
 
+def test_tag_names_property(user, simple_items):
+    item = simple_items['item_fish']
+    names = ["bar", "baz", "foo"]
+    item.tag_names = names
+    assert item.tag_names == names
