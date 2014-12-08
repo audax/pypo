@@ -16,6 +16,7 @@ before_script:
   - psql -c 'create database pypo;' -U postgres
   - npm install -g bower
   - bower install -f
+  - python manage.py migrate
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
