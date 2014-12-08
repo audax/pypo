@@ -135,13 +135,12 @@ PIPELINE_CSS = {
         },
 }
 
-STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
-
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
-    'pipeline.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'pipeline.finders.PipelineFinder',
 )
 
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'

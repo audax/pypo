@@ -1,11 +1,11 @@
-{% load compressed %}
+{% load pipeline %}
 {% load static from staticfiles %}
 <!DOCTYPE html>
 <html>
   <head>
     <title>{% block title %}PyPo{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% compressed_css 'all' %}
+    {% stylesheet 'all' %}
     {% with user.userprofile.theme|default:PYPO_DEFAULT_THEME as theme_name %}
         {% with "bootswatch/"|add:theme_name|add:"/bootstrap.min.css" as theme %}
             <link href="{% static theme %}" rel="stylesheet" type="text/css" />
@@ -133,7 +133,7 @@
        window.PYPO = {}
        window.PYPO.tags = {{ tag_names|safe|default:"[]" }};
     </script>
-    {% compressed_js 'components' %}
+    {% javascript 'components' %}
     {% block JS %}
     {% endblock %}
 
