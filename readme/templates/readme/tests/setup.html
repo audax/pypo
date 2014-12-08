@@ -1,17 +1,17 @@
-{% load compressed %}
+{% load pipeline %}
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <title>Setup test</title>
-    {% compressed_css 'testing' %}
-    {% compressed_css 'all' %}
+    {% stylesheet 'testing' %}
+    {% stylesheet 'all' %}
 </head>
 <body>
 <div id="qunit"></div>
 <div id="qunit-fixture"></div>
-{% compressed_js 'components' %}
-{% compressed_js 'testing' %}
+{% javascript 'components' %}
+{% javascript 'testing' %}
 <script>
 test("test setup is complete", function() {
     ok($, "jQuery is loaded");

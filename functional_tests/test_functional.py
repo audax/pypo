@@ -8,11 +8,11 @@ from django.utils.http import urlquote
 from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY
 from django.contrib.auth.models import User
 from django.contrib.sessions.backends.db import SessionStore
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test.utils import override_settings
 from selenium import webdriver
-from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 from sitegate.models import InvitationCode
 import time
 
@@ -31,7 +31,7 @@ TEST_INDEX = {
     }
 
 
-class PypoLiveServerTestCase(LiveServerTestCase):
+class PypoLiveServerTestCase(StaticLiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -39,13 +39,13 @@ class PypoLiveServerTestCase(LiveServerTestCase):
             if 'liveserver' in arg:
                 cls.server_url = arg.split('=')[1]
                 return
-        LiveServerTestCase.setUpClass()
+        StaticLiveServerTestCase.setUpClass()
         cls.server_url = cls.live_server_url
 
     @classmethod
     def tearDownClass(cls):
         if cls.server_url == cls.live_server_url:
-            LiveServerTestCase.tearDownClass()
+            StaticLiveServerTestCase.tearDownClass()
 
 
 
@@ -57,9 +57,9 @@ TEST_INDEX = {
     }
 
 @override_settings(
+    DEBUG=True,
     HAYSTACK_CONNECTIONS=TEST_INDEX,
-    STATICFILES_STORAGE='pipeline.storage.PipelineStorage',
-    PIPELINE_ENABLED=False)
+    STATICFILES_STORAGE='pipeline.storage.NonPackagingPipelineStorage')
 class ExistingUserTest(PypoLiveServerTestCase):
     fixtures = ['initial_data.json']
 

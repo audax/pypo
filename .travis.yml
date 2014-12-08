@@ -10,7 +10,7 @@ install:
 env:
   - TEST_SUITE=js
   - TEST_SUITE=python WEBDRIVER=Firefox
-  - TEST_SUITE=python WEBDRIVER=PhantomJS
+#  - TEST_SUITE=python WEBDRIVER=PhantomJS
 script: ./run_tests.sh $TEST_SUITE
 before_script:
   - psql -c 'create database pypo;' -U postgres
