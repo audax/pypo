@@ -16,27 +16,10 @@ class ItemViewSet(viewsets.ModelViewSet):
         """
         return Item.objects.filter(owner=self.request.user).order_by('-created').prefetch_related('tags')
 
-    def pre_save(self, item):
+    def perform_create(self, serializer):
         """
-        Prepare the item for saving
-
-        Set the items user to the current user, fetch the
-        article title and readable_article
-
-        If the url was already fetched by this user, overwrite the old Item
+        Pass the current user to the serializer
         """
-        # Fetch article if the item is new
-        if item.id is None:
-            item.owner = self.request.user
-            item.fetch_article()
+        serializer.save(owner=self.request.user)
 
-
-    def post_save(self, *args, **kwargs):
-        """
-        Special treatment of the tag attribute
-        """
-        if 'tags' in self.request.DATA:
-            self.object.tags.set(*self.request.DATA['tags'])
-            self.object.save()
-        return super(ItemViewSet, self).post_save(*args, **kwargs)
 

@@ -196,10 +196,7 @@ TEMPLATE_DIRS = (
 
 LOGIN_REDIRECT_URL = '/'
 
-SOUTH_MIGRATION_MODULES = {
-    'taggit': 'taggit.south_migrations',
-}
-
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -209,7 +206,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'pipeline',
-    'south',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
     'readme',
