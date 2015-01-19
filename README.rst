@@ -1,7 +1,7 @@
 About Pypo
 ==========
 
-|Build Status| |Requirements Status|
+|Build Status|
 
 
 Pypo is a self hosted bookmarking service like `Pocket`_.
@@ -84,6 +84,10 @@ Deploying
 There is a fab file you can customize to you liking. It creates a virtualenv,
 sets up the directory structure and checks your current local commit out
 on the target machine.
+
+Requirements status
+------------------
+ |Requirements Status|
 
 License
 -------
