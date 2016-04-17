@@ -74,7 +74,7 @@ def add_example_item(user, tags=None):
         item.save()
     return item
 
-@pytest.yield_fixture(scope='module')
+@pytest.yield_fixture
 def tagged_items(db, user):
     items = [
         add_example_item(user, ('fish', 'boxing')),
@@ -119,7 +119,7 @@ def test_index(settings):
     call_command('clear_index', interactive=False, verbosity=0)
     haystack.connections.reload('default')
 
-@pytest.yield_fixture(scope='module')
+@pytest.yield_fixture
 def simple_items(db, user):
     items = {
         'item_fish': add_example_item(user, [QUEEN, 'fish', 'cookie']),

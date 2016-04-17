@@ -17,13 +17,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'pypo',                      # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
-        'USER': 'postgres',
-        'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
     }
 }
 
@@ -82,7 +77,6 @@ STATIC_URL = '/static/'
 
 BOWER = path.join(PROJECT_ROOT, 'bower_components')
 
-
 # Additional locations of static files
 STATICFILES_DIRS = (
     BOWER,
@@ -134,6 +128,12 @@ PIPELINE_CSS = {
         'output_filename': 'js/testing.js',
         },
 }
+
+PIPELINE = {
+     'JAVASCRIPT': PIPELINE_JS,
+     'STYLESHEETS': PIPELINE_CSS,
+}
+
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -212,8 +212,6 @@ INSTALLED_APPS = (
     'haystack',
     'taggit',
     'rest_framework',
-    'django_admin_bootstrapped.bootstrap3',
-    'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.humanize',
     'settings_context_processor',

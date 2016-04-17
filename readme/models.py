@@ -53,14 +53,19 @@ class TaggedItem(ItemBase):
     content_object = models.ForeignKey('Item')
 
     @classmethod
-    def tags_for(cls, model, instance=None):
+    def tags_for(cls, model, instance=None, **extra_filters):
+        kwargs = extra_filters or {}
         if instance is not None:
-            return cls.tag_model().objects.filter(**{
+            kwargs.update({
                 '%s__content_object' % cls.tag_relname(): instance
             })
-        return cls.tag_model().objects.filter(**{
+            return cls.tag_model().objects.filter(**kwargs)
+        kwargs.update({
             '%s__content_object__isnull' % cls.tag_relname(): False
-        }).distinct()
+        })
+        return cls.tag_model().objects.filter(**kwargs).distinct()
+
+
 
 class Item(models.Model):
     """
