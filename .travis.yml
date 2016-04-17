@@ -1,7 +1,7 @@
 language: python
 python:
-  - "3.3"
   - "3.4"
+  - "3.5"
 install:
   - pip install -r requirements.txt --use-mirrors
   - pip install coverage
@@ -13,7 +13,6 @@ env:
 #  - TEST_SUITE=python WEBDRIVER=PhantomJS
 script: ./run_tests.sh $TEST_SUITE
 before_script:
-  - psql -c 'create database pypo;' -U postgres
   - npm install -g bower
   - bower install -f
   - python manage.py migrate
